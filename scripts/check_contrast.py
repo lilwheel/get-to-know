@@ -23,28 +23,28 @@ STYLESHEET_PATH = Path(__file__).resolve().parent.parent / "css" / "styles.css"
 THEMES = ("neutral", "icebreaker", "dating", "friends", "friends-party")
 TEXT_MINIMUM = 4.5
 GRAPHIC_MINIMUM = 3.0
-BACKGROUNDS_BEHIND_PAGE_ITEMS = ("backdrop-start", "backdrop-end")
+# Everything that sits on the page itself (headings, buttons, switch, dots)
+# has the page colour behind it.
+PAGE = "page"
 
 # Each entry: (description, foreground role, background roles, minimum ratio).
 # Role names are the --color-* variables without the "--color-" prefix.
+# In the flower-field look all text is ink, and every raised thing has an
+# ink outline, so the outline (not the fill) is what must stand out.
 PAIRS = [
+    ("Text on the page", "text", [PAGE], TEXT_MINIMUM),
     ("Question and body text on a card", "text", ["card-background"], TEXT_MINIMUM),
-    ("Headings and labels on the page", "text", BACKGROUNDS_BEHIND_PAGE_ITEMS, TEXT_MINIMUM),
-    ("Footnote 'why' text on a card", "text-muted", ["card-background"], TEXT_MINIMUM),
-    ("Muted labels on the page", "text-muted", BACKGROUNDS_BEHIND_PAGE_ITEMS, TEXT_MINIMUM),
-    ("Source link on a card", "link", ["card-background"], TEXT_MINIMUM),
-    ("Link-style button on the page", "link", BACKGROUNDS_BEHIND_PAGE_ITEMS, TEXT_MINIMUM),
-    ("Button text", "button-text", ["button-background"], TEXT_MINIMUM),
-    ("Primary button text", "button-primary-text", ["button-primary-background"], TEXT_MINIMUM),
-    ("Button outline against the page", "button-border", BACKGROUNDS_BEHIND_PAGE_ITEMS, GRAPHIC_MINIMUM),
-    ("Primary button against the page", "button-primary-background", BACKGROUNDS_BEHIND_PAGE_ITEMS, GRAPHIC_MINIMUM),
-    ("Empty level dot", "level-dot-empty", BACKGROUNDS_BEHIND_PAGE_ITEMS, GRAPHIC_MINIMUM),
-    ("Filled level dot", "level-dot-filled", BACKGROUNDS_BEHIND_PAGE_ITEMS, GRAPHIC_MINIMUM),
-    ("Filled vs empty level dot", "level-dot-filled", ["level-dot-empty"], GRAPHIC_MINIMUM),
-    ("Switch track when off", "switch-off", BACKGROUNDS_BEHIND_PAGE_ITEMS, GRAPHIC_MINIMUM),
-    ("Switch track when on", "switch-on", BACKGROUNDS_BEHIND_PAGE_ITEMS, GRAPHIC_MINIMUM),
-    ("Switch knob on its track", "switch-knob", ["switch-off", "switch-on"], GRAPHIC_MINIMUM),
-    ("Keyboard focus ring", "focus-ring", ["card-background", *BACKGROUNDS_BEHIND_PAGE_ITEMS], GRAPHIC_MINIMUM),
+    ("Footnote and label text", "text-muted", [PAGE, "card-background"], TEXT_MINIMUM),
+    ("Links and link-style buttons", "link", [PAGE, "card-background"], TEXT_MINIMUM),
+    ("Button text, normal and pressed", "text", ["button-background", "button-pressed"], TEXT_MINIMUM),
+    ("Primary button text, normal and pressed", "text",
+     ["button-primary-background", "button-primary-pressed"], TEXT_MINIMUM),
+    ("Badge and sticker text", "text", ["accent"], TEXT_MINIMUM),
+    ("Ink outline against the page", "outline", [PAGE], GRAPHIC_MINIMUM),
+    ("Ink outline against a card", "outline", ["card-background"], GRAPHIC_MINIMUM),
+    ("Hard shadow against the page", "shadow", [PAGE], GRAPHIC_MINIMUM),
+    ("Switch knob on its track, off and on", "switch-knob", ["switch-off", "switch-on"], GRAPHIC_MINIMUM),
+    ("Keyboard focus ring", "focus-ring", [PAGE, "card-background"], GRAPHIC_MINIMUM),
 ]
 NEUTRAL_ONLY_PAIRS = [
     ("Error message text", "error-text", ["error-background"], TEXT_MINIMUM),
@@ -55,9 +55,12 @@ NEUTRAL_ONLY_PAIRS = [
 # Reading colours from the stylesheet
 # ----------------------------------------------------------
 
-def read_variable_block(css_text, selector):
-    """Return {variable name: value} from the first rule with this exact selector."""
+def read_variable_block(css_text, selector, required=True):
+    """Return {variable name: value} from the first rule with this exact selector.
+    A section theme that isn't written yet (required=False) counts as no overrides."""
     match = re.search(re.escape(selector) + r"\s*\{(.*?)\}", css_text, re.DOTALL)
+    if match is None and not required:
+        return {}
     if match is None:
         sys.exit(f"Couldn't find the rule '{selector}' in css/styles.css.")
     return dict(re.findall(r"(--[\w-]+)\s*:\s*([^;]+);", match.group(1)))
@@ -68,7 +71,7 @@ def build_theme_variables(css_text):
     root_variables = read_variable_block(css_text, ":root")
     themes = {"neutral": root_variables}
     for theme in THEMES[1:]:
-        overrides = read_variable_block(css_text, f'[data-theme="{theme}"]')
+        overrides = read_variable_block(css_text, f'[data-theme="{theme}"]', required=False)
         themes[theme] = {**root_variables, **overrides}
     return themes
 

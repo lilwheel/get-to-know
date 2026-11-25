@@ -17,7 +17,7 @@ let isFading = false;
 // and colour the phone's browser toolbar to match.
 export function applyTheme(themeName) {
   document.body.dataset.theme = themeName;
-  const toolbarColor = getComputedStyle(document.body).getPropertyValue('--color-backdrop-start').trim();
+  const toolbarColor = getComputedStyle(document.body).getPropertyValue('--color-page').trim();
   themeColorMeta.setAttribute('content', toolbarColor);
   debugLog('Theme applied', { theme: themeName });
 }

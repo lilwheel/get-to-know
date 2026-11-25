@@ -1,107 +1,91 @@
 /* ==========================================================
    THEME TOKENS: START
-   The one source of truth for colours, spacing, sizes, shadows and
-   timings. Every colour value in the stylesheet lives between the
-   START and END markers; everything below only uses var(--…).
-   scripts/check_style.py checks this.
+   The one source of truth for colours, fonts, outlines, shadows,
+   spacing, sizes and timings. Every colour value in the stylesheet
+   lives between the START and END markers; everything below only
+   uses var(--…). scripts/check_style.py checks this.
+
+   The look: a pastel flower field drawn in a comics/manga style.
+   Solid colours only, bold ink outlines, hard offset shadows with no
+   blur, and no gradients, glows, filters or see-through colours.
 
    Colours come in two layers:
-   1. Palette: the raw colours, named by what they look like.
+   1. Palette: the flower-field colours, named as in PHASE3_PLAN.md.
    2. Roles (--color-*): what each colour is for. The neutral theme
       (start screen) sets them here; each section theme further down
-      overrides them. scripts/check_contrast.py reads both layers to
+      reassigns them. scripts/check_contrast.py reads both layers to
       check WCAG AA contrast.
    ========================================================== */
 :root {
-  /* Palette: neutral (start screen) */
-  --palette-paper: #f7f5f0;
-  --palette-paper-deep: #e9e3d8;
-  --palette-ink: #2a2522;
-  --palette-ink-muted: #5c534c;
-  --palette-ink-line: #847970;
-  --palette-teal: #1d5f5a;
-  --palette-white: #ffffff;
+  /* Palette: Flower Field. Three colours were nudged lighter than the
+     plan's samples so ink text on them meets WCAG AA (4.5 to 1):
+     leaf #7E9A57 -> #A0B77F, rose #C95F5A -> #DC9693,
+     periwinkle #8FA3DC -> #94A7DD; coral #EE8E86 -> #F09D96 makes
+     room for a pressed shade that still passes. */
+  --ink: #34402A;
+  --paper: #FFF9EC;
+  --cream: #FBF1DA;
+  --leaf: #A0B77F;
+  --leaf-light: #C3D49A;
+  --periwinkle: #94A7DD;
+  --coral: #F09D96;
+  --peach-pink: #F8C4B4;
+  --rose: #DC9693;
+  --butter: #F6CF5C;
+  --butter-light: #FBE4A0;
+  --apricot: #F2A262;
+  --pollen: #E8AD29;
 
-  /* Palette: Icebreaker (mint and surf green) */
-  --palette-mint-50: #f5fbf8;
-  --palette-mint-100: #e3f5ec;
-  --palette-surf-200: #c6e9dd;
-  --palette-surf-500: #4a8b7c;
-  --palette-surf-700: #1f6b5d;
-  --palette-surf-800: #335850;
-  --palette-surf-900: #123d36;
+  /* Pressed shades: the same hue a little darker, for buttons being
+     pushed. Each is as dark as it can be while ink text still meets AA. */
+  --leaf-shade: #95AF71;
+  --coral-shade: #ED8B82;
+  --butter-shade: #F3C12C;
+  --apricot-shade: #EF8F41;
 
-  /* Palette: Dating (maroon, burgundy and warm cream) */
-  --palette-maroon-950: #2a0510;
-  --palette-maroon-900: #4b0d20;
-  --palette-burgundy-700: #7a1f36;
-  --palette-burgundy-400: #c46a80;
-  --palette-cream-50: #fdf3e3;
-  --palette-cream-200: #f0d9c2;
-  --palette-gold-200: #f6d29c;
+  /* Roles: neutral theme (the start screen) */
+  --color-page: var(--cream);
+  --color-text: var(--ink);
+  --color-text-muted: var(--ink);
+  --color-link: var(--ink);
+  --color-card-background: var(--paper);
+  --color-outline: var(--ink);
+  --color-shadow: var(--ink);
+  --color-button-background: var(--paper);
+  --color-button-pressed: var(--cream);
+  --color-button-primary-background: var(--butter);
+  --color-button-primary-pressed: var(--butter-shade);
+  --color-accent: var(--pollen);
+  --color-level-dot-filled: var(--pollen);
+  --color-switch-off: var(--paper);
+  --color-switch-on: var(--pollen);
+  --color-switch-knob: var(--ink);
+  --color-focus-ring: var(--ink);
+  --color-dialog-backdrop: var(--cream);
+  --color-error-background: var(--peach-pink);
+  --color-error-text: var(--ink);
 
-  /* Palette: Friends & Teammates (honey, soft gold, marigold, dark browns) */
-  --palette-cream-white: #fffaf0;
-  --palette-honey-50: #fdf0d5;
-  --palette-honey-200: #f6d58e;
-  --palette-gold-100: #fff3c4;
-  --palette-gold-600: #a06a1c;
-  --palette-marigold-300: #ffd166;
-  --palette-marigold-500: #ffb020;
-  --palette-amber-800: #8a4a06;
-  --palette-brown-600: #8f5c14;
-  --palette-brown-700: #6a4720;
-  --palette-brown-800: #5c3608;
-  --palette-brown-900: #3a230d;
-  --palette-brown-950: #1f0f02;
+  /* Fonts: self-hosted Latin subsets in fonts/ (see @font-face below) */
+  --font-fallback: "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --font-family-body: "Zen Maru Gothic", var(--font-fallback);
+  --font-family-display: "Mochiy Pop One", var(--font-fallback);
+  --font-weight-body: 500;
+  --font-weight-bold: 700;
 
-  /* Palette: shadows and dialog backdrops (see-through, one pair per theme).
-     These go away in Phase 3, Step P3-2, which uses solid colours only. */
-  --palette-shadow-neutral: rgba(42, 37, 34, 0.14);
-  --palette-shadow-icebreaker: rgba(18, 61, 54, 0.16);
-  --palette-shadow-dating: rgba(0, 0, 0, 0.4);
-  --palette-shadow-friends: rgba(58, 35, 13, 0.18);
-  --palette-shadow-friends-party: rgba(31, 15, 2, 0.3);
-  --palette-scrim-neutral: rgba(42, 37, 34, 0.5);
-  --palette-scrim-icebreaker: rgba(18, 61, 54, 0.45);
-  --palette-scrim-dating: rgba(20, 2, 8, 0.6);
-  --palette-scrim-friends: rgba(58, 35, 13, 0.45);
-  --palette-scrim-friends-party: rgba(31, 15, 2, 0.5);
-
-  /* Palette: error messages (used by every theme) */
-  --palette-error-rose-50: #fdecec;
-  --palette-error-red-800: #8a1c1c;
-
-  /* Roles: neutral theme */
-  --color-backdrop-start: var(--palette-paper);
-  --color-backdrop-end: var(--palette-paper-deep);
-  --color-text: var(--palette-ink);
-  --color-text-muted: var(--palette-ink-muted);
-  --color-card-background: var(--palette-white);
-  --color-card-shadow: var(--palette-shadow-neutral);
-  --color-link: var(--palette-teal);
-  --color-button-background: var(--palette-white);
-  --color-button-text: var(--palette-ink);
-  --color-button-border: var(--palette-ink-line);
-  --color-button-primary-background: var(--palette-ink);
-  --color-button-primary-text: var(--palette-white);
-  --color-focus-ring: var(--palette-teal);
-  --color-level-dot-empty: var(--palette-ink-line);
-  --color-level-dot-filled: var(--palette-ink);
-  --color-switch-off: var(--palette-ink-line);
-  --color-switch-on: var(--palette-teal);
-  --color-switch-knob: var(--palette-white);
-  --color-dialog-backdrop: var(--palette-scrim-neutral);
-  --color-error-background: var(--palette-error-rose-50);
-  --color-error-text: var(--palette-error-red-800);
-  --font-family-question: var(--font-family-base);
+  /* Ink style: outlines and hard shadows (no blur, ever) */
+  --outline-width: 3px;
+  --outline-width-thin: 2px;
+  --shadow-hard: 4px 4px 0;
+  --shadow-hard-pressed: 2px 2px 0;
+  --shadow-hard-small: 2px 2px 0;
+  /* A pressed button moves this far towards its shadow */
+  --press-distance: 2px;
 
   --space-xsmall: 4px;
   --space-small: 8px;
   --space-medium: 16px;
   --space-large: 32px;
 
-  --font-family-base: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-size-app-title: 1.125rem;
   --font-size-body: 1rem;
   --font-size-question: clamp(1.375rem, 5.5vw, 2rem);
@@ -116,10 +100,10 @@
 
   --radius-medium: 12px;
   --radius-large: 24px;
-  --level-dot-size: 10px;
+  --level-dot-size: 12px;
   --section-button-width: min(100%, 24rem);
-  --switch-width: 44px;
-  --switch-height: 26px;
+  --switch-width: 48px;
+  --switch-height: 28px;
   --switch-knob-gap: 3px;
   --dialog-width: min(calc(100vw - var(--space-large)), 24rem);
   --error-max-width: 32rem;
@@ -129,18 +113,13 @@
   /* Minimum tap heights: main buttons, then smaller toggles and switches */
   --tap-target-large: 48px;
   --tap-target-small: 40px;
-  --opacity-disabled: 0.4;
-  --focus-outline-width: 3px;
-  --focus-outline-offset: 2px;
-  /* Shadow offsets and blur; the colour comes from --color-card-shadow */
-  --shadow-raised: 0 4px 12px;
-  --shadow-card: 0 8px 24px;
-  /* Direction of the background and section-button gradients */
-  --gradient-angle: 160deg;
+  --focus-outline-offset: 3px;
   --duration-switch: 150ms;
+  --duration-press: 80ms;
   /* Section change: content fades out, theme swaps, content fades in */
   --duration-theme-fade: 180ms;
-  --duration-backdrop: 400ms;
+  /* The solid page colour cross-fades to the next section's in this time */
+  --duration-backdrop: 200ms;
 
   /* Card size: fills a phone, stays a comfortable size on a tablet */
   --card-width: min(100%, 30rem);
@@ -168,116 +147,47 @@
     --duration-fly: 1ms;
     --duration-settle: 1ms;
     --duration-switch: 1ms;
+    --duration-press: 1ms;
     --duration-theme-fade: 1ms;
     --duration-backdrop: 1ms;
   }
 }
 
 /* ==========================================================
+   Fonts: self-hosted, Latin characters only, so the page stays small
+   and no request goes to a third party. Licences: fonts/OFL-*.txt.
+   ========================================================== */
+@font-face {
+  font-family: "Zen Maru Gothic";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/zen-maru-gothic-500-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Zen Maru Gothic";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/zen-maru-gothic-700-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Mochiy Pop One";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/mochiy-pop-one-400-latin.woff2") format("woff2");
+}
+
+/* ==========================================================
    Section themes. [data-theme] works on any element, so the start
    screen's section buttons and the background layers can show a
-   theme of their own.
+   theme of their own. Each theme only reassigns --color-* roles.
+   Phase 3, Step P3-3 fills these in; until then every section uses
+   the neutral flower-field look above.
    ========================================================== */
-
-/* Icebreaker: light pastel greens, soft and playful */
-[data-theme="icebreaker"] {
-  --color-backdrop-start: var(--palette-mint-100);
-  --color-backdrop-end: var(--palette-surf-200);
-  --color-text: var(--palette-surf-900);
-  --color-text-muted: var(--palette-surf-800);
-  --color-card-background: var(--palette-mint-50);
-  --color-card-shadow: var(--palette-shadow-icebreaker);
-  --color-link: var(--palette-surf-700);
-  --color-button-background: var(--palette-mint-50);
-  --color-button-text: var(--palette-surf-900);
-  --color-button-border: var(--palette-surf-500);
-  --color-button-primary-background: var(--palette-surf-700);
-  --color-button-primary-text: var(--palette-white);
-  --color-focus-ring: var(--palette-surf-700);
-  --color-level-dot-empty: var(--palette-surf-500);
-  --color-level-dot-filled: var(--palette-surf-900);
-  --color-switch-off: var(--palette-surf-500);
-  --color-switch-on: var(--palette-surf-700);
-  --color-switch-knob: var(--palette-white);
-  --color-dialog-backdrop: var(--palette-scrim-icebreaker);
-  /* Rounded letters where the device has them (e.g. Apple devices) */
-  --font-family-question: ui-rounded, "SF Pro Rounded", var(--font-family-base);
-}
-
-/* Dating: burgundy and maroon with warm cream text, romantic */
-[data-theme="dating"] {
-  --color-backdrop-start: var(--palette-maroon-900);
-  --color-backdrop-end: var(--palette-maroon-950);
-  --color-text: var(--palette-cream-50);
-  --color-text-muted: var(--palette-cream-200);
-  --color-card-background: var(--palette-burgundy-700);
-  --color-card-shadow: var(--palette-shadow-dating);
-  --color-link: var(--palette-gold-200);
-  --color-button-background: var(--palette-burgundy-700);
-  --color-button-text: var(--palette-cream-50);
-  --color-button-border: var(--palette-burgundy-400);
-  --color-button-primary-background: var(--palette-cream-50);
-  --color-button-primary-text: var(--palette-maroon-900);
-  --color-focus-ring: var(--palette-gold-200);
-  --color-level-dot-empty: var(--palette-burgundy-400);
-  --color-level-dot-filled: var(--palette-cream-50);
-  --color-switch-off: var(--palette-burgundy-400);
-  --color-switch-on: var(--palette-gold-200);
-  --color-switch-knob: var(--palette-maroon-950);
-  --color-dialog-backdrop: var(--palette-scrim-dating);
-  /* A classic serif for a warmer, more romantic feel; no download needed */
-  --font-family-question: Georgia, "Times New Roman", serif;
-}
-
-/* Friends & Teammates: honey and soft gold with dark brown text, warm and easygoing */
-[data-theme="friends"] {
-  --color-backdrop-start: var(--palette-honey-50);
-  --color-backdrop-end: var(--palette-honey-200);
-  --color-text: var(--palette-brown-900);
-  --color-text-muted: var(--palette-brown-700);
-  --color-card-background: var(--palette-cream-white);
-  --color-card-shadow: var(--palette-shadow-friends);
-  --color-link: var(--palette-amber-800);
-  --color-button-background: var(--palette-cream-white);
-  --color-button-text: var(--palette-brown-900);
-  --color-button-border: var(--palette-gold-600);
-  --color-button-primary-background: var(--palette-amber-800);
-  --color-button-primary-text: var(--palette-white);
-  --color-focus-ring: var(--palette-amber-800);
-  --color-level-dot-empty: var(--palette-gold-600);
-  --color-level-dot-filled: var(--palette-brown-900);
-  --color-switch-off: var(--palette-gold-600);
-  --color-switch-on: var(--palette-amber-800);
-  --color-switch-knob: var(--palette-white);
-  --color-dialog-backdrop: var(--palette-scrim-friends);
-  /* Rounded letters where the device has them, for a friendly feel */
-  --font-family-question: ui-rounded, "SF Pro Rounded", var(--font-family-base);
-}
-
-/* Friends & Teammates in Party mode: the same palette, bolder and brighter,
-   with marigold behind everything. Set by js/app.js while Party mode is on. */
-[data-theme="friends-party"] {
-  --color-backdrop-start: var(--palette-marigold-300);
-  --color-backdrop-end: var(--palette-marigold-500);
-  --color-text: var(--palette-brown-950);
-  --color-text-muted: var(--palette-brown-800);
-  --color-card-background: var(--palette-gold-100);
-  --color-card-shadow: var(--palette-shadow-friends-party);
-  --color-link: var(--palette-brown-800);
-  --color-button-background: var(--palette-gold-100);
-  --color-button-text: var(--palette-brown-950);
-  --color-button-border: var(--palette-brown-600);
-  --color-button-primary-background: var(--palette-brown-950);
-  --color-button-primary-text: var(--palette-marigold-300);
-  --color-focus-ring: var(--palette-brown-950);
-  --color-level-dot-empty: var(--palette-brown-600);
-  --color-level-dot-filled: var(--palette-brown-950);
-  --color-switch-off: var(--palette-brown-600);
-  --color-switch-on: var(--palette-brown-950);
-  --color-switch-knob: var(--palette-gold-100);
-  --color-dialog-backdrop: var(--palette-scrim-friends-party);
-  --font-family-question: ui-rounded, "SF Pro Rounded", var(--font-family-base);
-}
 
 /* ==========================================================
    Base: reset and page defaults
@@ -295,9 +205,10 @@ body {
 }
 
 body {
-  background: var(--color-backdrop-start);
+  background: var(--color-page);
   color: var(--color-text);
-  font-family: var(--font-family-base);
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-body);
   font-size: var(--font-size-body);
   line-height: var(--line-height-body);
   /* Stops the page bouncing or scrolling while a card is dragged */
@@ -329,15 +240,16 @@ button {
 }
 
 /* ==========================================================
-   Theme background layers: one per theme, stacked behind the page.
-   Only the active theme's layer is visible; switching themes
-   cross-fades them using opacity alone.
+   Theme background layers: one solid colour per theme, stacked
+   behind the page. Only the active theme's layer is visible;
+   switching themes cross-fades them using opacity alone, which
+   looks like a short colour change.
    ========================================================== */
 .theme-backdrop {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(var(--gradient-angle), var(--color-backdrop-start), var(--color-backdrop-end));
+  background: var(--color-page);
   opacity: 0;
   transition: opacity var(--duration-backdrop) ease;
 }
@@ -352,8 +264,36 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 
 :focus-visible,
 .switch__input:focus-visible + .switch__track {
-  outline: var(--focus-outline-width) solid var(--color-focus-ring);
+  outline: var(--outline-width) solid var(--color-focus-ring);
   outline-offset: var(--focus-outline-offset);
+}
+
+/* ==========================================================
+   Ink style shared by every raised thing (cards, buttons, switches,
+   the dialog): a bold ink outline and a hard offset shadow.
+   Pressing a button pushes it towards its shadow, like a printed
+   button being pressed down.
+   ========================================================== */
+.section-button,
+.control-button,
+.toggle-button,
+.card,
+.confirm-dialog {
+  border: var(--outline-width) solid var(--color-outline);
+  box-shadow: var(--shadow-hard) var(--color-shadow);
+}
+
+.section-button,
+.control-button,
+.toggle-button {
+  transition: transform var(--duration-press) ease;
+}
+
+.section-button:active,
+.control-button:not(:disabled):active,
+.toggle-button:active {
+  transform: translate(var(--press-distance), var(--press-distance));
+  box-shadow: var(--shadow-hard-pressed) var(--color-shadow);
 }
 
 /* ==========================================================
@@ -395,6 +335,8 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 
 .start-screen__title {
   margin: 0 0 var(--space-small);
+  font-family: var(--font-family-display);
+  font-weight: normal;
   font-size: var(--font-size-start-title);
   line-height: var(--line-height-start-title);
 }
@@ -411,23 +353,24 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   width: var(--section-button-width);
 }
 
-/* Each section button wears its own theme (see data-theme in index.html) */
+/* Each section button wears its own theme (data-theme, set by js/app.js) */
 .section-button {
   display: flex;
   flex-direction: column;
   gap: var(--space-xsmall);
   padding: var(--space-large) var(--space-medium);
-  border: 1px solid var(--color-button-border);
   border-radius: var(--radius-large);
-  background: linear-gradient(var(--gradient-angle), var(--color-card-background), var(--color-backdrop-end));
+  background: var(--color-button-primary-background);
   color: var(--color-text);
-  box-shadow: var(--shadow-raised) var(--color-card-shadow);
+}
+
+.section-button:active {
+  background: var(--color-button-primary-pressed);
 }
 
 .section-button__name {
-  font-family: var(--font-family-question);
+  font-family: var(--font-family-display);
   font-size: var(--font-size-section-name);
-  font-weight: 700;
 }
 
 .section-button__hint {
@@ -446,14 +389,11 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
    Card screen: header, card area, level controls, Back/Next
    ========================================================== */
 
+/* The buttons keep their size; a long section name wraps instead */
 .app-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-/* The buttons keep their size; a long section name wraps instead */
-.app-header {
   gap: var(--space-small);
 }
 
@@ -466,6 +406,8 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   flex: 1;
   min-width: 0;
   margin: 0;
+  font-family: var(--font-family-display);
+  font-weight: normal;
   font-size: var(--font-size-app-title);
   line-height: var(--line-height-heading);
   text-align: center;
@@ -490,11 +432,14 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   gap: var(--space-small);
 }
 
+/* Reached levels are filled; the rest are an ink outline only.
+   The level name underneath also says which level is on. */
 .level-dot {
   width: var(--level-dot-size);
   height: var(--level-dot-size);
+  border: var(--outline-width-thin) solid var(--color-outline);
   border-radius: 50%;
-  background: var(--color-level-dot-empty);
+  background: none;
 }
 
 .level-dot.is-filled {
@@ -503,6 +448,7 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 
 .level-indicator__name {
   font-size: var(--font-size-footnote);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-muted);
 }
 
@@ -532,7 +478,6 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   padding: var(--card-padding);
   border-radius: var(--radius-large);
   background: var(--color-card-background);
-  box-shadow: var(--shadow-card) var(--color-card-shadow);
   /* The page handles the gesture itself, so the browser shouldn't scroll or zoom */
   touch-action: none;
   user-select: none;
@@ -608,9 +553,8 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 
 .card__question {
   margin: 0;
-  font-family: var(--font-family-question);
   font-size: var(--font-size-question);
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   line-height: var(--line-height-heading);
   text-align: center;
   text-wrap: balance;
@@ -620,10 +564,11 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 .card__label {
   margin: 0;
   padding: var(--space-xsmall) var(--space-small);
-  border: 1px solid var(--color-button-border);
+  border: var(--outline-width-thin) solid var(--color-outline);
   border-radius: var(--radius-medium);
+  background: var(--color-card-background);
+  font-family: var(--font-family-display);
   font-size: var(--font-size-footnote);
-  font-weight: 700;
   letter-spacing: var(--letter-spacing-label);
   text-transform: uppercase;
 }
@@ -631,21 +576,23 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 .card__who {
   margin: 0;
   font-size: var(--font-size-footnote);
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-muted);
 }
 
-/* Party mode badge: a small tag in the card's top corner, outside the text flow */
+/* Party mode badge: a small sticker in the card's top corner, outside the text flow */
 .card__badge {
   position: absolute;
   top: var(--space-medium);
   right: var(--space-medium);
   padding: var(--space-xsmall) var(--space-small);
+  border: var(--outline-width-thin) solid var(--color-outline);
   border-radius: var(--radius-medium);
-  background: var(--color-button-primary-background);
-  color: var(--color-button-primary-text);
+  background: var(--color-accent);
+  color: var(--color-text);
+  box-shadow: var(--shadow-hard-small) var(--color-shadow);
+  font-family: var(--font-family-display);
   font-size: var(--font-size-footnote);
-  font-weight: 700;
   letter-spacing: var(--letter-spacing-label);
   text-transform: uppercase;
 }
@@ -668,13 +615,14 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 
 .card__source {
   color: var(--color-link);
+  font-weight: var(--font-weight-bold);
   /* A larger tap target without changing how the link looks */
   display: inline-block;
   padding: var(--space-xsmall) 0;
 }
 
 /* ==========================================================
-   Buttons: Back / Next and the sound toggle
+   Buttons: Back / Next, level buttons, Home, Sound and Pass
    ========================================================== */
 .card-controls {
   display: flex;
@@ -684,17 +632,21 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 
 .control-button,
 .toggle-button {
-  border: 1px solid var(--color-button-border);
   border-radius: var(--radius-medium);
   background: var(--color-button-background);
-  color: var(--color-button-text);
+  color: var(--color-text);
+  font-weight: var(--font-weight-bold);
+}
+
+.control-button:not(:disabled):active,
+.toggle-button:active {
+  background: var(--color-button-pressed);
 }
 
 .control-button {
   min-width: var(--control-button-min-width);
   min-height: var(--tap-target-large);
   padding: var(--space-small) var(--space-medium);
-  font-weight: 600;
 }
 
 .control-button--small {
@@ -703,13 +655,18 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 }
 
 .control-button--primary {
-  border-color: var(--color-button-primary-background);
   background: var(--color-button-primary-background);
-  color: var(--color-button-primary-text);
 }
 
+.control-button--primary:not(:disabled):active {
+  background: var(--color-button-primary-pressed);
+}
+
+/* Disabled: flat (no shadow) with a dashed outline, so it reads as
+   "not pressable" without fading into see-through colours */
 .control-button:disabled {
-  opacity: var(--opacity-disabled);
+  border-style: dashed;
+  box-shadow: none;
   cursor: default;
 }
 
@@ -720,8 +677,8 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 }
 
 /* ==========================================================
-   18+ setting: a switch built on a real checkbox, so it works with
-   keyboards and screen readers
+   The gated switch (18+ or Party mode): built on a real checkbox,
+   so it works with keyboards and screen readers
    ========================================================== */
 .setting-row {
   display: flex;
@@ -735,6 +692,7 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   gap: var(--space-small);
   min-height: var(--tap-target-small);
   font-size: var(--font-size-footnote);
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
 }
 
@@ -754,17 +712,20 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   flex: none;
   width: var(--switch-width);
   height: var(--switch-height);
+  border: var(--outline-width) solid var(--color-outline);
   border-radius: var(--switch-height);
   background: var(--color-switch-off);
+  box-shadow: var(--shadow-hard-small) var(--color-shadow);
 }
 
+/* The knob sits inside the outline, so its size subtracts the outline too */
 .switch__track::after {
   content: "";
   position: absolute;
   top: var(--switch-knob-gap);
   left: var(--switch-knob-gap);
-  width: calc(var(--switch-height) - var(--switch-knob-gap) * 2);
-  height: calc(var(--switch-height) - var(--switch-knob-gap) * 2);
+  width: calc(var(--switch-height) - var(--outline-width) * 2 - var(--switch-knob-gap) * 2);
+  height: calc(var(--switch-height) - var(--outline-width) * 2 - var(--switch-knob-gap) * 2);
   border-radius: 50%;
   background: var(--color-switch-knob);
   transition: transform var(--duration-switch) ease;
@@ -779,18 +740,18 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 }
 
 /* ==========================================================
-   Confirmation dialog
+   Confirmation dialog: an inked panel on a solid backdrop
    ========================================================== */
 .confirm-dialog {
   width: var(--dialog-width);
   padding: var(--space-large) var(--space-medium) var(--space-medium);
-  border: none;
   border-radius: var(--radius-large);
   background: var(--color-card-background);
   color: var(--color-text);
   text-align: center;
 }
 
+/* Solid, not see-through: the dialog sits on a plain panel of the page colour */
 .confirm-dialog::backdrop {
   background: var(--color-dialog-backdrop);
 }
@@ -798,7 +759,7 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 .confirm-dialog__message {
   margin: 0 0 var(--space-large);
   font-size: var(--font-size-section-name);
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   line-height: var(--line-height-heading);
 }
 
@@ -806,13 +767,15 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
    and the message becomes body text with one rule per line */
 .confirm-dialog__heading {
   margin: 0 0 var(--space-medium);
+  font-family: var(--font-family-display);
+  font-weight: normal;
   font-size: var(--font-size-section-name);
   line-height: var(--line-height-heading);
 }
 
 .confirm-dialog--with-heading .confirm-dialog__message {
   font-size: var(--font-size-body);
-  font-weight: 400;
+  font-weight: var(--font-weight-body);
   line-height: var(--line-height-body);
   white-space: pre-line;
 }
@@ -830,6 +793,7 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   margin-top: var(--space-large);
   padding: var(--space-medium);
   max-width: var(--error-max-width);
+  border: var(--outline-width) solid var(--color-outline);
   border-radius: var(--radius-medium);
   background: var(--color-error-background);
   color: var(--color-error-text);

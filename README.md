@@ -157,6 +157,7 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 | `js/timing.js` | Reads animation durations from CSS variables and waits for them. | `readCssDurationMs`, `wait` |
 | `js/debug.js` | `debugLog()`, the **only** place that writes to the console, and only with `?debug=1`. | `debugLog` |
 | `data/questions.json` | The 2,000 questions. See [The question bank](#5-the-question-bank). | — |
+| `fonts/` | Self-hosted web fonts, Latin characters only: Zen Maru Gothic 500 and 700 (body and questions) and Mochiy Pop One (headings and labels), about 41 KB in all, with their licences (`OFL-*.txt`, SIL Open Font License). Nothing is loaded from Google, so no visitor data reaches a third party. | — |
 | `data/sample-friends.json` | **Temporary.** 16 sample Friends & Teammates cards: 10 normal (5 questions, 5 dares) and 6 Party mode (a question and a dare per level), used until the real Friends cards are written (Phase 2, Step P2-6). Then it is deleted and removed from `CONFIG.questionFileUrls`. | — |
 | `data/sources.json` | The 24 verified sources that card footnotes link to. | — |
 | `scripts/validate.py` | Offline checker for both data files. Run it after any data change. | — |
