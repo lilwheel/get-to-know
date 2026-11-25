@@ -1,1 +1,86 @@
-[]
+[
+  {
+    "id": "gottman-love-maps",
+    "title": "The Sound Relationship House: Build Love Maps",
+    "url": "https://www.gottman.com/blog/the-sound-relationship-house-build-love-maps/",
+    "framework": "Gottman: Love Maps"
+  },
+  {
+    "id": "gottman-love-maps-questions-pdf",
+    "title": "The Love Maps Questions",
+    "url": "https://loveyourpeoplewell.com/wp-content/uploads/2021/08/Love-Maps-Questions.pdf",
+    "framework": "Gottman: Love Maps"
+  },
+  {
+    "id": "gottman-love-map-exercise-pdf",
+    "title": "The Gottman Love Map Exercise",
+    "url": "https://newpathcentre.ca/wp-content/uploads/2020/09/build-love-maps-love-map-exercise.pdf",
+    "framework": "Gottman: Love Maps"
+  },
+  {
+    "id": "gottman-sound-relationship-house-pdf",
+    "title": "Love Maps, by The Gottman Institute",
+    "url": "https://static1.squarespace.com/static/57cf7037d2b857215af71cc5/t/63dac6d2b21c760a5887a53f/1675282130310/love-map-questions.pdf",
+    "framework": "Gottman: Sound Relationship House"
+  },
+  {
+    "id": "gottman-fondness-admiration",
+    "title": "Build Love Maps: Gottman Method for Stronger Relationships",
+    "url": "https://relationshipsuite.com/enhancing-daily-connection-building-love-maps-and-strengthening-your-relationship-with-the-gottman-method/",
+    "framework": "Gottman: Fondness and Admiration"
+  },
+  {
+    "id": "aron-36-questions-amq",
+    "title": "36 questions that can lead to love",
+    "url": "https://amorebeautifulquestion.com/36-questions/",
+    "framework": "Aron: 36 Questions"
+  },
+  {
+    "id": "aron-36-questions-rd",
+    "title": "The 36 Questions That Lead to Love",
+    "url": "https://www.rd.com/list/arthur-aron-36-questions/",
+    "framework": "Aron: 36 Questions"
+  },
+  {
+    "id": "general-eharmony-first-date",
+    "title": "189 First date questions",
+    "url": "https://www.eharmony.com/dating-advice/getting-to-know/questions-to-ask-first-date/",
+    "framework": "General"
+  },
+  {
+    "id": "general-thoughtcatalog-first-date",
+    "title": "400+ First Date Questions",
+    "url": "https://thoughtcatalog.com/kendra-syrdal/2018/05/first-date-questions/",
+    "framework": "General"
+  },
+  {
+    "id": "general-wondermind-first-date",
+    "title": "35 First Date Questions to Ask Anyone",
+    "url": "https://www.wondermind.com/article/first-date-questions/",
+    "framework": "General"
+  },
+  {
+    "id": "general-onelove-first-date",
+    "title": "10 Perfect Questions to Ask On The First Date To Really Get To Know Someone",
+    "url": "https://www.joinonelove.org/learn/10-perfect-questions-to-ask-on-the-first-date-to-really-get-to-know-someone/",
+    "framework": "General"
+  },
+  {
+    "id": "gottman-intimacy-talk-about-sex",
+    "title": "Couples That Talk About Sex Have Better Sex",
+    "url": "https://www.gottman.com/blog/couples-talk-sex-better-sex/",
+    "framework": "Gottman: Intimacy"
+  },
+  {
+    "id": "gottman-intimacy-expressing-desires",
+    "title": "How To Feel Comfortable Expressing Sexual Desires With Your Partner",
+    "url": "https://www.gottman.com/blog/how-to-feel-comfortable-expressing-sexual-desires-with-your-partner/",
+    "framework": "Gottman: Intimacy"
+  },
+  {
+    "id": "gottman-intimacy-sensual-communication",
+    "title": "The Art of Sensual Communication",
+    "url": "https://www.gottman.com/blog/the-art-of-sensual-communication/",
+    "framework": "Gottman: Intimacy"
+  }
+]

@@ -29,11 +29,65 @@ to see debug logs in the browser console.
 | `js/swipe.js` | (Step 3) Drag, flick and keyboard handling for the card stack. |
 | `js/theme.js` | Switches the page theme by setting `data-theme` on `<body>`. |
 | `js/debug.js` | `debugLog()`: the only console output in the app, shown only with `?debug=1`. |
-| `data/questions.json` | The question bank (currently empty). |
-| `data/sources.json` | The verified sources that questions link to (currently empty). |
-| `scripts/validate.py` | Offline checker for the data files. Run `python3 scripts/validate.py`. |
+| `data/questions.json` | The question bank (currently empty). Format below. |
+| `data/sources.json` | The 14 verified sources that questions link to. Format below. |
+| `scripts/validate.py` | Offline checker for both data files. Run `python3 scripts/validate.py`. |
 | `PROGRESS.md` | Build checklist: which steps are done, when, and in which commit. |
 | `.nojekyll` | Tells GitHub Pages to serve files as-is, without Jekyll processing. |
+
+## Data format
+
+### Sources (`data/sources.json`)
+
+Every link in the app comes from this file. Each source is:
+
+```json
+{
+  "id": "gottman-love-maps",
+  "title": "The Sound Relationship House: Build Love Maps",
+  "url": "https://www.gottman.com/blog/the-sound-relationship-house-build-love-maps/",
+  "framework": "Gottman: Love Maps"
+}
+```
+
+Only add a source after opening its URL and checking it matches the title.
+
+### Questions (`data/questions.json`)
+
+Every field is required. A complete example:
+
+```json
+{
+  "id": "date-1-0001",
+  "section": "dating",
+  "level": 1,
+  "category": "Daily life",
+  "adult": false,
+  "text": "What's been taking up the most space in your head this week, and why?",
+  "why": "Builds Love Maps by learning their current worries.",
+  "framework": "Gottman: Love Maps",
+  "source_id": "gottman-love-maps"
+}
+```
+
+| Field | Rule |
+| --- | --- |
+| `id` | `section-level-number`: `ice-1-0001` for icebreaker, `date-2-0042` for dating. Must match `section` and `level`. |
+| `section` | `"icebreaker"` or `"dating"`. |
+| `level` | `1` (light), `2` (personal) or `3` (deep). |
+| `category` | Short topic label, e.g. "Quirky habits". |
+| `adult` | `true` or `false`. Always `false` in icebreaker; `true` only in dating levels 2 and 3. |
+| `text` | The question: open-ended (not yes/no), and both people answer it. |
+| `why` | One sentence, under 20 words, naming the principle. |
+| `framework` | Must equal the `framework` of the source it cites. |
+| `source_id` | Must match an `id` in `data/sources.json`. |
+
+### Checking the data
+
+Run `python3 scripts/validate.py`. It prints counts per section and level
+and flags missing or invalid fields, unknown source ids, wrong frameworks,
+exact duplicates and near-duplicates (over 80% word overlap). It exits with
+an error if it finds any problem.
 
 ## How the pieces fit together
 
