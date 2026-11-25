@@ -1,0 +1,83 @@
+/* ==========================================================
+   Design tokens: colours, spacing, type and timings.
+   Every colour or size used below comes from here.
+   ========================================================== */
+:root {
+  --color-background: #f7f7f5;
+  --color-text: #1f2a2a;
+  --color-text-muted: #4a5555;
+  --color-error-background: #fdecec;
+  --color-error-text: #8a1c1c;
+
+  --space-small: 8px;
+  --space-medium: 16px;
+  --space-large: 32px;
+
+  --font-family-base: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-size-title: clamp(2rem, 8vw, 3.5rem);
+  --font-size-body: 1.125rem;
+
+  --radius-medium: 12px;
+}
+
+/* ==========================================================
+   Base: reset and page defaults
+   ========================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body);
+  line-height: 1.5;
+}
+
+/* ==========================================================
+   Layout: full-height app shell, content centred
+   ========================================================== */
+.app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-large) var(--space-medium);
+  text-align: center;
+}
+
+/* ==========================================================
+   Start screen
+   ========================================================== */
+.start-screen__title {
+  margin: 0 0 var(--space-small);
+  font-size: var(--font-size-title);
+  line-height: 1.1;
+}
+
+.start-screen__subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* ==========================================================
+   Error message
+   ========================================================== */
+.error-message {
+  margin-top: var(--space-large);
+  padding: var(--space-medium);
+  max-width: 32rem;
+  border-radius: var(--radius-medium);
+  background: var(--color-error-background);
+  color: var(--color-error-text);
+}
