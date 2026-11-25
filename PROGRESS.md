@@ -37,7 +37,8 @@ Decisions:
 - P2-3 (2026-11-25): every dare is done by the whole table. Dare cards show "Whole table"; no extra field in the data.
 - P2-6g (2026-11-25): the 18+ top-up is additive. New 18+ questions are added on top of the 300 regular
   questions per level (for example, 40% of 300 = 120 18+ questions), never by turning regular ones into 18+.
-  Still to confirm before 6g: the exact percentage, and whether the 50 existing 18+ questions count towards it.
+  Confirmed (2026-11-25): target is 40% of the 300 regular questions = 120 18+ questions each at Dating L2 and L3.
+  The 50 existing ones count, so 6g writes 70 new 18+ questions per level (140 in all).
 
 - P2-4b (2026-11-25): regular pools reshuffle when they run out, as before. The 18+ pool does not:
   once every 18+ card at a level has been shown, that level deals regular cards only (no 18+ repeats)
