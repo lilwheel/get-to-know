@@ -35,7 +35,8 @@ export function save(key, value, areaName = 'local') {
   }
 }
 
-// Delete saved values.
+// Delete saved values from localStorage (used by Reset). The 18+ choice in
+// sessionStorage is left alone; it clears itself when the tab closes.
 export function clearSaved(keys) {
   try {
     keys.forEach((key) => localStorage.removeItem(key));

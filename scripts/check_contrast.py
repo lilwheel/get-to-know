@@ -92,14 +92,28 @@ def resolve_colour(variables, name):
 
 def relative_luminance(hex_colour):
     """How bright a colour looks to the eye, from 0 (black) to 1 (white)."""
+    # "#rrggbb" -> red, green and blue as 0-1 values.
     channels = [int(hex_colour[index:index + 2], 16) / 255 for index in (1, 3, 5)]
-    linear = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4 for c in channels]
-    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+    # Undo the sRGB gamma curve (WCAG's formula, constants included), so the
+    # values are proportional to real light.
+    linear = []
+    for channel in channels:
+        if channel <= 0.03928:
+            linear.append(channel / 12.92)
+        else:
+            linear.append(((channel + 0.055) / 1.055) ** 2.4)
+    # Eyes are most sensitive to green and least to blue; these are WCAG's weights.
+    red, green, blue = linear
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue
 
 
 def contrast_ratio(colour_a, colour_b):
     """WCAG contrast ratio between two colours, from 1 to 21."""
-    lighter, darker = sorted((relative_luminance(colour_a), relative_luminance(colour_b)), reverse=True)
+    luminance_a = relative_luminance(colour_a)
+    luminance_b = relative_luminance(colour_b)
+    lighter = max(luminance_a, luminance_b)
+    darker = min(luminance_a, luminance_b)
+    # The 0.05 stands for screen glare, as in the WCAG definition.
     return (lighter + 0.05) / (darker + 0.05)
 
 

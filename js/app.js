@@ -29,6 +29,7 @@ const elements = {
   adultSetting: document.getElementById('adult-setting'),
   adultToggle: document.getElementById('adult-toggle'),
   cardStack: document.getElementById('card-stack'),
+  cardAnnouncer: document.getElementById('card-announcer'),
   shallowerButton: document.getElementById('shallower-button'),
   deeperButton: document.getElementById('deeper-button'),
   levelIndicator: document.getElementById('level-indicator'),
@@ -58,6 +59,7 @@ const session = {
   currentPosition: 0,   // which entry of history is on top
   cardStack: null,
   isFirstCardOfVisit: true,
+  isSoundOn: false,     // the click sound; off by default, not saved
 };
 
 // ----------------------------------------------------------
@@ -165,6 +167,7 @@ function handleCardShown(position) {
     save(CONFIG.storageKeys.seenIds, session.shuffler.getSeenIds());
   }
   savePlace('cards');
+  elements.cardAnnouncer.textContent = buildCardContent(question).text;
   elements.backButton.disabled = position === 0;
   if (!session.isFirstCardOfVisit) {
     playCardChangeFeedback();
@@ -385,12 +388,11 @@ function handleArrowKeys(event) {
   }
 }
 
-// Flip the click sound on or off and update the button's label and state.
+// Flip the click sound on or off and update the button's label to match.
 function toggleSound() {
-  const turningOn = elements.soundToggle.getAttribute('aria-pressed') !== 'true';
-  setSoundEnabled(turningOn);
-  elements.soundToggle.setAttribute('aria-pressed', String(turningOn));
-  elements.soundToggle.textContent = turningOn ? 'Sound on' : 'Sound off';
+  session.isSoundOn = !session.isSoundOn;
+  setSoundEnabled(session.isSoundOn);
+  elements.soundToggle.textContent = session.isSoundOn ? 'Sound on' : 'Sound off';
 }
 
 // ----------------------------------------------------------
