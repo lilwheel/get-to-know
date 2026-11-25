@@ -143,7 +143,7 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 
 | File | What it does | Main functions |
 | --- | --- | --- |
-| `index.html` | The single page: one background layer per theme (five), the start screen, the card screen, the confirm dialog, the screen-reader announcer and the error message. Loads `css/styles.css` and `js/app.js`. | — |
+| `index.html` | The single page: one background layer per theme (five), the start screen, the card screen, the confirm dialog, the screen-reader announcer and the error message. Loads `css/styles.css` and `js/app.js`, each with a release version tag, plus an import map that gives every script the same tag (see [Deploying](#10-deploying)). | — |
 | `css/styles.css` | All styling. It starts with design tokens (palette, colour roles, sizes, timings), then the Icebreaker and Dating theme overrides, then the components in page order. | — |
 | `js/config.js` | The one `CONFIG` object: every tunable number and name in the JavaScript. See [Settings](#8-settings-you-can-change). | — |
 | `js/app.js` | Entry point and coordinator. Loads data, switches screens, deals cards into the stack, handles levels, the gated switches (18+ and Party mode), Reset, sound and keyboard, and saves your place. | `startApp`, `openSection`, `getCardAt`, `handleCardShown`, `changeLevel`, `handleToggleChange` |
@@ -358,32 +358,65 @@ It exits with an error if anything is wrong, so you can use it before every comm
 
 ## 6. Themes and colours
 
-| Theme | Where | Look |
+### The look: Flower Field
+
+A pastel flower field drawn in a comics/manga style (Phase 3, `PHASE3_PLAN.md`):
+
+- **Solid colours only:** no gradients, blurs, glows, filters or see-through colours.
+- **Ink outlines:** cards, buttons, the switch and the dialog have a 3 px outline in `--ink` (a dark leaf green, used instead of black).
+- **Hard shadows:** a 4 px offset shadow with no blur, like a printed comic. A pressed button moves 2 px towards its shadow and turns its darker shade.
+- **Manga details:** cards are panels with 14 px corners, the footnote is a cream caption box, DARE and PARTY are starburst stickers, and the level indicator is three small flowers. The next card gives one short "pop" when the top card leaves (off for reduced motion).
+- **Fonts:** Zen Maru Gothic (500 and 700) for questions and body text, Mochiy Pop One for headings, section buttons and stickers. Both are self-hosted in `fonts/`.
+- **Text is always `--ink`**, never a pastel on a pastel.
+
+### Theme tokens
+
+Every colour, outline, shadow, radius and timing lives in one **Theme tokens** block at the top of `css/styles.css`, between the `THEME TOKENS: START` and `THEME TOKENS: END` markers. Section themes only reassign `--color-*` roles.
+
+**Palette.** Hex values marked * were nudged lighter than the plan's samples so that ink text on them meets WCAG AA.
+
+| Token | Hex | Used for |
 | --- | --- | --- |
-| Neutral | Start screen | Warm paper background. Each section button previews its own theme. |
-| Icebreaker | Icebreaker cards | Mint and surf-green gradient, near-white mint cards, dark teal text, rounded letters where available. |
-| Dating | Dating cards | Maroon gradient, burgundy cards, warm cream text, serif questions. |
-| Friends | Friends & Teammates cards | Honey and soft-gold gradient, warm-white cards, dark brown text, amber buttons, rounded letters where available. |
-| Friends Party | Friends & Teammates with Party mode on | The same palette, bolder: a bright marigold gradient, golden cards, near-black brown text and buttons with marigold lettering. |
+| `--ink` | #34402A | All text, outlines, hard shadows, the switch knob |
+| `--paper` | #FFF9EC | Card faces, normal buttons, empty level flowers |
+| `--cream` | #FBF1DA | Start-screen page, caption boxes, pressed normal buttons |
+| `--leaf` | #A0B77F * | Icebreaker buttons (plan: #7E9A57) |
+| `--leaf-light` | #C3D49A | Icebreaker page |
+| `--periwinkle` | #94A7DD * | Icebreaker accent (plan: #8FA3DC) |
+| `--coral` | #F09D96 * | Dating buttons (plan: #EE8E86) |
+| `--peach-pink` | #F8C4B4 | Dating page, error box |
+| `--rose` | #DC9693 * | Dating accent: 18+ sticker and ring, switch (plan: #C95F5A) |
+| `--butter` | #F6CF5C | Friends buttons, start-screen primary buttons |
+| `--butter-light` | #FBE4A0 | Friends page |
+| `--apricot` | #F2A262 | Friends accent (DARE sticker, switch); Party mode page |
+| `--pollen` | #E8AD29 | Reached level flowers; Party mode accent (stickers, switch) |
+| `--leaf-shade`, `--coral-shade`, `--butter-shade`, `--apricot-shade` | #95AF71, #ED8B82, #F3C12C, #EF8F41 | Pressed buttons. Each is as dark as it can be while ink text still meets AA |
 
-Colours in `css/styles.css` come in two layers:
+**Roles** (`--color-*`) say what each colour is for: `page`, `text`, `card-background`, `outline`, `shadow`, `button-background` / `-pressed`, `button-primary-background` / `-pressed`, `accent`, `level-dot-filled`, `switch-off` / `-on` / `-knob`, `focus-ring`, `dialog-backdrop`, `caption-background`, `error-background` / `-text`.
 
-1. **Palette** (`--palette-*`): the raw colours, named by what they look like.
-2. **Roles** (`--color-*`): what each colour is for, such as card background or link. `:root` sets the neutral roles, and `[data-theme="icebreaker"]` and `[data-theme="dating"]` override them.
+**Ink style tokens:** `--outline-width` (3px), `--outline-width-thin` (2px), `--shadow-hard` (4px 4px 0), `--shadow-hard-pressed` (2px 2px 0), `--press-distance` (2px), `--radius-panel` (14px), `--starburst-shape`, `--flower-size`, `--duration-pop` (150ms).
 
-Components use only roles, never palette colours, so a theme is just a list of role overrides.
+### Section themes
 
-Party mode switches the page to the `friends-party` theme while it's on (`themeWhenOn` in `CONFIG.toggles.party`), and back to `friends` when it's turned off.
+| Theme | Page | Primary buttons | Accent |
+| --- | --- | --- | --- |
+| Neutral (start screen) | `--cream` | each section button in its section's colour | `--pollen` |
+| Icebreaker | `--leaf-light` | `--leaf` | `--periwinkle` |
+| Dating | `--peach-pink` | `--coral` | `--rose`: 18+ cards get a rose "18+" sticker and a rose ring inside the ink outline |
+| Friends | `--butter-light` | `--butter` | `--apricot` |
+| Friends, Party mode | `--apricot` | `--butter` | `--pollen`: a starburst PARTY sticker |
 
-Switching section fades the content out, swaps the theme while nothing is visible, then fades it back in. Meanwhile one background layer per theme cross-fades. Only opacity animates, never colour, which keeps it smooth on phones.
+Party mode switches the page to the `friends-party` theme while it's on (`themeWhenOn` in `CONFIG.toggles.party`). Switching section fades the content out, swaps the theme while nothing is visible, then fades it back in, while the solid page colour cross-fades over 200 ms. Only opacity and transform ever animate.
 
-**After changing any colour**, run:
+### Checks after any style change
 
 ```
+python3 scripts/check_style.py
 python3 scripts/check_contrast.py
 ```
 
-It checks every text and control pair against WCAG AA: 4.5:1 for text, 3:1 for borders, dots, the switch and the focus ring.
+- `check_style.py` fails on any gradient, blur, filter, blurred shadow, see-through colour, or colour value outside the tokens block. It also checks the release version tags in `index.html` (see [Deploying](#10-deploying)).
+- `check_contrast.py` checks every text and control pair in all five themes against WCAG AA: 4.5:1 for text, 3:1 for outlines, the switch knob and the focus ring.
 
 ---
 
@@ -462,9 +495,10 @@ Edit the `<h1>` and the `start-screen__subtitle` paragraph in `index.html`. Also
 
 The site is served by GitHub Pages from the `main` branch, root folder.
 
-1. Run `python3 scripts/validate.py` and `python3 scripts/check_contrast.py`.
-2. Commit and push to `main`.
-3. Wait 1–2 minutes, then hard refresh <https://lilwheel.github.io/get-to-know/>.
+1. Run `python3 scripts/validate.py`, `python3 scripts/check_style.py` and `python3 scripts/check_contrast.py`.
+2. **Bump the release version.** In `index.html`, replace every `v=2026-11-26` (the stylesheet, the import map and the app script) with a new value, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
+3. Commit and push to `main`.
+4. Wait 1–2 minutes, then refresh <https://lilwheel.github.io/get-to-know/>.
 
 If the site doesn't update, open the repo's **Actions** tab on GitHub and check the "pages build and deployment" run for errors.
 

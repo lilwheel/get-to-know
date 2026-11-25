@@ -88,7 +88,9 @@ async function loadAllData() {
 async function loadJsonFile(url) {
   let response;
   try {
-    response = await fetch(url);
+    // 'no-cache' asks the server whether the file changed (cheap when it hasn't),
+    // so an updated question bank shows up straight after a release.
+    response = await fetch(url, { cache: 'no-cache' });
   } catch {
     // fetch itself fails when offline, or when the page is opened as a file.
     throw new Error(`Couldn't load ${url}. Check your connection, or open the app through a web server.`);

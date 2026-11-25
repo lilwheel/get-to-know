@@ -8,6 +8,8 @@ Searches css/*.css, js/*.js and index.html (comments are ignored) and flags:
   - any colour literal (#hex, rgb(), hsl()) outside the Theme tokens block,
     which is everything between "THEME TOKENS: START" and "THEME TOKENS: END"
     in css/styles.css
+  - release versions: index.html must tag the stylesheet and every js/ file
+    with the same "?v=" value, and its import map must list every js/ file
 
 Exits with status 1 if anything is found, 0 if the style is clean.
 
@@ -134,9 +136,24 @@ def check_file(path):
     return findings
 
 
+def check_release_version():
+    """index.html must give the stylesheet and every js/ file the same "?v=" tag,
+    and the import map must list every file in js/ (see the comment in index.html)."""
+    html = (PROJECT_ROOT / "index.html").read_text(encoding="utf-8")
+    findings = []
+    versions = set(re.findall(r"\?v=([\w.-]+)", html))
+    if len(versions) != 1:
+        findings.append(f"index.html: expected one release version tag, found {sorted(versions) or 'none'}")
+    for script in sorted((PROJECT_ROOT / "js").glob("*.js")):
+        if f'"./js/{script.name}": "./js/{script.name}?v=' not in html:
+            findings.append(f"index.html: js/{script.name} is missing from the import map")
+    return findings
+
+
 def main():
     """Check every file, print what was found and set the exit code."""
     findings = [finding for path in files_to_check() for finding in check_file(path)]
+    findings += check_release_version()
     if findings:
         print(f"{len(findings)} style problem(s) found:")
         for finding in findings:
