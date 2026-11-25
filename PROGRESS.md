@@ -15,5 +15,5 @@ New session? Read this first, then resume from the next unticked step.
   - [x] 7d — Dating Level 1 (2026-11-25, commit b416fe7, 300 questions)
   - [x] 7e — Dating Level 2 (2026-11-25, commit 80fedff, 300 questions incl. 50 adult)
   - [x] 7f — Dating Level 3 (2026-11-25, commit 87b24d5, 300 questions incl. 50 adult)
-  - [ ] 7g — Top up to ~2,000 and switch the app to the real bank
+  - [x] 7g — Top up to ~2,000 and switch the app to the real bank (2026-11-25, commit bb443ae, 2,000 questions)
 - [ ] Step 8 — Final check and deploy
