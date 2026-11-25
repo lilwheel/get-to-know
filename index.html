@@ -62,10 +62,12 @@
       <div class="level-controls">
         <button id="shallower-button" class="control-button control-button--small" type="button">Go Shallower</button>
         <div class="level-indicator" id="level-indicator" role="img">
+          <!-- Three flowers, each reusing the #flower drawing at the end of the page.
+               Colours come from css/styles.css (fill, stroke and color). -->
           <span class="level-indicator__dots" aria-hidden="true">
-            <span class="level-dot" data-level="1"></span>
-            <span class="level-dot" data-level="2"></span>
-            <span class="level-dot" data-level="3"></span>
+            <svg class="level-dot" data-level="1" viewBox="0 0 24 24"><use href="#flower"></use></svg>
+            <svg class="level-dot" data-level="2" viewBox="0 0 24 24"><use href="#flower"></use></svg>
+            <svg class="level-dot" data-level="3" viewBox="0 0 24 24"><use href="#flower"></use></svg>
           </span>
           <span id="level-name" class="level-indicator__name" aria-hidden="true"></span>
         </div>
@@ -95,5 +97,14 @@
     <!-- Plain-language error message, hidden unless something fails to load -->
     <p id="error-message" class="error-message" role="alert" hidden></p>
   </main>
+
+  <!-- Shared drawings, never shown on their own. The flower is five round
+       petals with an ink centre; css/styles.css colours it per level. -->
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
+    <symbol id="flower" viewBox="0 0 24 24">
+      <path d="M9.53 8.60A3.9 3.9 0 1 1 14.47 8.60A3.9 3.9 0 1 1 15.99 13.30A3.9 3.9 0 1 1 12.00 16.20A3.9 3.9 0 1 1 8.01 13.30A3.9 3.9 0 1 1 9.53 8.60Z"></path>
+      <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"></circle>
+    </symbol>
+  </svg>
 </body>
 </html>

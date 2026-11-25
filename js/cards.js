@@ -181,6 +181,7 @@ async function showNext(stack, direction) {
   const leavingCard = stack.cardElements.shift();
   flyOff(leavingCard, direction);
   stack.cardElements.forEach((cardElement, depth) => setDepth(cardElement, depth));
+  popToTop(stack.cardElements[0]);
 
   await waitForTransition(leavingCard, readCssDurationMs('--duration-fly'));
   if (stack.isDestroyed) {
@@ -191,6 +192,19 @@ async function showNext(stack, direction) {
   addCardAtBack(stack);
 
   finishMove(stack);
+}
+
+// Give the card that just reached the top one short "pop" (css/styles.css
+// .card--pop; switched off there for reduced motion). The class comes off
+// when the animation ends, so the next pop can play.
+function popToTop(cardElement) {
+  if (cardElement === undefined) {
+    return;
+  }
+  cardElement.classList.remove('card--pop');
+  forceStyleUpdate(cardElement);
+  cardElement.classList.add('card--pop');
+  cardElement.addEventListener('animationend', () => cardElement.classList.remove('card--pop'), { once: true });
 }
 
 // Start the fly-off animation from wherever the card currently is.

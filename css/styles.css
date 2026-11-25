@@ -64,6 +64,7 @@
   --color-dialog-backdrop: var(--cream);
   --color-error-background: var(--peach-pink);
   --color-error-text: var(--ink);
+  --color-caption-background: var(--cream);
 
   /* Fonts: self-hosted Latin subsets in fonts/ (see @font-face below) */
   --font-fallback: "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", system-ui, sans-serif;
@@ -84,6 +85,7 @@
   --accent-ring-width: 5px;
   /* Starburst sticker (Party badge): size and a 12-point star outline */
   --starburst-size: 88px;
+  --starburst-size-small: 72px;
   --font-size-sticker: 0.6875rem;
   --starburst-shape: polygon(50% 0%, 59% 17%, 75% 7%, 75% 25%, 93% 25%, 83% 41%, 100% 50%, 83% 59%, 93% 75%, 75% 75%, 75% 93%, 59% 83%, 50% 100%, 41% 83%, 25% 93%, 25% 75%, 7% 75%, 17% 59%, 0% 50%, 17% 41%, 7% 25%, 25% 25%, 25% 7%, 41% 17%);
 
@@ -106,7 +108,11 @@
 
   --radius-medium: 12px;
   --radius-large: 24px;
-  --level-dot-size: 12px;
+  /* Cards are drawn like manga panels: only slightly rounded */
+  --radius-panel: 14px;
+  /* Level indicator: three small five-petal flowers */
+  --flower-size: 20px;
+  --flower-stroke-width: 2px;
   --section-button-width: min(100%, 24rem);
   --switch-width: 48px;
   --switch-height: 28px;
@@ -122,6 +128,9 @@
   --focus-outline-offset: 3px;
   --duration-switch: 150ms;
   --duration-press: 80ms;
+  /* The next card's small "pop" as it reaches the top */
+  --duration-pop: 150ms;
+  --pop-start-scale: 0.96;
   /* Section change: content fades out, theme swaps, content fades in */
   --duration-theme-fade: 180ms;
   /* The solid page colour cross-fades to the next section's in this time */
@@ -475,22 +484,26 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 
 .level-indicator__dots {
   display: flex;
-  gap: var(--space-small);
+  gap: var(--space-xsmall);
 }
 
-/* Reached levels are filled with pollen; the rest are plain paper inside
-   the ink outline, so the two stay easy to tell apart on every page colour.
+/* Each level is a small five-petal flower (an SVG drawn once in index.html).
+   Reached levels are filled with pollen; the rest are plain paper inside the
+   ink outline, so the two stay easy to tell apart on every page colour.
    The level name underneath also says which level is on. */
 .level-dot {
-  width: var(--level-dot-size);
-  height: var(--level-dot-size);
-  border: var(--outline-width-thin) solid var(--color-outline);
-  border-radius: 50%;
-  background: var(--color-card-background);
+  display: block;
+  width: var(--flower-size);
+  height: var(--flower-size);
+  color: var(--color-outline);
+  fill: var(--color-card-background);
+  stroke: var(--color-outline);
+  stroke-width: var(--flower-stroke-width);
+  stroke-linejoin: round;
 }
 
 .level-dot.is-filled {
-  background: var(--color-level-dot-filled);
+  fill: var(--color-level-dot-filled);
 }
 
 .level-indicator__name {
@@ -523,7 +536,7 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   display: flex;
   flex-direction: column;
   padding: var(--card-padding);
-  border-radius: var(--radius-large);
+  border-radius: var(--radius-panel);
   background: var(--color-card-background);
   /* The page handles the gesture itself, so the browser shouldn't scroll or zoom */
   touch-action: none;
@@ -587,6 +600,26 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   transition: none;
 }
 
+/* When the top card leaves, the next card gives one short "pop" */
+.card.card--pop {
+  animation: card-pop var(--duration-pop) ease-out;
+}
+
+@keyframes card-pop {
+  from {
+    transform: scale(var(--pop-start-scale));
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card.card--pop {
+    animation: none;
+  }
+}
+
 /* The middle of the card: fills the space above the footnote and centres its text */
 .card__body {
   flex: 1;
@@ -607,16 +640,15 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   text-wrap: balance;
 }
 
-/* Dares: a small "Dare" tag above the text and a "Whole table" line under it */
+/* Dares: a "Dare" starburst sticker above the text (in the section's accent
+   colour; see the starburst rules below) and a "Whole table" line under it */
 .card__label {
+  position: relative;
+  flex: none;
+  width: var(--starburst-size-small);
+  height: var(--starburst-size-small);
   margin: 0;
-  padding: var(--space-xsmall) var(--space-small);
-  border: var(--outline-width-thin) solid var(--color-outline);
-  border-radius: var(--radius-medium);
-  background: var(--color-card-background);
   font-family: var(--font-family-display);
-  font-size: var(--font-size-footnote);
-  letter-spacing: var(--letter-spacing-label);
   text-transform: uppercase;
 }
 
@@ -645,14 +677,18 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   text-transform: uppercase;
 }
 
-/* Party mode badge: a starburst sticker. The badge itself is an ink star;
-   its ::before is a slightly smaller star in the accent colour, so the ink
-   shows round the edge as an outline (borders can't follow a star shape). */
+/* Starburst stickers: the Party badge and the DARE label. The element itself
+   is an ink star; its ::before is a slightly smaller star in the accent colour,
+   so the ink shows round the edge as an outline (borders can't follow a star). */
 .card__badge--party {
-  display: grid;
-  place-items: center;
   width: var(--starburst-size);
   height: var(--starburst-size);
+}
+
+.card__badge--party,
+.card__label {
+  display: grid;
+  place-items: center;
   padding: 0;
   border: none;
   border-radius: 0;
@@ -664,7 +700,8 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   letter-spacing: 0;
 }
 
-.card__badge--party::before {
+.card__badge--party::before,
+.card__label::before {
   content: "";
   position: absolute;
   inset: var(--outline-width);
@@ -684,7 +721,12 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   margin-bottom: var(--space-medium);
 }
 
+/* The footnote is a narration box, like the caption panels in a comic */
 .card__footnote {
+  padding: var(--space-small) var(--space-medium);
+  border: var(--outline-width-thin) solid var(--color-outline);
+  border-radius: var(--radius-medium);
+  background: var(--color-caption-background);
   font-size: var(--font-size-footnote);
   color: var(--color-text-muted);
   text-align: center;
@@ -699,7 +741,7 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   font-weight: var(--font-weight-bold);
   /* A larger tap target without changing how the link looks */
   display: inline-block;
-  padding: var(--space-xsmall) 0;
+  padding: var(--space-xsmall) 0 0;
 }
 
 /* ==========================================================

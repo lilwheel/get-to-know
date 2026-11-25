@@ -35,6 +35,7 @@ PAIRS = [
     ("Text on the page", "text", [PAGE], TEXT_MINIMUM),
     ("Question and body text on a card", "text", ["card-background"], TEXT_MINIMUM),
     ("Footnote and label text", "text-muted", [PAGE, "card-background"], TEXT_MINIMUM),
+    ("Footnote text in its caption box", "text-muted", ["caption-background"], TEXT_MINIMUM),
     ("Links and link-style buttons", "link", [PAGE, "card-background"], TEXT_MINIMUM),
     ("Button text, normal and pressed", "text", ["button-background", "button-pressed"], TEXT_MINIMUM),
     ("Primary button text, normal and pressed", "text",
