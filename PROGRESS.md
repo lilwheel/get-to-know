@@ -12,7 +12,7 @@ New session? Read this first, then resume from the next unticked step.
   - [x] 7a — Icebreaker Level 1 (2026-11-25, commit feebaf7, 300 questions)
   - [x] 7b — Icebreaker Level 2 (2026-11-25, commit 67098ca, 300 questions)
   - [x] 7c — Icebreaker Level 3 (2026-11-25, commit b141513, 300 questions)
-  - [ ] 7d — Dating Level 1
+  - [x] 7d — Dating Level 1 (2026-11-25, commit b416fe7, 300 questions)
   - [ ] 7e — Dating Level 2
   - [ ] 7f — Dating Level 3
   - [ ] 7g — Top up to ~2,000 and switch the app to the real bank
