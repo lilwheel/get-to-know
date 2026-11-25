@@ -44,7 +44,7 @@ Decisions:
   until "Reset seen cards".
 
 - [x] P2-1 — 18+ count and data schema update (2026-11-25, commit 5e58241). Before: Dating L2 50/350 (14.3%), L3 50/350 (14.3%), L1 0.
-- [ ] P2-2 — Sources
+- [x] P2-2 — Sources (2026-11-25, commit ed358e6, 12 added, 0 dropped)
 - [ ] P2-3 — Third section on screen
 - [ ] P2-4 — Party mode toggle
 - [ ] P2-4b — 18+ card frequency (Dating)
