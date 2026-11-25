@@ -53,7 +53,7 @@ Decisions:
 - [ ] P2-6 — Card bank
   - [x] 6a — Friends Level 1 (2026-11-25, commit d22ba74, 200 cards: 120 questions, 80 dares)
   - [x] 6b — Friends Level 2 (2026-11-25, commit b6e8098, 200 cards: 120 questions, 80 dares)
-  - [ ] 6c — Friends Level 3
+  - [x] 6c — Friends Level 3 (2026-11-25, commit 7705608, 200 cards: 120 questions, 80 dares)
   - [ ] 6d — Party Level 1
   - [ ] 6e — Party Level 2
   - [ ] 6f — Party Level 3
