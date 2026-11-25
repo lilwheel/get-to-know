@@ -7,7 +7,7 @@ New session? Read this first, then resume from the next unticked step.
 - Keystone Claude Code session (the main session for this project): https://claude.ai/code/session_01FVN9H83TR3msWmCh1Edhze
 - Live app preview (private artifact): https://claude.ai/artifact/CSiwSJaMrGSzxJuE2PwPme
 - Question bank review page, with flags and notes (private artifact): https://claude.ai/artifact/PmsGAGhqcdNDhRqj2JYrvB
-- GitHub repo for Step 8: https://github.com/lilwheel/get-to-know (not connected yet)
+- GitHub repo: https://github.com/lilwheel/get-to-know (pushed 2026-11-25; GitHub Pages not switched on yet)
 - Before fixing questions, read the flags saved on the review page (collection `flags`, one document per question id).
 
 ## Steps
@@ -26,4 +26,4 @@ New session? Read this first, then resume from the next unticked step.
   - [x] 7e — Dating Level 2 (2026-11-25, commit c92efd1, 300 questions incl. 50 adult)
   - [x] 7f — Dating Level 3 (2026-11-25, commit 556ee37, 300 questions incl. 50 adult)
   - [x] 7g — Top up to ~2,000 and switch the app to the real bank (2026-11-25, commit dcf200d, 2,000 questions)
-- [ ] Step 8 — Final check and deploy
+- [ ] Step 8 — Final check and deploy (code review fixes in commit 27c48b4, pushed; waiting on GitHub Pages and a phone check)
