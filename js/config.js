@@ -13,10 +13,9 @@ export function sectionHasToggle(section, toggleName) {
 }
 
 export const CONFIG = {
-  // Data files, loaded once at startup. Every card file is merged into one bank.
-  // data/sample-friends.json is temporary: it holds Friends & Teammates sample
-  // cards until the real ones are written (Phase 2, Step P2-6), then it goes.
-  questionFileUrls: ['data/questions.json', 'data/sample-friends.json'],
+  // Data files, loaded once at startup. Every card file in the list is merged
+  // into one bank, so cards could be split across files later if needed.
+  questionFileUrls: ['data/questions.json'],
   sourcesUrl: 'data/sources.json',
 
   // The sections, in the order their buttons appear on the start screen.

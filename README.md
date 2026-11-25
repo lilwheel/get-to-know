@@ -6,7 +6,7 @@ Swipeable question cards for getting to know each other. There are three section
 
 - **Icebreaker:** first dates and people who have just met.
 - **Dating:** couples a few months in. Includes optional 18+ questions.
-- **Friends & Teammates:** a group around a table. Questions plus dares (quick activities for the whole table), with a Pass button on every card, and an optional Party mode. Being built in Phase 2; it uses 16 sample cards for now.
+- **Friends & Teammates:** a group around a table. Questions plus dares (quick activities for the whole table), with a Pass button on every card, and an optional Party mode.
 
 The app is a static site: plain HTML, CSS and JavaScript. It has no backend, no build step, no accounts and no tracking.
 
@@ -156,9 +156,8 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 | `js/storage.js` | Safe read, write and clear for localStorage and sessionStorage. If storage is blocked, the app carries on without saving. | `loadSaved`, `save`, `clearSaved` |
 | `js/timing.js` | Reads animation durations from CSS variables and waits for them. | `readCssDurationMs`, `wait` |
 | `js/debug.js` | `debugLog()`, the **only** place that writes to the console, and only with `?debug=1`. | `debugLog` |
-| `data/questions.json` | The 2,000 questions. See [The question bank](#5-the-question-bank). | — |
+| `data/questions.json` | The 3,340 cards for all three sections. See [The question bank](#5-the-question-bank). | — |
 | `fonts/` | Self-hosted web fonts, Latin characters only: Zen Maru Gothic 500 and 700 (body and questions) and Mochiy Pop One (headings and labels), about 41 KB in all, with their licences (`OFL-*.txt`, SIL Open Font License). Nothing is loaded from Google, so no visitor data reaches a third party. | — |
-| `data/sample-friends.json` | **Temporary.** 16 sample Friends & Teammates cards: 10 normal (5 questions, 5 dares) and 6 Party mode (a question and a dare per level), used until the real Friends cards are written (Phase 2, Step P2-6). Then it is deleted and removed from `CONFIG.questionFileUrls`. | — |
 | `data/sources.json` | The 24 verified sources that card footnotes link to. | — |
 | `scripts/validate.py` | Offline checker for both data files. Run it after any data change. | — |
 | `scripts/check_style.py` | Offline check of the look's rules: no gradients, blurs, CSS filters, blurred shadows or see-through colours, and no colour values outside the Theme tokens block in `css/styles.css`. Run it after any style change. | — |
@@ -249,15 +248,18 @@ In developer tools, go to **Application** (Chrome) or **Storage** (Firefox), the
 | Section | Level 1 (Light) | Level 2 (Personal) | Level 3 (Deep) |
 | --- | --- | --- | --- |
 | Icebreaker | 350 | 300 | 300 |
-| Dating | 350 | 350 (50 are 18+) | 350 (50 are 18+) |
+| Dating | 350 | 420 (120 are 18+) | 420 (120 are 18+) |
+| Friends & Teammates | 400 (200 Party) | 400 (200 Party) | 400 (200 Party) |
 
-That's 2,000 in total. With 18+ switched off, every pool still has at least 300 cards.
+That's 3,340 cards in total. Each Friends level has 120 questions and 80 dares in normal play and the same split in Party mode. Dating's 18+ questions are 40% of each level's 300 regular questions. With 18+ and Party mode off, every pool still has at least 200 cards.
 
-| Level | Icebreaker | Dating |
-| --- | --- | --- |
-| 1 | Quirky habits, would-you-rather, favourites with a twist, hypotheticals | Gottman Love Maps: daily life, current worries, dreams, people, backstory |
-| 2 | Stories, passions, how you spend your time, small life lessons | Fondness and admiration, turning towards, gentle feedback, conflict and repair, stress; 18+ on desires, needs, boundaries and communication |
-| 3 | Values, hopes, formative moments, still fine for an early date | Shared meaning, future plans, values; 18+ on long-term intimacy |
+| Level | Icebreaker | Dating | Friends & Teammates | Party mode |
+| --- | --- | --- | --- | --- |
+| 1 | Quirky habits, would-you-rather, favourites with a twist, hypotheticals | Gottman Love Maps: daily life, current worries, dreams, people, backstory | Favourites, would-you-rather, two truths and a lie, quick group games | Silly and harmless: funny confessions, impressions, accents, tongue-twisters, kind "most likely to" votes |
+| 2 | Stories, passions, how you spend your time, small life lessons | Fondness and admiration, turning towards, gentle feedback, conflict and repair, stress; 18+ on desires, needs, boundaries and communication | Stories and personality, work and friendship styles, support; speed-friending dares | More candid: embarrassing-but-fun stories about yourself, harmless hot takes, friendly "never have I ever" |
+| 3 | Values, hopes, formative moments, still fine for an early date | Shared meaning, future plans, values; 18+ on long-term intimacy | Trust and appreciation, mistakes that taught something, specific compliments | Adventurous: group performances and challenges, bold but kind honest questions |
+
+Party mode safety: every Party card says "take a sip" (never "drink"), and a sip can be water or a soft drink. Pass is always allowed. There's no drinking amounts, touching, phones, posting about others, or anything risky, and the content stays teammate-safe and never sexual. `validate.py` flags drinking words other than "take a sip".
 
 All questions are original. The sources inspired their style and principles; nothing is copied.
 
@@ -496,7 +498,7 @@ Edit the `<h1>` and the `start-screen__subtitle` paragraph in `index.html`. Also
 The site is served by GitHub Pages from the `main` branch, root folder.
 
 1. Run `python3 scripts/validate.py`, `python3 scripts/check_style.py` and `python3 scripts/check_contrast.py`.
-2. **Bump the release version.** In `index.html`, replace every `v=2026-11-26` (the stylesheet, the import map and the app script) with a new value, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
+2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.2`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
 3. Commit and push to `main`.
 4. Wait 1–2 minutes, then refresh <https://lilwheel.github.io/get-to-know/>.
 
