@@ -2,16 +2,21 @@
 // Shuffler
 // Keeps one shuffled pool of cards per section, level and kind:
 //   general - normal cards
-//   adult   - 18+ cards, added alongside general ones when the 18+ switch is on
+//   adult   - 18+ cards, mixed in at a fixed rate when the 18+ switch is on
 //   party   - Party mode cards, dealt instead of general ones when Party mode is on
-// Cards are dealt without repeats; when the pools in use run out they
-// are reshuffled, and the card just shown is kept from coming straight
-// back. Cards already seen (saved from an earlier visit) start outside
-// their pool. Each kind only works in the section whose toggle it belongs
-// to (see sectionHasToggle in config.js).
+// Cards are dealt without repeats. When a general or party pool runs out
+// it is reshuffled, and the card just shown is kept from coming straight
+// back. An 18+ pool is never reshuffled: once its cards are used up, that
+// level deals normal cards only, until Reset. Cards already seen (saved
+// from an earlier visit) start outside their pool. Each kind only works in
+// the section whose toggle it belongs to (see sectionHasToggle in config.js).
+//
+// 18+ rate: at a level listed in CONFIG.toggles.adult.oneInEveryByLevel
+// (say 1 in 3), cards are dealt in blocks of 3 with exactly one 18+ card
+// in a random spot in each block. See "The 18+ rate" below.
 // ==========================================================
 
-import { sectionHasToggle } from './config.js';
+import { CONFIG, sectionHasToggle } from './config.js';
 import { debugLog } from './debug.js';
 
 // ----------------------------------------------------------
@@ -28,6 +33,8 @@ export function createShuffler(questions, seenIds = []) {
     dealtButNotShownIds: new Set(),
     lastShownIdByPool: new Map(),
     pools: new Map(),
+    // One 18+ rate plan per section and level, created when first needed.
+    adultPlans: new Map(),
   };
   seenIds.filter((id) => state.questionsById.has(id)).forEach((id) => state.seenIds.add(id));
   fillAllPools(state);
@@ -99,63 +106,142 @@ function shuffle(list) {
 // Dealing
 // ----------------------------------------------------------
 
-// Take the next card for a section and level, reshuffling first if every
-// pool in use is empty. Returns null only if there are no questions at all.
+// Take the next card for a section and level. If this spot in the current
+// 18+ block is the 18+ one and an 18+ card is left, deal that; otherwise
+// deal from the main pool (general, or party in Party mode), reshuffling it
+// first if it has run out. Returns null only if there are no cards at all.
 function dealNext(state, section, level, options) {
-  const keys = poolKeysFor(state, section, level, options);
-  if (keys.length === 0) {
+  const adultPlan = isAdultRateActive(section, level, options) ? getAdultPlan(state, section, level) : null;
+  const wantsAdult = adultPlan !== null && takeNextSlot(adultPlan);
+  const adultPool = state.pools.get(poolKey(section, level, 'adult')) || [];
+
+  let question;
+  if (wantsAdult && adultPool.length > 0) {
+    question = adultPool.pop();
+  } else {
+    question = dealFromMainPool(state, section, level, options);
+  }
+  if (question === null) {
     return null;
   }
-  if (countRemaining(state, keys) === 0) {
-    keys.forEach((key) => reshufflePool(state, key));
-  }
-  const question = state.pools.get(pickPoolByRemaining(state, keys)).pop();
   state.dealtButNotShownIds.add(question.id);
+  if (adultPlan !== null) {
+    recordPlannedDeal(adultPlan, question, section, level);
+  }
   return question;
 }
 
-// The non-empty pools to deal from at a section and level.
-// - Party mode (only in the party section) swaps the general pool for the
-//   party pool; if that level has no party cards, general cards are used.
-// - The 18+ switch (only in the adult section) adds the adult pool.
-// Checking the section here means no other section can ever get these cards.
-function poolKeysFor(state, section, level, options) {
-  const hasCards = (key) => (state.questionsByPool.get(key) || []).length > 0;
-  let mainKey = poolKey(section, level, 'general');
+// Deal one card from the main pool, reshuffling it first if it's empty.
+function dealFromMainPool(state, section, level, options) {
+  const key = mainPoolKey(state, section, level, options);
+  if (key === null) {
+    return null;
+  }
+  if (state.pools.get(key).length === 0) {
+    reshufflePool(state, key);
+  }
+  return state.pools.get(key).pop();
+}
+
+// True if a pool has any cards at all (seen or not).
+function poolHasCards(state, key) {
+  return (state.questionsByPool.get(key) || []).length > 0;
+}
+
+// The pool normal dealing uses: party in Party mode (only in the party
+// section, and only if that level has party cards), otherwise general.
+// Null if neither has any cards.
+function mainPoolKey(state, section, level, options) {
   const partyKey = poolKey(section, level, 'party');
-  if (options.partyMode === true && sectionHasToggle(section, 'party') && hasCards(partyKey)) {
-    mainKey = partyKey;
+  if (options.partyMode === true && sectionHasToggle(section, 'party') && poolHasCards(state, partyKey)) {
+    return partyKey;
   }
-  const keys = [mainKey];
-  if (options.includeAdult === true && sectionHasToggle(section, 'adult')) {
-    keys.push(poolKey(section, level, 'adult'));
-  }
-  return keys.filter(hasCards);
+  const generalKey = poolKey(section, level, 'general');
+  return poolHasCards(state, generalKey) ? generalKey : null;
 }
 
-// How many cards are left to deal for a section and level (used in debug logs).
+// How many cards are left to deal for a section and level before a
+// reshuffle (used in debug logs), counting 18+ cards when they're on.
 function cardsLeft(state, section, level, options) {
-  const keys = poolKeysFor(state, section, level, options);
-  return countRemaining(state, keys);
-}
-
-// How many cards are left across some pools.
-function countRemaining(state, keys) {
-  return keys.reduce((total, key) => total + state.pools.get(key).length, 0);
-}
-
-// Choose a pool with odds matching how many cards it has left, which is
-// the same as dealing from one combined shuffled pool.
-function pickPoolByRemaining(state, keys) {
-  let target = Math.random() * countRemaining(state, keys);
-  for (const key of keys) {
-    target -= state.pools.get(key).length;
-    if (target < 0) {
-      return key;
-    }
+  const mainKey = mainPoolKey(state, section, level, options);
+  let total = mainKey === null ? 0 : state.pools.get(mainKey).length;
+  if (isAdultRateActive(section, level, options)) {
+    total += (state.pools.get(poolKey(section, level, 'adult')) || []).length;
   }
-  return keys.find((key) => state.pools.get(key).length > 0);
+  return total;
 }
+
+// ----------------------------------------------------------
+// The 18+ rate
+// A plan per section and level counts the cards dealt there while 18+ is
+// on, and picks one random spot per block for the 18+ card. A card that is
+// put back (lined up but never shown) comes off the count, so changing
+// level or flipping a switch doesn't throw the rate off.
+// ----------------------------------------------------------
+
+// True if 18+ cards should be mixed in here: the switch is on, this is the
+// 18+ section, and this level has a rate in CONFIG.
+function isAdultRateActive(section, level, options) {
+  const rate = CONFIG.toggles.adult.oneInEveryByLevel[level];
+  return options.includeAdult === true && sectionHasToggle(section, 'adult') && rate > 0;
+}
+
+// The plan for a section and level, made the first time it's needed.
+function getAdultPlan(state, section, level) {
+  const key = `${section}-${level}`;
+  if (!state.adultPlans.has(key)) {
+    state.adultPlans.set(key, {
+      blockSize: CONFIG.toggles.adult.oneInEveryByLevel[level],
+      dealtCount: 0,           // cards dealt here so far (minus any put back)
+      adultSpotByBlock: [],    // for each block, which spot (0 to blockSize - 1) is 18+
+      plannedIds: new Set(),   // cards dealt under this plan and not yet put back
+      adultDealt: 0,
+      regularDealt: 0,
+    });
+  }
+  return state.adultPlans.get(key);
+}
+
+// Move to the next spot in the plan and say whether it's the 18+ spot.
+function takeNextSlot(plan) {
+  const blockIndex = Math.floor(plan.dealtCount / plan.blockSize);
+  if (plan.adultSpotByBlock[blockIndex] === undefined) {
+    plan.adultSpotByBlock[blockIndex] = Math.floor(Math.random() * plan.blockSize);
+  }
+  const spotInBlock = plan.dealtCount % plan.blockSize;
+  plan.dealtCount += 1;
+  return spotInBlock === plan.adultSpotByBlock[blockIndex];
+}
+
+// Count a card dealt under a plan, and log the running totals.
+function recordPlannedDeal(plan, question, section, level) {
+  plan.plannedIds.add(question.id);
+  if (question.adult === true) {
+    plan.adultDealt += 1;
+  } else {
+    plan.regularDealt += 1;
+  }
+  debugLog('18+ rate', { section, level, adult: plan.adultDealt, regular: plan.regularDealt });
+}
+
+// Undo the count for a card that was put back, so the plan steps back one spot.
+function unrecordPlannedDeal(state, question) {
+  const plan = state.adultPlans.get(`${question.section}-${question.level}`);
+  if (plan === undefined || !plan.plannedIds.has(question.id)) {
+    return;
+  }
+  plan.plannedIds.delete(question.id);
+  plan.dealtCount -= 1;
+  if (question.adult === true) {
+    plan.adultDealt -= 1;
+  } else {
+    plan.regularDealt -= 1;
+  }
+}
+
+// ----------------------------------------------------------
+// Reshuffling
+// ----------------------------------------------------------
 
 // Refill an emptied pool: everything in it becomes unseen again, except
 // cards already dealt into the stack. The last card shown goes to the
@@ -194,6 +280,7 @@ function putBack(state, question) {
   }
   state.dealtButNotShownIds.delete(question.id);
   state.pools.get(poolKeyOf(question)).push(question);
+  unrecordPlannedDeal(state, question);
 }
 
 // Take a specific card out of its pool, so it won't be dealt this time
@@ -218,5 +305,6 @@ function resetAll(state) {
   state.seenIds.clear();
   state.dealtButNotShownIds.clear();
   state.lastShownIdByPool.clear();
+  state.adultPlans.clear();
   fillAllPools(state);
 }

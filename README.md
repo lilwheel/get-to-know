@@ -120,7 +120,10 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 - Each choice is kept in sessionStorage, so it resets when the tab is closed.
 - **A switch only ever works in its own section.** The shuffler checks the section itself (`sectionHasToggle` in `js/config.js`), so Party mode can't reach Icebreaker or Dating and 18+ can't reach Icebreaker or Friends, even through a bug in `app.js`.
 - **18+:**
-  - 18+ cards sit in their own pools, which are *added* to the normal cards at the same level.
+  - 18+ cards sit in their own pools and are mixed in at a **fixed rate**: 1 in every 5 cards at Level 2, 1 in every 3 at Level 3, none at Level 1 (`oneInEveryByLevel` in `CONFIG.toggles.adult`).
+  - Cards are dealt in blocks of that size (5 or 3), each with exactly one 18+ card in a random spot, so the rate stays steady. Two 18+ cards can still sit side by side, at the end of one block and the start of the next.
+  - 18+ cards never repeat. Their pool is not reshuffled: once every 18+ card at a level has been shown, that level deals normal cards only, until "Reset seen cards".
+  - If a card is lined up but never shown (after a level change, say), it comes off the count, so the rate holds.
   - Turning it off reopens the section, so no 18+ card stays on screen, waits behind the top card, or can be reached with Back.
 - **Party mode:**
   - Party cards (`"party": true`) sit in their own pools, which *replace* the normal cards at the same level. If a level has no Party cards, normal cards are used.
@@ -130,7 +133,8 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 ### No repeats
 
 - Each pool is shuffled once (Fisher–Yates) and dealt from the end, so no card repeats until its pool is used up.
-- When a pool runs out, it is reshuffled. The card you just saw is put at the bottom, so it can't come straight back.
+- When a normal or Party pool runs out, it is reshuffled. The card you just saw is put at the bottom, so it can't come straight back.
+- 18+ pools are the exception: they are never reshuffled, so 18+ cards don't repeat until Reset.
 - Cards seen on earlier visits (saved in localStorage) start outside their pools.
 
 ---
@@ -195,6 +199,7 @@ Add `?debug=1` to the address, open the browser's developer tools (F12, or Cmd+O
 | `Level changed` | Go Deeper / Go Shallower | The new `level`. |
 | `Pool reshuffled` | A pool ran out | `pool` (for example `dating-2-general` or `dating-2-adult`) and how many `cards` it now holds. |
 | `Toggle changed` | A gated switch changed | `toggle` (`adult` or `party`) and `on` (true or false). |
+| `18+ rate` | Every card dealt in Dating levels 2–3 while 18+ is on | Running totals for that level: `adult` and `regular` cards dealt. They include the two cards waiting behind the top card, so they run two ahead of what you've seen. |
 | `Sound setting changed` | Sound button | `soundOn`. |
 | `Progress reset` | After Reset is confirmed | — |
 | `Could not read / save / clear saved progress` | Storage is blocked or full | The storage `key`. The app keeps working, but won't remember your place. |
@@ -214,7 +219,7 @@ In developer tools, go to **Application** (Chrome) or **Storage** (Firefox), the
 | A blank page with no message | A JavaScript error stopped startup | Open the Console (no `?debug=1` needed for errors) and read the red error with its file and line. |
 | "No questions here yet. Try another level." on a card | That section and level has no questions | Run `validate.py` and check the counts table. |
 | Old text or old behaviour after a change | The browser cached the old files | Hard refresh: Ctrl+Shift+R (Cmd+Shift+R on a Mac). GitHub Pages can take 1–2 minutes to update after a push. |
-| 18+ questions never appear | The switch is off, you're in Icebreaker, or the level is 1 | 18+ questions exist only in Dating levels 2 and 3. With `?debug=1`, `Card shown` should list `date-2-…` / `date-3-…` ids that have `"adult": true`. |
+| 18+ questions never appear | The switch is off, you're not in Dating, the level is 1, or that level's 18+ cards are used up | 18+ questions exist only in Dating levels 2 and 3. With `?debug=1`, watch the `18+ rate` log. If `adult` stops rising, the 18+ pool is empty; "Reset seen cards" refills it. |
 | The same card came back | Its pool ran out and was reshuffled | Look for `Pool reshuffled` in the log. That's expected after every card in that level has been seen. |
 | A swipe doesn't register, or flies too easily | The swipe thresholds | Adjust `swipeDistanceRatio` and `flickVelocityPxPerMs` in `js/config.js`. |
 | Animations feel instant | The device has "reduce motion" switched on | Expected: `css/styles.css` shortens every animation to 1 ms under `prefers-reduced-motion`. |
@@ -225,7 +230,8 @@ In developer tools, go to **Application** (Chrome) or **Storage** (Firefox), the
 
 | Problem area | Start here |
 | --- | --- |
-| Which card comes next, repeats, 18+ and Party mode | `js/shuffler.js`: `dealNext`, `poolKeysFor`, `reshufflePool`; `js/app.js`: `dealOptions`, `isToggleOnHere` |
+| Which card comes next, repeats, 18+ and Party mode | `js/shuffler.js`: `dealNext`, `mainPoolKey`, `reshufflePool`; `js/app.js`: `dealOptions`, `isToggleOnHere` |
+| How often 18+ cards appear | `js/shuffler.js`, "The 18+ rate" section: `takeNextSlot`, `recordPlannedDeal`, `unrecordPlannedDeal` |
 | What Back shows, or where a reload resumes | `js/app.js`: `getCardAt`, `forgetCardsAfter`, `openSection`, `findResumableQuestion` |
 | Card animations, cards stacking up, Back/Next timing | `js/cards.js`: `showNext`, `showPrevious`, `waitForTransition` |
 | Drag and flick behaviour | `js/swipe.js`: `handlePointerUp`, `getSwipeDirection` |
@@ -404,6 +410,7 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 | `levelNames` | Light, Personal, Deep | Level names shown under the dots. |
 | `lowestLevel`, `deepestLevel` | 1, 3 | Level limits. |
 | `toggles` | adult, party | The gated switches: label, which card field they gate (`cardFlag`), sessionStorage key, the confirm dialog's heading, message and button, and whether turning off reopens the section. |
+| `toggles.adult.oneInEveryByLevel` | `{ 2: 5, 3: 3 }` | The fixed 18+ rate per level: 1 in every 5 cards at Level 2, 1 in every 3 at Level 3. Levels not listed get no 18+ cards. |
 | `storageKeys` | see [Saved data](#7-saved-data) | Names of the saved progress values (localStorage). |
 | `maxCardsInPage` | 3 | Cards in the page at once. The CSS styles one `data-depth` per card, so change both together. |
 | `swipeDistanceRatio` | 0.3 | A drag past this share of the screen width counts as a swipe. |

@@ -69,6 +69,11 @@ export const CONFIG = {
         confirmLabel: 'Confirm',
       },
       turnOffClearsVisit: true,
+      // How often 18+ cards come up while the switch is on: at level 2, one in
+      // every 5 cards; at level 3, one in every 3. Levels not listed get none.
+      // Cards are dealt in blocks of that size with exactly one 18+ card in a
+      // random spot, so the rate is steady rather than streaky.
+      oneInEveryByLevel: { 2: 5, 3: 3 },
     },
     party: {
       label: 'Party mode',
