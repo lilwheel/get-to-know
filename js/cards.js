@@ -11,10 +11,9 @@ import { debugLog } from './debug.js';
 import { attachSwipe } from './swipe.js';
 import { readCssDurationMs } from './timing.js';
 
-const MAX_CARDS_IN_PAGE = 3;
 // A depth one past the last visible card: the card is there but transparent,
 // so it can fade into the back of the stack.
-const HIDDEN_DEPTH = MAX_CARDS_IN_PAGE;
+const HIDDEN_DEPTH = CONFIG.maxCardsInPage;
 
 // ----------------------------------------------------------
 // Public: create the stack
@@ -44,7 +43,6 @@ export function createCardStack({ containerElement, getCardAt, onCardShown, forg
   return {
     showNext: (direction = 'left') => showNext(stack, direction),
     showPrevious: () => showPrevious(stack),
-    canGoBack: () => stack.currentPosition > 0,
     refreshUpcoming: () => refreshUpcoming(stack),
     destroy: () => destroy(stack),
   };
@@ -56,7 +54,7 @@ export function createCardStack({ containerElement, getCardAt, onCardShown, forg
 
 // Create the elements for the top card and the cards behind it.
 function renderInitialCards(stack) {
-  for (let depth = 0; depth < MAX_CARDS_IN_PAGE; depth += 1) {
+  for (let depth = 0; depth < CONFIG.maxCardsInPage; depth += 1) {
     const cardElement = createCardElement(stack, stack.getCardAt(stack.currentPosition + depth));
     setDepth(cardElement, depth);
     stack.containerElement.prepend(cardElement);
@@ -83,14 +81,17 @@ function createCardElement(stack, card) {
 }
 
 // Build the footnote: the "why" line, then a link to the source in a new tab.
+// Either part is left out when the card has none (the "no questions" card).
 function createFootnoteElement(card) {
   const footnoteElement = document.createElement('footer');
   footnoteElement.className = 'card__footnote';
 
-  const whyElement = document.createElement('p');
-  whyElement.className = 'card__why';
-  whyElement.textContent = card.why;
-  footnoteElement.append(whyElement);
+  if (card.why) {
+    const whyElement = document.createElement('p');
+    whyElement.className = 'card__why';
+    whyElement.textContent = card.why;
+    footnoteElement.append(whyElement);
+  }
 
   if (card.sourceUrl) {
     const sourceLink = document.createElement('a');
@@ -146,7 +147,7 @@ function flyOff(cardElement, direction) {
 
 // Add a new card at the back of the stack and fade it in.
 function addCardAtBack(stack) {
-  const backDepth = MAX_CARDS_IN_PAGE - 1;
+  const backDepth = CONFIG.maxCardsInPage - 1;
   const card = stack.getCardAt(stack.currentPosition + backDepth);
   const cardElement = createCardElement(stack, card);
   setDepth(cardElement, HIDDEN_DEPTH);
@@ -245,11 +246,13 @@ function forceStyleUpdate(element) {
 function waitForTransition(element, durationMs) {
   return new Promise((resolve) => {
     const timeoutId = setTimeout(finish, durationMs + CONFIG.transitionSafetyMarginMs);
+    // Stop listening and waiting, then let the caller carry on. Runs only once.
     function finish() {
       clearTimeout(timeoutId);
       element.removeEventListener('transitionend', handleTransitionEnd);
       resolve();
     }
+    // Finish when this card's own transform transition ends (not a child's, not opacity).
     function handleTransitionEnd(event) {
       if (event.target === element && event.propertyName === 'transform') {
         finish();

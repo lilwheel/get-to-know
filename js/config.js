@@ -34,6 +34,10 @@ export const CONFIG = {
     includeAdult: 'getting-to-know.include-adult',
   },
 
+  // Most cards in the page at once: the top card and two behind it.
+  // css/styles.css styles one data-depth per card, so change both together.
+  maxCardsInPage: 3,
+
   // Swiping: a drag past this share of the screen width counts as a swipe.
   swipeDistanceRatio: 0.3,
   // A release faster than this (pixels per millisecond) counts as a flick.

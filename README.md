@@ -24,7 +24,7 @@ to see debug logs in the browser console.
 | --- | --- |
 | `index.html` | The single page. Loads the stylesheet and `js/app.js` as a module. Holds one background layer per theme and two screens: the start screen (Icebreaker / Dating buttons, Reset) and the card screen (Home, sound toggle, 18+ switch for Dating, card stack, level controls, Back/Next), the confirmation dialog and the error message. |
 | `css/styles.css` | All styling. At the top: the colour palette, the colour roles for the neutral theme, then the Icebreaker and Dating theme overrides (`[data-theme="…"]`), sizes and animation timings. Reduced-motion settings shorten the timings. Card depth (0 = top) is styled with `data-depth`. |
-| `js/config.js` | The one `CONFIG` object: data file paths, section and level names, which section allows 18+, storage keys, swipe distance and flick speed, vibration length, click sound. |
+| `js/config.js` | The one `CONFIG` object: data file paths, section and level names, which section allows 18+, storage keys, cards in the page, swipe distance and flick speed, vibration length, click sound. |
 | `js/app.js` | Entry point. Loads the data once, switches between the two screens, deals cards from the shuffler into the stack, handles level changes and the 18+ switch, saves your place and connects every control. |
 | `js/cards.js` | The card stack. Keeps at most 3 cards in the page, flies the top card off for "next" and slides the previous card back in for "back". Asks `app.js` which card belongs at each position, and can rebuild the cards behind the top one after a level change. |
 | `js/swipe.js` | Dragging with touch or mouse. Moves the card on each animation frame; on release, reports a swipe (past 30% of the screen width or a fast flick) or snaps back. |
@@ -36,11 +36,12 @@ to see debug logs in the browser console.
 | `js/timing.js` | Reads animation durations from CSS variables and waits for them; shared by `cards.js` and `theme.js`. |
 | `js/debug.js` | `debugLog()`: the only console output in the app, shown only with `?debug=1`. |
 | `data/questions.json` | The question bank: 2,000 original questions (about 720 KB). Format and counts below. |
-| `data/sources.json` | The 14 verified sources that questions link to. Format below. |
+| `data/sources.json` | The 12 verified sources that questions link to. Format below. |
 | `scripts/check_contrast.py` | Offline WCAG AA check of every text and control colour pair in all three themes, read straight from `css/styles.css`. Run `python3 scripts/check_contrast.py`. |
 | `scripts/validate.py` | Offline checker for both data files. Run `python3 scripts/validate.py` (or pass another questions file to check it instead). |
 | `PROGRESS.md` | Build checklist: which steps are done, when, and in which commit. |
 | `.nojekyll` | Tells GitHub Pages to serve files as-is, without Jekyll processing. |
+| `.gitignore` | Keeps local-only files out of the repo: the question review page (`REVIEW-PAGE.html`, a private review tool, not part of the app) and Python's `__pycache__`. |
 
 ## Data format
 
@@ -120,12 +121,20 @@ an error if it finds any problem.
 `index.html` loads `js/app.js`. `app.js` reads its settings from `config.js`,
 fetches the data once and gives the questions to `shuffler.js`, which indexes
 them by section and level. When `cards.js` needs a card, `app.js` deals one
-from the shuffler; `storage.js` saves what has been seen and where you are. `cards.js` draws
-the stack and gives each card to `swipe.js`, which turns a drag into "next".
+from the shuffler; `storage.js` saves what has been seen and where you are.
+`cards.js` draws the stack and gives each card to `swipe.js`, which turns a drag into "next".
 The Back/Next buttons and arrow keys call the same `cards.js` functions.
 Each time a card settles, `app.js` triggers `feedback.js` (vibration and
 optional click). `theme.js` changes the look, and every module logs only
 through `debug.js`.
+
+## Code conventions
+
+- JavaScript, HTML and CSS use 2-space indentation. The two Python helper
+  scripts in `scripts/` use 4 spaces, the Python standard (PEP 8).
+- Every colour, size and timing is a CSS variable at the top of
+  `css/styles.css` or a value in `js/config.js`.
+- The only console output goes through `debugLog()` in `js/debug.js`.
 
 ## Themes
 
@@ -168,7 +177,7 @@ One thing is kept in sessionStorage, which the browser clears when the tab close
 
 - Swipe the card left or right (touch or mouse), or flick it: next card.
 - A short drag snaps back.
-- Next button or Right arrow: next card. Back button or Left arrow: previous card.
+- Next button or Right arrow: next card. Back button or Left arrow: previous card. (Arrows with Alt, Ctrl or Cmd are left to the browser.)
 - Go Deeper / Go Shallower: change level (1 Light, 2 Personal, 3 Deep). The card showing stays; the next card comes from the new level. The dots show the level.
 - Home: back to the start screen. Choosing the same section again picks up where you left off.
 - The source link in the footnote opens in a new tab.

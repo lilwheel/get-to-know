@@ -98,8 +98,10 @@ def opens_like_yes_no(text):
 
 
 def find_duplicate_values(values):
-    """Return the values that appear more than once."""
-    return [value for value, count in Counter(values).items() if count > 1]
+    """Return the text values that appear more than once (non-text values are skipped,
+    because a malformed id such as a list can't be counted and is reported elsewhere)."""
+    text_values = [value for value in values if isinstance(value, str)]
+    return [value for value, count in Counter(text_values).items() if count > 1]
 
 
 # ----------------------------------------------------------
@@ -110,7 +112,9 @@ def check_sources(sources):
     """Check every source has all fields and that ids and URLs are unique."""
     problems = []
     for index, source in enumerate(sources):
-        label = source.get("id", f"source #{index + 1}") if isinstance(source, dict) else f"source #{index + 1}"
+        label = f"source #{index + 1}"
+        if isinstance(source, dict) and is_filled_string(source.get("id")):
+            label = source["id"]
         if not isinstance(source, dict):
             problems.append(f"{label}: must be an object")
             continue
@@ -179,8 +183,9 @@ def check_question_rules(question, label, sources_by_id):
     source = sources_by_id.get(question.get("source_id"))
     if source is None:
         problems.append(f"{label}: source_id '{question.get('source_id')}' is not in sources.json")
-    elif question.get("framework") != source["framework"]:
-        problems.append(f"{label}: framework '{question.get('framework')}' doesn't match its source ('{source['framework']}')")
+    elif question.get("framework") != source.get("framework"):
+        expected_framework = source.get("framework")
+        problems.append(f"{label}: framework '{question.get('framework')}' doesn't match its source ('{expected_framework}')")
     return problems
 
 
@@ -191,7 +196,8 @@ def check_questions(questions, sources_by_id):
         if not isinstance(question, dict):
             problems.append(f"question #{index + 1}: must be an object")
             continue
-        label = question.get("id") or f"question #{index + 1}"
+        question_id = question.get("id")
+        label = question_id if is_filled_string(question_id) else f"question #{index + 1}"
         problems += check_question_basics(question, label)
         problems += check_question_id(question, label)
         problems += check_question_rules(question, label, sources_by_id)
@@ -206,8 +212,12 @@ def check_questions(questions, sources_by_id):
 
 def check_duplicate_texts(questions):
     """Flag exact duplicates and near-duplicates by question text."""
-    entries = [(q["id"], normalise_text(q["text"]))
-               for q in questions if isinstance(q, dict) and is_filled_string(q.get("text"))]
+    entries = []
+    for index, question in enumerate(questions):
+        if isinstance(question, dict) and is_filled_string(question.get("text")):
+            question_id = question.get("id")
+            label = question_id if is_filled_string(question_id) else f"question #{index + 1}"
+            entries.append((label, normalise_text(question["text"])))
     problems = []
     ids_by_text = defaultdict(list)
     for question_id, text in entries:
@@ -249,7 +259,7 @@ def main():
     sources = load_json_list(SOURCES_PATH)
     questions = load_json_list(questions_path)
     print(f"Checking {questions_path.name}")
-    sources_by_id = {s["id"]: s for s in sources if isinstance(s, dict) and "id" in s}
+    sources_by_id = {s["id"]: s for s in sources if isinstance(s, dict) and is_filled_string(s.get("id"))}
 
     print(f"Sources: {len(sources)}")
     print_counts(questions)

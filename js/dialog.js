@@ -13,11 +13,11 @@ const cancelButton = document.getElementById('confirm-dialog-cancel');
 const CONFIRM_VALUE = 'confirm';
 
 // Show the dialog and resolve true for Confirm, or false for Cancel,
-// the Escape key, or anything else that closes it.
-export function askToConfirm({ message, confirmLabel = 'Confirm', cancelLabel = 'Cancel' }) {
+// the Escape key, or anything else that closes it. The Cancel button
+// always says "Cancel" (set in index.html).
+export function askToConfirm({ message, confirmLabel = 'Confirm' }) {
   messageElement.textContent = message;
   confirmButton.textContent = confirmLabel;
-  cancelButton.textContent = cancelLabel;
   dialogElement.returnValue = '';
   dialogElement.showModal();
   // Start on Cancel, so pressing Enter straight away never confirms by accident.

@@ -66,7 +66,13 @@ const session = {
 
 // Fetch one JSON file and return its contents, with a clear error if it fails.
 async function loadJsonFile(url) {
-  const response = await fetch(url);
+  let response;
+  try {
+    response = await fetch(url);
+  } catch {
+    // fetch itself fails when offline, or when the page is opened as a file.
+    throw new Error(`Couldn't load ${url}. Check your connection, or open the app through a web server.`);
+  }
   if (!response.ok) {
     throw new Error(`Couldn't load ${url}. Check that the file exists.`);
   }
@@ -133,7 +139,8 @@ function loadPlace() {
 // dealt from the shuffler at the current level.
 function getCardAt(position) {
   while (session.history.length <= position) {
-    session.history.push(session.shuffler.dealNext(session.section, session.level, isAdultIncludedHere()));
+    const question = session.shuffler.dealNext(session.section, session.level, isAdultIncludedHere());
+    session.history.push(question);
   }
   return buildCardContent(session.history[position]);
 }
@@ -178,7 +185,7 @@ function handleCardShown(position) {
 // Move up (+1) or down (-1) one level. The card showing stays;
 // the next card comes from the new level.
 function changeLevel(step) {
-  const newLevel = Math.min(CONFIG.deepestLevel, Math.max(CONFIG.lowestLevel, session.level + step));
+  const newLevel = clampLevel(session.level + step);
   if (newLevel === session.level) {
     return;
   }
@@ -187,6 +194,11 @@ function changeLevel(step) {
   savePlace('cards');
   session.cardStack.refreshUpcoming();
   debugLog('Level changed', { section: session.section, level: newLevel });
+}
+
+// Keep a level between the lowest (1) and the deepest (3).
+function clampLevel(level) {
+  return Math.min(CONFIG.deepestLevel, Math.max(CONFIG.lowestLevel, level));
 }
 
 // Fill in the level dots and name, and stop the buttons at levels 1 and 3.
@@ -263,8 +275,12 @@ function showStartScreen() {
 function openSection(section, level, resumeCardId) {
   closeCardStack();
   session.section = section;
-  session.level = Math.min(CONFIG.deepestLevel, Math.max(CONFIG.lowestLevel, level));
+  session.level = clampLevel(level);
   const resumeQuestion = findResumableQuestion(resumeCardId);
+  if (resumeQuestion) {
+    // It may still be in its pool; take it out so it isn't dealt again this visit.
+    session.shuffler.takeOut(resumeQuestion);
+  }
   session.history = resumeQuestion ? [resumeQuestion] : [];
   session.currentPosition = 0;
   session.isFirstCardOfVisit = true;
@@ -340,7 +356,8 @@ async function resetProgress() {
 // Connect every button and the arrow keys. Runs once at startup.
 function connectControls() {
   elements.sectionButtons.forEach((button) => {
-    button.addEventListener('click', () => changeScreenWithFade(() => chooseSection(button.dataset.section)));
+    const openThisSection = () => chooseSection(button.dataset.section);
+    button.addEventListener('click', () => changeScreenWithFade(openThisSection));
   });
   elements.resetButton.addEventListener('click', resetProgress);
   elements.homeButton.addEventListener('click', () => changeScreenWithFade(showStartScreen));
@@ -353,10 +370,12 @@ function connectControls() {
   document.addEventListener('keydown', handleArrowKeys);
 }
 
-// Left/right arrows move through cards, but only on the card screen
-// and not while a dialog is open.
+// Left/right arrows move through cards, but only on the card screen,
+// not while a dialog is open, and not with a modifier key (Alt+Left is
+// the browser's own Back).
 function handleArrowKeys(event) {
-  if (session.cardStack === null || isDialogOpen()) {
+  const hasModifier = event.altKey || event.ctrlKey || event.metaKey;
+  if (session.cardStack === null || isDialogOpen() || hasModifier) {
     return;
   }
   if (event.key === 'ArrowRight') {
@@ -402,6 +421,10 @@ async function startApp() {
     ]);
   } catch (error) {
     showError(error.message);
+    return;
+  }
+  if (!Array.isArray(questions) || !Array.isArray(sources)) {
+    showError(`Couldn't read the questions. Check ${CONFIG.questionsUrl} and ${CONFIG.sourcesUrl} are lists.`);
     return;
   }
   if (questions.length === 0) {

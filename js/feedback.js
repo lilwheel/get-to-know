@@ -15,10 +15,12 @@ let audioContext = null;
 // ----------------------------------------------------------
 
 // Turn the click sound on or off. Called from a button press, which
-// browsers require before audio is allowed to start.
+// browsers require before audio is allowed to start. Browsers without
+// Web Audio just stay silent.
 export function setSoundEnabled(enabled) {
-  isSoundEnabled = enabled;
-  if (enabled && audioContext === null) {
+  const canPlayAudio = 'AudioContext' in window;
+  isSoundEnabled = enabled && canPlayAudio;
+  if (isSoundEnabled && audioContext === null) {
     audioContext = new AudioContext();
   }
   debugLog('Sound setting changed', { soundOn: enabled });

@@ -32,9 +32,10 @@ export function createShuffler(questions, seenIds = []) {
     dealNext: (section, level, includeAdult) => dealNext(state, section, level, includeAdult),
     putBack: (question) => putBack(state, question),
     markShown: (question) => markShown(state, question),
+    takeOut: (question) => takeOut(state, question),
     findById: (id) => state.questionsById.get(id) || null,
     getSeenIds: () => [...state.seenIds],
-    cardsLeft: (section, level, includeAdult) => countRemaining(state, poolKeysFor(state, section, level, includeAdult)),
+    cardsLeft: (section, level, includeAdult) => cardsLeft(state, section, level, includeAdult),
     reset: () => resetAll(state),
   };
 }
@@ -113,6 +114,12 @@ function poolKeysFor(state, section, level, includeAdult) {
   return keys.filter((key) => (state.questionsByPool.get(key) || []).length > 0);
 }
 
+// How many cards are left to deal for a section and level (used in debug logs).
+function cardsLeft(state, section, level, includeAdult) {
+  const keys = poolKeysFor(state, section, level, includeAdult);
+  return countRemaining(state, keys);
+}
+
 // How many cards are left across some pools.
 function countRemaining(state, keys) {
   return keys.reduce((total, key) => total + state.pools.get(key).length, 0);
@@ -168,6 +175,16 @@ function putBack(state, question) {
   }
   state.dealtButNotShownIds.delete(question.id);
   state.pools.get(poolKeyOf(question)).push(question);
+}
+
+// Take a specific card out of its pool, so it won't be dealt this time
+// round. Used for the saved card that resumes on top after a reload.
+function takeOut(state, question) {
+  const pool = state.pools.get(poolKeyOf(question));
+  const index = pool.indexOf(question);
+  if (index !== -1) {
+    pool.splice(index, 1);
+  }
 }
 
 // Record that a card reached the top of the stack.

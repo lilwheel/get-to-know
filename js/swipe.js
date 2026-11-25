@@ -38,22 +38,45 @@ export function attachSwipe(cardElement, { canSwipe, onSwipe }) {
   }
 
   // Record the pointer position and ask for a frame to move the card.
+  // If the stack moved some other way mid-drag (Next button, arrow key),
+  // let go of the card so the drag can't pull it back or swipe twice.
   function handlePointerMove(event) {
     if (event.pointerId !== drag.pointerId) {
+      return;
+    }
+    if (!canSwipe()) {
+      endDrag(cardElement, drag);
       return;
     }
     drag.currentX = event.clientX;
     recordSample(drag, event.clientX, event.timeStamp);
     if (drag.frameId === null) {
-      drag.frameId = requestAnimationFrame(() => applyDragPosition(cardElement, drag));
+      drag.frameId = requestAnimationFrame(moveCardOnFrame);
+    }
+  }
+
+  // Runs on the next animation frame: move the card, unless the drag was
+  // taken over by another move since the frame was requested.
+  function moveCardOnFrame() {
+    drag.frameId = null;
+    if (canSwipe()) {
+      applyDragPosition(cardElement, drag);
     }
   }
 
   // Finish the drag: swipe if it went far or fast enough, otherwise snap back.
+  // The release point is recorded too, so a drag that paused before letting go
+  // isn't mistaken for a flick.
   function handlePointerUp(event) {
     if (event.pointerId !== drag.pointerId) {
       return;
     }
+    if (!canSwipe()) {
+      endDrag(cardElement, drag);
+      return;
+    }
+    drag.currentX = event.clientX;
+    recordSample(drag, event.clientX, event.timeStamp);
     const swipeDirection = getSwipeDirection(drag);
     endDrag(cardElement, drag);
     if (swipeDirection === null) {
@@ -83,18 +106,22 @@ export function attachSwipe(cardElement, { canSwipe, onSwipe }) {
 // Drag helpers
 // ----------------------------------------------------------
 
+// Speed needs two points, so the window never trims below this many samples.
+const MIN_SAMPLES_FOR_SPEED = 2;
+
 // Keep only the recent pointer positions, used to measure release speed.
+// If the pointer sat still, the one older sample kept makes the measured
+// time long, so the speed comes out slow, as it should.
 function recordSample(drag, x, time) {
   drag.samples.push({ x, time });
   const oldestAllowedTime = time - CONFIG.velocitySampleWindowMs;
-  while (drag.samples.length > 2 && drag.samples[0].time < oldestAllowedTime) {
+  while (drag.samples.length > MIN_SAMPLES_FOR_SPEED && drag.samples[0].time < oldestAllowedTime) {
     drag.samples.shift();
   }
 }
 
 // Move and tilt the card to follow the pointer. Runs once per animation frame.
 function applyDragPosition(cardElement, drag) {
-  drag.frameId = null;
   const offsetX = drag.currentX - drag.startX;
   const tiltDegrees = offsetX * CONFIG.dragRotationDegreesPerPixel;
   cardElement.style.transform = `translateX(${offsetX}px) rotate(${tiltDegrees}deg)`;
