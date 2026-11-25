@@ -52,7 +52,7 @@ Decisions:
 - [x] P2-5 — Theme (2026-11-25, commit 0c2e5e0; friends + friends-party pass WCAG AA)
 - [ ] P2-6 — Card bank
   - [x] 6a — Friends Level 1 (2026-11-25, commit d22ba74, 200 cards: 120 questions, 80 dares)
-  - [ ] 6b — Friends Level 2
+  - [x] 6b — Friends Level 2 (2026-11-25, commit b6e8098, 200 cards: 120 questions, 80 dares)
   - [ ] 6c — Friends Level 3
   - [ ] 6d — Party Level 1
   - [ ] 6e — Party Level 2
