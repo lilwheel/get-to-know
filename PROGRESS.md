@@ -55,7 +55,7 @@ Decisions:
   - [x] 6b — Friends Level 2 (2026-11-25, commit b6e8098, 200 cards: 120 questions, 80 dares)
   - [x] 6c — Friends Level 3 (2026-11-25, commit 7705608, 200 cards: 120 questions, 80 dares)
   - [x] 6d — Party Level 1 (2026-11-25, commit 4700126, 200 cards: 120 questions, 80 dares)
-  - [ ] 6e — Party Level 2
+  - [x] 6e — Party Level 2 (2026-11-25, commit b1531d3, 200 cards: 120 questions, 80 dares)
   - [ ] 6f — Party Level 3
   - [ ] 6g — Dating 18+ top-up
 - [ ] P2-7 — Final check and deploy
