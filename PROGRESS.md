@@ -50,14 +50,14 @@ Decisions:
 - [x] P2-4 — Party mode toggle (2026-11-25, commit ce74112; 6 Party sample cards)
 - [x] P2-4b — 18+ card frequency (Dating) (2026-11-25, commit e1b7af8; 30 swipes: L1 0, L2 6, L3 10 adult)
 - [x] P2-5 — Theme (2026-11-25, commit 0c2e5e0; friends + friends-party pass WCAG AA)
-- [ ] P2-6 — Card bank
+- [x] P2-6 — Card bank
   - [x] 6a — Friends Level 1 (2026-11-25, commit d22ba74, 200 cards: 120 questions, 80 dares)
   - [x] 6b — Friends Level 2 (2026-11-25, commit b6e8098, 200 cards: 120 questions, 80 dares)
   - [x] 6c — Friends Level 3 (2026-11-25, commit 7705608, 200 cards: 120 questions, 80 dares)
   - [x] 6d — Party Level 1 (2026-11-25, commit 4700126, 200 cards: 120 questions, 80 dares)
   - [x] 6e — Party Level 2 (2026-11-25, commit b1531d3, 200 cards: 120 questions, 80 dares)
   - [x] 6f — Party Level 3 (2026-11-25, commit 355f203, 200 cards: 120 questions, 80 dares)
-  - [ ] 6g — Dating 18+ top-up
+  - [x] 6g — Dating 18+ top-up (2026-11-26, commit b74a577; L2 and L3: 120 18+ each, 40% of 300 regular)
 - [ ] P2-7 — Final check and deploy
 
 ## Phase 3: Flower Field Theme (look only)
