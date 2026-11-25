@@ -262,6 +262,11 @@ function updateLevelDisplay() {
 // Gated switches (18+ in Dating, Party mode in Friends & Teammates)
 // ----------------------------------------------------------
 
+// The name of the open section's gated switch ('adult', 'party' or null).
+function currentToggleName() {
+  return CONFIG.sections[session.section].toggle;
+}
+
 // True only when the named switch is on (and confirmed) and the open
 // section is the one that switch belongs to.
 function isToggleOnHere(toggleName) {
@@ -284,7 +289,7 @@ function isCardAllowedNow(question) {
 // The section's switch was flipped. Turning on needs Confirm in the dialog
 // first; until then the switch stays off. Turning off never asks.
 async function handleToggleChange() {
-  const toggleName = CONFIG.sections[session.section].toggle;
+  const toggleName = currentToggleName();
   const toggle = CONFIG.toggles[toggleName];
   if (!elements.toggleInput.checked) {
     setToggle(toggleName, false);
@@ -316,7 +321,7 @@ function setToggle(toggleName, isOn) {
 // The theme for the open section: its own, or its switch's theme while
 // that switch is on (Party mode uses 'friends-party').
 function currentThemeName() {
-  const toggleName = CONFIG.sections[session.section].toggle;
+  const toggleName = currentToggleName();
   const themeWhenOn = toggleName === null ? undefined : CONFIG.toggles[toggleName].themeWhenOn;
   return themeWhenOn && isToggleOnHere(toggleName) ? themeWhenOn : session.section;
 }
@@ -330,7 +335,7 @@ function loadToggles() {
 
 // Show the open section's switch (if it has one), with its label and state.
 function updateToggleDisplay() {
-  const toggleName = CONFIG.sections[session.section].toggle;
+  const toggleName = currentToggleName();
   elements.toggleSetting.hidden = toggleName === null;
   if (toggleName !== null) {
     elements.toggleLabel.textContent = CONFIG.toggles[toggleName].label;
@@ -497,7 +502,8 @@ function handleArrowKeys(event) {
 function toggleSound() {
   session.isSoundOn = !session.isSoundOn;
   setSoundEnabled(session.isSoundOn);
-  elements.soundToggle.textContent = session.isSoundOn ? 'Sound on' : 'Sound off';
+  const { soundOn, soundOff } = CONFIG.buttonLabels;
+  elements.soundToggle.textContent = session.isSoundOn ? soundOn : soundOff;
 }
 
 // ----------------------------------------------------------

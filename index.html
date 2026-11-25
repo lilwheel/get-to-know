@@ -56,7 +56,7 @@
     </section>
 
     <!-- Card screen: the card stack and its controls -->
-    <section id="card-screen" class="screen card-screen" hidden>
+    <section id="card-screen" class="screen" hidden>
       <header class="app-header">
         <button id="home-button" class="toggle-button" type="button">&larr; Home</button>
         <h2 id="section-title" class="app-header__title"></h2>
@@ -71,7 +71,7 @@
         <label class="switch">
           <input id="toggle-input" class="switch__input" type="checkbox" role="switch">
           <span class="switch__track" aria-hidden="true"></span>
-          <span id="toggle-label" class="switch__label"></span>
+          <span id="toggle-label"></span>
         </label>
       </div>
 
@@ -108,7 +108,7 @@
     <!-- Confirmation dialog used by js/dialog.js (18+ check, Party mode rules, Reset).
          The heading is only shown when a dialog has one (Party mode rules). -->
     <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-dialog-message">
-      <form method="dialog" class="confirm-dialog__form">
+      <form method="dialog">
         <h2 id="confirm-dialog-heading" class="confirm-dialog__heading" hidden></h2>
         <p id="confirm-dialog-message" class="confirm-dialog__message"></p>
         <div class="confirm-dialog__buttons">
@@ -124,7 +124,7 @@
 
   <!-- Shared drawings, never shown on their own. The flower is five round
        petals with an ink centre; css/styles.css colours it per level. -->
-  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
+  <svg class="svg-defs" aria-hidden="true" focusable="false">
     <symbol id="flower" viewBox="0 0 24 24">
       <path d="M9.53 8.60A3.9 3.9 0 1 1 14.47 8.60A3.9 3.9 0 1 1 15.99 13.30A3.9 3.9 0 1 1 12.00 16.20A3.9 3.9 0 1 1 8.01 13.30A3.9 3.9 0 1 1 9.53 8.60Z"></path>
       <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"></circle>

@@ -45,7 +45,7 @@ python3 -m http.server 8000
 - To test on a phone on the same Wi-Fi, open `http://<this computer's IP address>:8000` on the phone. Windows may ask you to allow Python through the firewall the first time.
 - Add `?debug=1` to the address to see debug logs in the browser console, for example <http://localhost:8000/?debug=1>. See [Debugging guide](#4-debugging-guide).
 
-Nothing needs installing apart from Python 3, which is used only for the local server and the two checking scripts.
+Nothing needs installing apart from Python 3, which is used only for the local server and the three checking scripts.
 
 ---
 
@@ -65,7 +65,7 @@ Only one screen shows at a time. A third element, the error message, replaces bo
 1. Apply the neutral theme (the start screen's colours).
 2. Fetch every card file in `CONFIG.questionFileUrls` and `data/sources.json` together, and merge the card files into one bank. This happens once per visit.
 3. If either fails, show a plain error message and stop.
-4. Build the shuffler (`js/shuffler.js`). It sorts every question into a pool by section, level and adult/not adult, leaving out cards you've already seen.
+4. Build the shuffler (`js/shuffler.js`). It sorts every question into a pool by section, level and kind (normal, 18+ or Party), leaving out cards you've already seen.
 5. Add the section buttons to the start screen, then connect every button and the arrow keys.
 6. Restore your place. If you were on the card screen last time, reopen the same section, level and card. Otherwise show the start screen.
 
@@ -144,12 +144,12 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 | File | What it does | Main functions |
 | --- | --- | --- |
 | `index.html` | The single page: one background layer per theme (five), the start screen, the card screen, the confirm dialog, the screen-reader announcer and the error message. Loads `css/styles.css` and `js/app.js`, each with a release version tag, plus an import map that gives every script the same tag (see [Deploying](#10-deploying)). | — |
-| `css/styles.css` | All styling. It starts with design tokens (palette, colour roles, sizes, timings), then the Icebreaker and Dating theme overrides, then the components in page order. | — |
+| `css/styles.css` | All styling. It starts with design tokens (palette, colour roles, sizes, timings), then the section theme overrides (Icebreaker, Dating, Friends, Friends Party), then the components in page order. | — |
 | `js/config.js` | The one `CONFIG` object: every tunable number and name in the JavaScript. See [Settings](#8-settings-you-can-change). | — |
 | `js/app.js` | Entry point and coordinator. Loads data, switches screens, deals cards into the stack, handles levels, the gated switches (18+ and Party mode), Reset, sound and keyboard, and saves your place. | `startApp`, `openSection`, `getCardAt`, `handleCardShown`, `changeLevel`, `handleToggleChange` |
 | `js/cards.js` | The card stack on screen. Builds card elements, keeps at most 3 in the page, flies the top card off for Next, slides one back in for Back, and rebuilds the upcoming cards after a level change. | `createCardStack`, `showNext`, `showPrevious`, `refreshUpcoming` |
 | `js/swipe.js` | Dragging a card with touch or mouse (pointer events). Follows the pointer on each animation frame. On release it decides swipe or snap back: past 30% of the screen width, or a fast flick in the same direction. | `attachSwipe`, `getSwipeDirection` |
-| `js/shuffler.js` | The pools of questions and the dealing rules: no repeats, reshuffle when empty, 18+ only in Dating, returning cards that were lined up but never shown. | `createShuffler`, `dealNext`, `putBack`, `markShown`, `takeOut` |
+| `js/shuffler.js` | The pools of questions and the dealing rules: no repeats, reshuffle when empty, 18+ only in Dating at a fixed rate, Party cards only in Friends, returning cards that were lined up but never shown. | `createShuffler`, `dealNext`, `putBack`, `markShown`, `takeOut` |
 | `js/theme.js` | Sets `data-theme` on `<body>`, colours the phone's browser bar, and fades between screens. | `applyTheme`, `changeScreenWithFade` |
 | `js/dialog.js` | The reusable "are you sure?" dialog, used for the 18+ check, the Party mode rules and Reset. An optional heading turns the message into body text, one line per rule. | `askToConfirm`, `isDialogOpen` |
 | `js/feedback.js` | A short vibration (where supported) and an optional soft click when the card changes. | `playCardChangeFeedback`, `setSoundEnabled` |
@@ -193,7 +193,7 @@ Add `?debug=1` to the address, open the browser's developer tools (F12, or Cmd+O
 | Log message | When | What the details mean |
 | --- | --- | --- |
 | `Restoring place` | Startup | The saved place: `screen`, `section`, `level`, `currentCardId`. `null` means nothing was saved. |
-| `Theme applied` | Every screen change, and when Party mode is switched | `theme`: `neutral`, `icebreaker`, `dating`, `friends` or `friends-party`. |
+| `Theme applied` | Every screen change, and whenever either switch changes (only Party mode changes the theme) | `theme`: `neutral`, `icebreaker`, `dating`, `friends` or `friends-party`. |
 | `Card shown` | Every time a card settles on top | `section`, `level`, `cardId`, `party` (true for a Party mode card), and `cardsLeftInPool`: cards left to deal at this level before a reshuffle. |
 | `Card passed` | Pass pressed (Friends & Teammates) | `cardId` of the card that was passed. |
 | `Card stack moved` | After Next or Back finishes | `position` in this visit's history, and `cardsInPage`, which should never be more than 3. |
@@ -259,7 +259,7 @@ That's 3,340 cards in total. Each Friends level has 120 questions and 80 dares i
 | 2 | Stories, passions, how you spend your time, small life lessons | Fondness and admiration, turning towards, gentle feedback, conflict and repair, stress; 18+ on desires, needs, boundaries and communication | Stories and personality, work and friendship styles, support; speed-friending dares | More candid: embarrassing-but-fun stories about yourself, harmless hot takes, friendly "never have I ever" |
 | 3 | Values, hopes, formative moments, still fine for an early date | Shared meaning, future plans, values; 18+ on long-term intimacy | Trust and appreciation, mistakes that taught something, specific compliments | Adventurous: group performances and challenges, bold but kind honest questions |
 
-Party mode safety: every Party card says "take a sip" (never "drink"), and a sip can be water or a soft drink. Pass is always allowed. There's no drinking amounts, touching, phones, posting about others, or anything risky, and the content stays teammate-safe and never sexual. `validate.py` flags drinking words other than "take a sip".
+Party mode safety: whenever a card mentions drinking it says "take a sip" (never "drink"), a sip penalty is one sip at most, and any sip can be water or a soft drink. Pass is always allowed. There's no drinking amounts, touching, phones, posting about others, or anything risky, and the content stays teammate-safe and never sexual. `validate.py` flags drinking words other than "take a sip".
 
 All questions are original. The sources inspired their style and principles; nothing is copied.
 
@@ -308,7 +308,7 @@ A dare (Friends & Teammates only):
 }
 ```
 
-The dare example shows the Friends format; Friends cards arrive in Phase 2, Step P2-6.
+The dare example shows the Friends & Teammates format.
 
 | Field | Rule |
 | --- | --- |
@@ -362,7 +362,7 @@ It exits with an error if anything is wrong, so you can use it before every comm
 
 ### The look: Flower Field
 
-A pastel flower field drawn in a comics/manga style (Phase 3, `PHASE3_PLAN.md`):
+A pastel flower field drawn in a comics/manga style (Phase 3; the plan, `PHASE3_PLAN.md`, sits next to `BUILD_PLAN.md` in the folder above this repo):
 
 - **Solid colours only:** no gradients, blurs, glows, filters or see-through colours.
 - **Ink outlines:** cards, buttons, the switch and the dialog have a 3 px outline in `--ink` (a dark leaf green, used instead of black).
@@ -392,7 +392,7 @@ Every colour, outline, shadow, radius and timing lives in one **Theme tokens** b
 | `--butter-light` | #FBE4A0 | Friends page |
 | `--apricot` | #F2A262 | Friends accent (DARE sticker, switch); Party mode page |
 | `--pollen` | #E8AD29 | Reached level flowers; Party mode accent (stickers, switch) |
-| `--leaf-shade`, `--coral-shade`, `--butter-shade`, `--apricot-shade` | #95AF71, #ED8B82, #F3C12C, #EF8F41 | Pressed buttons. Each is as dark as it can be while ink text still meets AA |
+| `--leaf-shade`, `--coral-shade`, `--butter-shade` | #95AF71, #ED8B82, #F3C12C | Pressed primary buttons (Party mode uses butter). Each is as dark as it can be while ink text still meets AA |
 
 **Roles** (`--color-*`) say what each colour is for: `page`, `text`, `card-background`, `outline`, `shadow`, `button-background` / `-pressed`, `button-primary-background` / `-pressed`, `accent`, `level-dot-filled`, `switch-off` / `-on` / `-knob`, `focus-ring`, `dialog-backdrop`, `caption-background`, `error-background` / `-text`.
 
@@ -447,10 +447,11 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 | --- | --- | --- |
 | `questionFileUrls`, `sourcesUrl` | `data/…json` | Where the data files are. Every card file in the list is merged into one bank. |
 | `sections` | Icebreaker, Dating, Friends & Teammates | One entry per section, in start-screen order: `name`, `hint` (the line under the name), `hasPassButton` and `toggle`. Adding a section starts here. |
-| `cardLabels` | Dare, Whole table, Pass, Party | Words shown on cards. |
+| `buttonLabels` | Sound on, Sound off | The Sound button's two labels. |
+| `cardLabels` | Dare, Whole table, Pass, Party, 18+ | Words shown on cards. |
 | `levelNames` | Light, Personal, Deep | Level names shown under the dots. |
 | `lowestLevel`, `deepestLevel` | 1, 3 | Level limits. |
-| `toggles` | adult, party | The gated switches: label, which card field they gate (`cardFlag`), sessionStorage key, the confirm dialog's heading, message and button, and whether turning off reopens the section. |
+| `toggles` | adult, party | The gated switches: label, which card field they gate (`cardFlag`), sessionStorage key, the confirm dialog's heading, message and button, whether turning off reopens the section, and (Party mode) `themeWhenOn`, the theme used while it's on. |
 | `toggles.adult.oneInEveryByLevel` | `{ 2: 5, 3: 3 }` | The fixed 18+ rate per level: 1 in every 5 cards at Level 2, 1 in every 3 at Level 3. Levels not listed get no 18+ cards. |
 | `storageKeys` | see [Saved data](#7-saved-data) | Names of the saved progress values (localStorage). |
 | `maxCardsInPage` | 3 | Cards in the page at once. The CSS styles one `data-depth` per card, so change both together. |
@@ -460,7 +461,7 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 | `dragRotationDegreesPerPixel` | 0.05 | How much a card tilts while dragged. |
 | `transitionSafetyMarginMs` | 50 | Extra wait in case the browser never reports an animation's end. |
 | `vibrationMs` | 12 | Length of the vibration. |
-| `clickSound` | 1800 Hz, 40 ms, volume 0.15 | The soft click. |
+| `clickSound` | 1800 Hz, 40 ms, volume 0.15 | The soft click, which fades to `silentGain` (0.0001). |
 
 **`css/styles.css`** (the top `:root` block) holds every colour, size and timing, including animation durations such as `--duration-fly` and `--duration-settle`. Durations live in CSS so the reduced-motion rule can shorten them all in one place, and `js/timing.js` reads them from there.
 

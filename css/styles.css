@@ -10,7 +10,8 @@
    blur, and no gradients, glows, filters or see-through colours.
 
    Colours come in two layers:
-   1. Palette: the flower-field colours, named as in PHASE3_PLAN.md.
+   1. Palette: the flower-field colours, named as in PHASE3_PLAN.md (in the
+      folder above this repo, next to BUILD_PLAN.md).
    2. Roles (--color-*): what each colour is for. The neutral theme
       (start screen) sets them here; each section theme further down
       reassigns them. scripts/check_contrast.py reads both layers to
@@ -41,7 +42,6 @@
   --leaf-shade: #95AF71;
   --coral-shade: #ED8B82;
   --butter-shade: #F3C12C;
-  --apricot-shade: #EF8F41;
 
   /* Roles: neutral theme (the start screen) */
   --color-page: var(--cream);
@@ -273,6 +273,13 @@ body {
 /* [hidden] must win over any display rule set on the same element */
 [hidden] {
   display: none !important;
+}
+
+/* Holds shared SVG drawings (the level flower); takes up no space */
+.svg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
 }
 
 /* Read by screen readers but not shown (the standard "visually hidden" pattern) */
@@ -548,7 +555,8 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
     opacity var(--duration-settle) ease;
 }
 
-/* Position in the stack: 0 is on top, higher numbers sit behind */
+/* Position in the stack: 0 is on top, higher numbers sit behind.
+   z-index is simply 3 minus the depth, so the top card is drawn last. */
 .card[data-depth="0"] {
   z-index: 3;
   transform: none;

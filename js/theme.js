@@ -13,7 +13,8 @@ const appElement = document.getElementById('app');
 const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 let isFading = false;
 
-// Apply a named theme ("neutral", "icebreaker" or "dating") to the whole page,
+// Apply a named theme ("neutral", "icebreaker", "dating", "friends" or
+// "friends-party") to the whole page,
 // and colour the phone's browser toolbar to match.
 export function applyTheme(themeName) {
   document.body.dataset.theme = themeName;

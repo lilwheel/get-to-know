@@ -34275,7 +34275,7 @@
     "adult": false,
     "type": "dare",
     "party": true,
-    "text": "Everyone speaks only in questions until the next card. Anyone who forgets takes a sip.",
+    "text": "Everyone speaks only in questions until the next card. The first person to forget takes one sip, and the round ends.",
     "why": "Silly rules create shared laughter.",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -34366,7 +34366,7 @@
     "adult": false,
     "type": "dare",
     "party": true,
-    "text": "Talk like a pirate until your next turn. Anyone who slips back into normal talk takes a sip.",
+    "text": "Talk like a pirate until your next turn. The first person to slip back into normal talk takes one sip, and the round ends.",
     "why": "Silly role-play keeps the table laughing.",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -34899,7 +34899,7 @@
     "adult": false,
     "type": "dare",
     "party": true,
-    "text": "Everyone speaks in rhyme until their next turn. Anyone who breaks the rhyme takes a sip.",
+    "text": "Everyone speaks in rhyme until their next turn. The first person to break the rhyme takes one sip, and the round ends.",
     "why": "Silly rules spark creativity and laughter.",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -35627,7 +35627,7 @@
     "adult": false,
     "type": "dare",
     "party": true,
-    "text": "Everyone speaks like a news anchor until their next turn. Anyone who forgets takes a sip.",
+    "text": "Everyone speaks like a news anchor until their next turn. The first person to forget takes one sip, and the round ends.",
     "why": "Role-play rules keep the table laughing.",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -36277,7 +36277,7 @@
     "adult": false,
     "type": "dare",
     "party": true,
-    "text": "Everyone talks without using the letter \"s\" until their next turn. Anyone who slips takes a sip.",
+    "text": "Everyone talks without using the letter \"s\" until their next turn. The first person to slip takes one sip, and the round ends.",
     "why": "Word limits make conversation hilarious.",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -37473,7 +37473,7 @@
     "adult": false,
     "type": "dare",
     "party": true,
-    "text": "Each person recreates their most awkward photo pose. The table rates it.",
+    "text": "Each person recreates their most awkward photo pose, if they're happy to. The table cheers every one.",
     "why": "Recreating awkward moments turns them into shared fun.",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -39683,7 +39683,7 @@
     "adult": false,
     "type": "question",
     "party": true,
-    "text": "What's the wildest place you've ever woken up, harmless only?",
+    "text": "What's the most unexpected place you've ever ended up on an adventure, and how did you get there?",
     "why": "Wild stories make adventurous, fun shares.",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -40164,7 +40164,7 @@
     "adult": false,
     "type": "dare",
     "party": true,
-    "text": "Each person gives someone at the table an award for something kind or funny they did tonight.",
+    "text": "Each person gives the person on their left an award for something kind or funny they did tonight.",
     "why": "Kind awards celebrate everyone's contributions.",
     "framework": "Fast Friends",
     "source_id": "greatergood-fast-friends"
@@ -40970,7 +40970,7 @@
     "adult": false,
     "type": "question",
     "party": true,
-    "text": "What have you been waiting for permission to do? Consider this it.",
+    "text": "What's a small, positive step you've been waiting for permission to take? Consider this your encouragement.",
     "why": "Encouraging permission makes bold steps feel safe.",
     "framework": "Team: Psychological Safety",
     "source_id": "psychsafety-aristotle-guide"
@@ -41542,8 +41542,8 @@
     "adult": false,
     "type": "dare",
     "party": true,
-    "text": "Each person shares a bold promise for next month. The person on their right writes it down to check on later.",
-    "why": "Written promises with a buddy build follow-through.",
+    "text": "Each person shares a bold promise for next month, if they'd like the table to cheer them on.",
+    "why": "Saying a bold goal aloud invites the group's encouragement.",
     "framework": "Team: Psychological Safety",
     "source_id": "psychsafety-aristotle-guide"
   },

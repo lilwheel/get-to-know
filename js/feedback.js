@@ -47,7 +47,7 @@ function vibrateBriefly() {
 
 // Play a very short, quiet tone that fades out quickly so it sounds like a click.
 function playSoftClick() {
-  const { frequencyHz, durationMs, volume } = CONFIG.clickSound;
+  const { frequencyHz, durationMs, volume, silentGain } = CONFIG.clickSound;
   const startTime = audioContext.currentTime;
   const endTime = startTime + durationMs / 1000;
 
@@ -56,7 +56,7 @@ function playSoftClick() {
   oscillator.frequency.value = frequencyHz;
   gain.gain.setValueAtTime(volume, startTime);
   // Exponential ramps can't reach zero, so fade to a near-silent value instead.
-  gain.gain.exponentialRampToValueAtTime(0.0001, endTime);
+  gain.gain.exponentialRampToValueAtTime(silentGain, endTime);
 
   oscillator.connect(gain).connect(audioContext.destination);
   oscillator.start(startTime);

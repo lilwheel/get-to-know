@@ -20,7 +20,8 @@ const HIDDEN_DEPTH = CONFIG.maxCardsInPage;
 // ----------------------------------------------------------
 
 // Build a card stack inside containerElement.
-// getCardAt(position) returns {id, text, why, sourceTitle, sourceUrl} for that position.
+// getCardAt(position) returns what that card shows: {id, type, text, why,
+// sourceTitle, sourceUrl, canPass, isParty, isAdult}.
 // onCardShown(position) runs whenever a new card settles on top.
 // forgetCardsAfter(position) runs just before the upcoming cards are rebuilt,
 // so the app can drop the cards it had lined up after that position.
@@ -67,7 +68,6 @@ function renderInitialCards(stack) {
 function createCardElement(stack, card) {
   const cardElement = document.createElement('article');
   cardElement.className = 'card';
-  cardElement.classList.toggle('card--dare', card.type === 'dare');
   cardElement.classList.toggle('card--adult', card.isAdult);
   cardElement.dataset.cardId = card.id;
 
@@ -75,7 +75,7 @@ function createCardElement(stack, card) {
     cardElement.append(createBadge(CONFIG.cardLabels.party, 'card__badge--party'));
   }
   if (card.isAdult) {
-    cardElement.append(createBadge(CONFIG.cardLabels.adult, 'card__badge--adult'));
+    cardElement.append(createBadge(CONFIG.cardLabels.adult));
   }
   cardElement.append(createBodyElement(card));
   if (card.canPass) {
@@ -114,10 +114,11 @@ function createBodyElement(card) {
 }
 
 // Build a small badge for the card's corner: "Party" (a starburst) on
-// Party mode cards, "18+" on adult cards. The modifier class sets its shape.
-function createBadge(text, modifierClass) {
+// Party mode cards, "18+" (the plain sticker) on adult cards. An optional
+// modifier class changes its shape.
+function createBadge(text, modifierClass = '') {
   const badgeElement = document.createElement('span');
-  badgeElement.className = `card__badge ${modifierClass}`;
+  badgeElement.className = `card__badge ${modifierClass}`.trim();
   badgeElement.textContent = text;
   return badgeElement;
 }

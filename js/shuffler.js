@@ -113,7 +113,7 @@ function shuffle(list) {
 function dealNext(state, section, level, options) {
   const adultPlan = isAdultRateActive(section, level, options) ? getAdultPlan(state, section, level) : null;
   const wantsAdult = adultPlan !== null && takeNextSlot(adultPlan);
-  const adultPool = state.pools.get(poolKey(section, level, 'adult')) || [];
+  const adultPool = adultPoolOf(state, section, level);
 
   let question;
   if (wantsAdult && adultPool.length > 0) {
@@ -143,6 +143,11 @@ function dealFromMainPool(state, section, level, options) {
   return state.pools.get(key).pop();
 }
 
+// The 18+ cards left to deal at a section and level (empty if there are none).
+function adultPoolOf(state, section, level) {
+  return state.pools.get(poolKey(section, level, 'adult')) || [];
+}
+
 // True if a pool has any cards at all (seen or not).
 function poolHasCards(state, key) {
   return (state.questionsByPool.get(key) || []).length > 0;
@@ -166,7 +171,7 @@ function cardsLeft(state, section, level, options) {
   const mainKey = mainPoolKey(state, section, level, options);
   let total = mainKey === null ? 0 : state.pools.get(mainKey).length;
   if (isAdultRateActive(section, level, options)) {
-    total += (state.pools.get(poolKey(section, level, 'adult')) || []).length;
+    total += adultPoolOf(state, section, level).length;
   }
   return total;
 }
@@ -186,9 +191,14 @@ function isAdultRateActive(section, level, options) {
   return options.includeAdult === true && sectionHasToggle(section, 'adult') && rate > 0;
 }
 
+// The name of the 18+ plan for a section and level, e.g. "dating-3".
+function adultPlanKey(section, level) {
+  return `${section}-${level}`;
+}
+
 // The plan for a section and level, made the first time it's needed.
 function getAdultPlan(state, section, level) {
-  const key = `${section}-${level}`;
+  const key = adultPlanKey(section, level);
   if (!state.adultPlans.has(key)) {
     state.adultPlans.set(key, {
       blockSize: CONFIG.toggles.adult.oneInEveryByLevel[level],
@@ -226,7 +236,7 @@ function recordPlannedDeal(plan, question, section, level) {
 
 // Undo the count for a card that was put back, so the plan steps back one spot.
 function unrecordPlannedDeal(state, question) {
-  const plan = state.adultPlans.get(`${question.section}-${question.level}`);
+  const plan = state.adultPlans.get(adultPlanKey(question.section, question.level));
   if (plan === undefined || !plan.plannedIds.has(question.id)) {
     return;
   }

@@ -54,10 +54,12 @@ QUESTION_ID_PATTERN = re.compile(r"^(" + "|".join(SECTION_ID_PREFIX.values()) + 
 YES_NO_OPENERS = {"am", "are", "is", "was", "were", "do", "does", "did", "have", "has",
                   "had", "can", "could", "will", "would", "should", "shall", "may", "might"}
 ALLOWED_OPENER_PHRASES = ("would you rather",)
-# Party mode safety: cards say "take a sip", never these. Matched as whole words,
-# so "soft drink" in the rules screen is fine but a card saying "drink" is flagged.
-PARTY_BANNED_WORDS = ("drink", "drinks", "drinking", "chug", "chugging", "shot", "shots",
-                      "down it", "finish your", "bottoms up")
+# Party mode safety: cards say "take a sip", never these. Matched as whole words
+# in party cards only (the Party rules screen, which says "soft drink", is in
+# js/config.js and isn't checked here).
+PARTY_BANNED_WORDS = ("drink", "drinks", "drinking", "drunk", "chug", "chugging", "shot", "shots",
+                      "down it", "finish your", "bottoms up", "alcohol", "beer", "wine",
+                      "booze", "pint", "pints")
 
 
 # ----------------------------------------------------------
@@ -107,6 +109,12 @@ def opens_like_yes_no(text):
         return False
     first_word = lowered.split()[0].strip(string.punctuation)
     return first_word in YES_NO_OPENERS
+
+
+def question_label(question, index):
+    """How a question is named in problem messages: its id, or its place in the file."""
+    question_id = question.get("id")
+    return question_id if is_filled_string(question_id) else f"question #{index + 1}"
 
 
 def find_duplicate_values(values):
@@ -243,8 +251,7 @@ def check_questions(questions, sources_by_id):
         if not isinstance(question, dict):
             problems.append(f"question #{index + 1}: must be an object")
             continue
-        question_id = question.get("id")
-        label = question_id if is_filled_string(question_id) else f"question #{index + 1}"
+        label = question_label(question, index)
         problems += check_question_basics(question, label)
         problems += check_question_id(question, label)
         problems += check_question_rules(question, label, sources_by_id)
@@ -262,8 +269,7 @@ def check_duplicate_texts(questions):
     entries = []
     for index, question in enumerate(questions):
         if isinstance(question, dict) and is_filled_string(question.get("text")):
-            question_id = question.get("id")
-            label = question_id if is_filled_string(question_id) else f"question #{index + 1}"
+            label = question_label(question, index)
             entries.append((label, normalise_text(question["text"])))
     problems = []
     ids_by_text = defaultdict(list)

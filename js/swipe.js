@@ -39,14 +39,16 @@ export function attachSwipe(cardElement, { canSwipe, onSwipe }) {
   }
 
   // Record the pointer position and ask for a frame to move the card.
-  // If the stack moved some other way mid-drag (Next button, arrow key),
-  // let go of the card so the drag can't pull it back or swipe twice.
+  // If the stack moved some other way mid-drag (Next, Back or an arrow key),
+  // let go of the card and settle it, so the drag can't pull it back, leave
+  // it tilted, or swipe twice.
   function handlePointerMove(event) {
     if (event.pointerId !== drag.pointerId) {
       return;
     }
     if (!canSwipe()) {
       endDrag(cardElement, drag);
+      snapBack(cardElement);
       return;
     }
     drag.currentX = event.clientX;
@@ -74,6 +76,7 @@ export function attachSwipe(cardElement, { canSwipe, onSwipe }) {
     }
     if (!canSwipe()) {
       endDrag(cardElement, drag);
+      snapBack(cardElement);
       return;
     }
     drag.currentX = event.clientX;
@@ -167,7 +170,7 @@ function getSwipeDirection(drag) {
 
 // Speed of the pointer just before release, in pixels per millisecond.
 function getReleaseVelocity(samples) {
-  if (samples.length < 2) {
+  if (samples.length < MIN_SAMPLES_FOR_SPEED) {
     return 0;
   }
   const first = samples[0];

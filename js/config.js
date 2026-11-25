@@ -64,7 +64,6 @@ export const CONFIG = {
       cardFlag: 'adult',
       storageKey: 'getting-to-know.include-adult',
       confirm: {
-        heading: '',
         message: 'Both of you confirm you are 18 or older.',
         confirmLabel: 'Confirm',
       },
@@ -93,6 +92,12 @@ export const CONFIG = {
       // While Party mode is on, the page uses this bolder theme (css/styles.css).
       themeWhenOn: 'friends-party',
     },
+  },
+
+  // Words on the Sound button (the starting text is in index.html too).
+  buttonLabels: {
+    soundOn: 'Sound on',
+    soundOff: 'Sound off',
   },
 
   // Words shown on cards.
@@ -143,5 +148,7 @@ export const CONFIG = {
     frequencyHz: 1800,
     durationMs: 40,
     volume: 0.15,
+    // The click fades to this near-silent volume (a fade can't reach exactly 0).
+    silentGain: 0.0001,
   },
 };
