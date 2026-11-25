@@ -160,6 +160,7 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 | `data/sample-friends.json` | **Temporary.** 16 sample Friends & Teammates cards: 10 normal (5 questions, 5 dares) and 6 Party mode (a question and a dare per level), used until the real Friends cards are written (Phase 2, Step P2-6). Then it is deleted and removed from `CONFIG.questionFileUrls`. | — |
 | `data/sources.json` | The 24 verified sources that card footnotes link to. | — |
 | `scripts/validate.py` | Offline checker for both data files. Run it after any data change. | — |
+| `scripts/check_style.py` | Offline check of the look's rules: no gradients, blurs, CSS filters, blurred shadows or see-through colours, and no colour values outside the Theme tokens block in `css/styles.css`. Run it after any style change. | — |
 | `scripts/check_contrast.py` | Offline WCAG AA contrast check of every colour pair in all five themes (neutral, Icebreaker, Dating, Friends, Friends Party), read from `css/styles.css`. Run it after any colour change. | — |
 | `PROGRESS.md` | Build history: each step of the build plan, its date and commit. | — |
 | `.nojekyll` | Tells GitHub Pages to serve the files as they are. | — |
@@ -476,6 +477,7 @@ If the site doesn't update, open the repo's **Actions** tab on GitHub and check 
   - Functions stay short (about 30 lines or fewer) and do one thing.
 - **Indentation:** 2 spaces in HTML, CSS and JavaScript. The Python scripts use 4 spaces, the Python standard (PEP 8).
 - **No magic numbers:** every colour, size and timing is a CSS variable or a `CONFIG` value.
+- **One Theme tokens block:** every colour value in `css/styles.css` sits between the `THEME TOKENS: START` and `THEME TOKENS: END` markers. Section themes only point roles at those tokens. `python3 scripts/check_style.py` enforces it.
 - **No console output** except through `debugLog()`.
 - **Performance:**
   - Data loads once and is indexed by pool, so a swipe never scans the whole bank.

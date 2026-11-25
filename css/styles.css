@@ -1,6 +1,9 @@
 /* ==========================================================
-   Design tokens: colours, spacing, sizes and timings.
-   Every colour, size and duration used below comes from here.
+   THEME TOKENS: START
+   The one source of truth for colours, spacing, sizes, shadows and
+   timings. Every colour value in the stylesheet lives between the
+   START and END markers; everything below only uses var(--…).
+   scripts/check_style.py checks this.
 
    Colours come in two layers:
    1. Palette: the raw colours, named by what they look like.
@@ -52,6 +55,19 @@
   --palette-brown-900: #3a230d;
   --palette-brown-950: #1f0f02;
 
+  /* Palette: shadows and dialog backdrops (see-through, one pair per theme).
+     These go away in Phase 3, Step P3-2, which uses solid colours only. */
+  --palette-shadow-neutral: rgba(42, 37, 34, 0.14);
+  --palette-shadow-icebreaker: rgba(18, 61, 54, 0.16);
+  --palette-shadow-dating: rgba(0, 0, 0, 0.4);
+  --palette-shadow-friends: rgba(58, 35, 13, 0.18);
+  --palette-shadow-friends-party: rgba(31, 15, 2, 0.3);
+  --palette-scrim-neutral: rgba(42, 37, 34, 0.5);
+  --palette-scrim-icebreaker: rgba(18, 61, 54, 0.45);
+  --palette-scrim-dating: rgba(20, 2, 8, 0.6);
+  --palette-scrim-friends: rgba(58, 35, 13, 0.45);
+  --palette-scrim-friends-party: rgba(31, 15, 2, 0.5);
+
   /* Palette: error messages (used by every theme) */
   --palette-error-rose-50: #fdecec;
   --palette-error-red-800: #8a1c1c;
@@ -62,7 +78,7 @@
   --color-text: var(--palette-ink);
   --color-text-muted: var(--palette-ink-muted);
   --color-card-background: var(--palette-white);
-  --color-card-shadow: rgba(42, 37, 34, 0.14);
+  --color-card-shadow: var(--palette-shadow-neutral);
   --color-link: var(--palette-teal);
   --color-button-background: var(--palette-white);
   --color-button-text: var(--palette-ink);
@@ -75,7 +91,7 @@
   --color-switch-off: var(--palette-ink-line);
   --color-switch-on: var(--palette-teal);
   --color-switch-knob: var(--palette-white);
-  --color-dialog-backdrop: rgba(42, 37, 34, 0.5);
+  --color-dialog-backdrop: var(--palette-scrim-neutral);
   --color-error-background: var(--palette-error-rose-50);
   --color-error-text: var(--palette-error-red-800);
   --font-family-question: var(--font-family-base);
@@ -144,6 +160,7 @@
   /* Overshoots slightly past the target, then settles: a spring feel */
   --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+/* THEME TOKENS: END ======================================== */
 
 /* Reduced motion: near-instant moves instead of flying and springing */
 @media (prefers-reduced-motion: reduce) {
@@ -169,7 +186,7 @@
   --color-text: var(--palette-surf-900);
   --color-text-muted: var(--palette-surf-800);
   --color-card-background: var(--palette-mint-50);
-  --color-card-shadow: rgba(18, 61, 54, 0.16);
+  --color-card-shadow: var(--palette-shadow-icebreaker);
   --color-link: var(--palette-surf-700);
   --color-button-background: var(--palette-mint-50);
   --color-button-text: var(--palette-surf-900);
@@ -182,7 +199,7 @@
   --color-switch-off: var(--palette-surf-500);
   --color-switch-on: var(--palette-surf-700);
   --color-switch-knob: var(--palette-white);
-  --color-dialog-backdrop: rgba(18, 61, 54, 0.45);
+  --color-dialog-backdrop: var(--palette-scrim-icebreaker);
   /* Rounded letters where the device has them (e.g. Apple devices) */
   --font-family-question: ui-rounded, "SF Pro Rounded", var(--font-family-base);
 }
@@ -194,7 +211,7 @@
   --color-text: var(--palette-cream-50);
   --color-text-muted: var(--palette-cream-200);
   --color-card-background: var(--palette-burgundy-700);
-  --color-card-shadow: rgba(0, 0, 0, 0.4);
+  --color-card-shadow: var(--palette-shadow-dating);
   --color-link: var(--palette-gold-200);
   --color-button-background: var(--palette-burgundy-700);
   --color-button-text: var(--palette-cream-50);
@@ -207,7 +224,7 @@
   --color-switch-off: var(--palette-burgundy-400);
   --color-switch-on: var(--palette-gold-200);
   --color-switch-knob: var(--palette-maroon-950);
-  --color-dialog-backdrop: rgba(20, 2, 8, 0.6);
+  --color-dialog-backdrop: var(--palette-scrim-dating);
   /* A classic serif for a warmer, more romantic feel; no download needed */
   --font-family-question: Georgia, "Times New Roman", serif;
 }
@@ -219,7 +236,7 @@
   --color-text: var(--palette-brown-900);
   --color-text-muted: var(--palette-brown-700);
   --color-card-background: var(--palette-cream-white);
-  --color-card-shadow: rgba(58, 35, 13, 0.18);
+  --color-card-shadow: var(--palette-shadow-friends);
   --color-link: var(--palette-amber-800);
   --color-button-background: var(--palette-cream-white);
   --color-button-text: var(--palette-brown-900);
@@ -232,7 +249,7 @@
   --color-switch-off: var(--palette-gold-600);
   --color-switch-on: var(--palette-amber-800);
   --color-switch-knob: var(--palette-white);
-  --color-dialog-backdrop: rgba(58, 35, 13, 0.45);
+  --color-dialog-backdrop: var(--palette-scrim-friends);
   /* Rounded letters where the device has them, for a friendly feel */
   --font-family-question: ui-rounded, "SF Pro Rounded", var(--font-family-base);
 }
@@ -245,7 +262,7 @@
   --color-text: var(--palette-brown-950);
   --color-text-muted: var(--palette-brown-800);
   --color-card-background: var(--palette-gold-100);
-  --color-card-shadow: rgba(31, 15, 2, 0.3);
+  --color-card-shadow: var(--palette-shadow-friends-party);
   --color-link: var(--palette-brown-800);
   --color-button-background: var(--palette-gold-100);
   --color-button-text: var(--palette-brown-950);
@@ -258,7 +275,7 @@
   --color-switch-off: var(--palette-brown-600);
   --color-switch-on: var(--palette-brown-950);
   --color-switch-knob: var(--palette-gold-100);
-  --color-dialog-backdrop: rgba(31, 15, 2, 0.5);
+  --color-dialog-backdrop: var(--palette-scrim-friends-party);
   --font-family-question: ui-rounded, "SF Pro Rounded", var(--font-family-base);
 }
 

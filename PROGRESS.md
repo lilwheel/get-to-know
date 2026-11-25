@@ -59,3 +59,19 @@ Decisions:
   - [x] 6f — Party Level 3 (2026-11-25, commit 355f203, 200 cards: 120 questions, 80 dares)
   - [ ] 6g — Dating 18+ top-up
 - [ ] P2-7 — Final check and deploy
+
+## Phase 3: Flower Field Theme (look only)
+
+Plan: `PHASE3_PLAN.md`, next to `BUILD_PLAN.md` in the folder above this project. Phase 2 step 6g and P2-7 wait until Phase 3 is done.
+
+Decisions (2026-11-25):
+- Fonts are self-hosted (Latin subsets of Zen Maru Gothic 500/700 and Mochiy Pop One in `fonts/`), not loaded from Google, so no visitor data goes to a third party.
+- `--leaf`, `--rose` and `--periwinkle` may be nudged lighter so `--ink` text on them meets WCAG AA (unadjusted: 3.47, 2.75, 4.41).
+- The dialog backdrop becomes a solid fill of the section's background colour instead of a see-through dimming wash.
+- Section colour changes keep the solid-layer opacity cross-fade (only transform and opacity animate), which looks like a 200 ms colour change.
+
+- [ ] P3-1 — Audit and tokens
+- [ ] P3-2 — New palette, fonts and ink style
+- [ ] P3-3 — Section themes and toggle states
+- [ ] P3-4 — Manga details
+- [ ] P3-5 — Final check and deploy
