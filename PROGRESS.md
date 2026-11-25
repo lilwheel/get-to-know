@@ -46,7 +46,7 @@ Decisions:
 - [x] P2-1 — 18+ count and data schema update (2026-11-25, commit 5e58241). Before: Dating L2 50/350 (14.3%), L3 50/350 (14.3%), L1 0.
 - [x] P2-2 — Sources (2026-11-25, commit ed358e6, 12 added, 0 dropped)
 - [x] P2-3 — Third section on screen (2026-11-25, commit 02197c7; 10 sample cards in data/sample-friends.json)
-- [ ] P2-4 — Party mode toggle
+- [x] P2-4 — Party mode toggle (2026-11-25, commit ce74112; 6 Party sample cards)
 - [ ] P2-4b — 18+ card frequency (Dating)
 - [ ] P2-5 — Theme
 - [ ] P2-6 — Card bank
