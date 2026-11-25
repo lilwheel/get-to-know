@@ -16,6 +16,10 @@
   --color-focus-ring: #1d5f5a;
   --color-level-dot-empty: #c9d1d0;
   --color-level-dot-filled: #1f2a2a;
+  --color-switch-off: #8a9595;
+  --color-switch-on: #1d5f5a;
+  --color-switch-knob: #ffffff;
+  --color-dialog-backdrop: rgba(31, 42, 42, 0.5);
   --color-error-background: #fdecec;
   --color-error-text: #8a1c1c;
 
@@ -36,6 +40,11 @@
   --radius-large: 24px;
   --level-dot-size: 10px;
   --section-button-width: min(100%, 24rem);
+  --switch-width: 44px;
+  --switch-height: 26px;
+  --switch-knob-gap: 3px;
+  --dialog-width: min(calc(100vw - 32px), 24rem);
+  --duration-switch: 150ms;
 
   /* Card size: fills a phone, stays a comfortable size on a tablet */
   --card-width: min(100%, 30rem);
@@ -61,6 +70,7 @@
   :root {
     --duration-fly: 1ms;
     --duration-settle: 1ms;
+    --duration-switch: 1ms;
   }
 }
 
@@ -384,6 +394,105 @@ button {
   min-height: 40px;
   padding: var(--space-xsmall) var(--space-medium);
   font-size: var(--font-size-footnote);
+}
+
+/* ==========================================================
+   18+ setting: a switch built on a real checkbox, so it works with
+   keyboards and screen readers
+   ========================================================== */
+.setting-row {
+  display: flex;
+  justify-content: center;
+}
+
+/* [hidden] must win over the display rule above */
+.setting-row[hidden] {
+  display: none;
+}
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-small);
+  min-height: 40px;
+  font-size: var(--font-size-footnote);
+  cursor: pointer;
+}
+
+/* The real checkbox sits invisibly over the track so it still gets clicks and focus */
+.switch__input {
+  position: absolute;
+  width: var(--switch-width);
+  height: var(--switch-height);
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.switch__track {
+  position: relative;
+  flex: none;
+  width: var(--switch-width);
+  height: var(--switch-height);
+  border-radius: var(--switch-height);
+  background: var(--color-switch-off);
+}
+
+.switch__track::after {
+  content: "";
+  position: absolute;
+  top: var(--switch-knob-gap);
+  left: var(--switch-knob-gap);
+  width: calc(var(--switch-height) - var(--switch-knob-gap) * 2);
+  height: calc(var(--switch-height) - var(--switch-knob-gap) * 2);
+  border-radius: 50%;
+  background: var(--color-switch-knob);
+  transition: transform var(--duration-switch) ease;
+}
+
+.switch__input:checked + .switch__track {
+  background: var(--color-switch-on);
+}
+
+.switch__input:checked + .switch__track::after {
+  transform: translateX(calc(var(--switch-width) - var(--switch-height)));
+}
+
+.switch__input:focus-visible + .switch__track {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ==========================================================
+   Confirmation dialog
+   ========================================================== */
+.confirm-dialog {
+  width: var(--dialog-width);
+  padding: var(--space-large) var(--space-medium) var(--space-medium);
+  border: none;
+  border-radius: var(--radius-large);
+  background: var(--color-card-background);
+  color: var(--color-text);
+  text-align: center;
+}
+
+.confirm-dialog::backdrop {
+  background: var(--color-dialog-backdrop);
+}
+
+.confirm-dialog__message {
+  margin: 0 0 var(--space-large);
+  font-size: var(--font-size-section-name);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.confirm-dialog__buttons {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-medium);
 }
 
 /* ==========================================================

@@ -37,6 +37,15 @@
         <button id="sound-toggle" class="toggle-button" type="button" aria-pressed="false">Sound off</button>
       </header>
 
+      <!-- Dating only: the 18+ switch. Turning it on asks both people to confirm their age. -->
+      <div id="adult-setting" class="setting-row" hidden>
+        <label class="switch">
+          <input id="adult-toggle" class="switch__input" type="checkbox" role="switch">
+          <span class="switch__track" aria-hidden="true"></span>
+          <span class="switch__label">Include 18+ questions</span>
+        </label>
+      </div>
+
       <!-- js/cards.js fills this with up to three cards -->
       <div class="card-area">
         <div id="card-stack" class="card-stack" aria-live="polite"></div>
@@ -62,6 +71,17 @@
         <button id="next-button" class="control-button control-button--primary" type="button">Next &rarr;</button>
       </nav>
     </section>
+
+    <!-- Confirmation dialog used by js/dialog.js (18+ check and Reset) -->
+    <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-dialog-message">
+      <form method="dialog" class="confirm-dialog__form">
+        <p id="confirm-dialog-message" class="confirm-dialog__message"></p>
+        <div class="confirm-dialog__buttons">
+          <button id="confirm-dialog-cancel" class="control-button" type="submit" value="cancel">Cancel</button>
+          <button id="confirm-dialog-confirm" class="control-button control-button--primary" type="submit" value="confirm">Confirm</button>
+        </div>
+      </form>
+    </dialog>
 
     <!-- Plain-language error message, hidden unless something fails to load -->
     <p id="error-message" class="error-message" role="alert" hidden></p>

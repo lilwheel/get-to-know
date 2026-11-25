@@ -2,12 +2,14 @@
 // App entry point
 // Loads the data once, then runs the two screens: the start screen
 // (pick a section) and the card screen (the stack, level controls,
-// Back/Next). Remembers your place between visits.
+// Back/Next, and the 18+ switch in Dating). Remembers your place
+// between visits.
 // ==========================================================
 
 import { CONFIG } from './config.js';
 import { createCardStack } from './cards.js';
 import { debugLog } from './debug.js';
+import { askToConfirm, isDialogOpen } from './dialog.js';
 import { playCardChangeFeedback, setSoundEnabled } from './feedback.js';
 import { createShuffler } from './shuffler.js';
 import { clearSaved, loadSaved, save } from './storage.js';
@@ -24,6 +26,8 @@ const elements = {
   homeButton: document.getElementById('home-button'),
   sectionTitle: document.getElementById('section-title'),
   soundToggle: document.getElementById('sound-toggle'),
+  adultSetting: document.getElementById('adult-setting'),
+  adultToggle: document.getElementById('adult-toggle'),
   cardStack: document.getElementById('card-stack'),
   shallowerButton: document.getElementById('shallower-button'),
   deeperButton: document.getElementById('deeper-button'),
@@ -49,6 +53,7 @@ const session = {
   sourcesById: new Map(),
   section: null,
   level: CONFIG.lowestLevel,
+  includeAdult: false,  // the 18+ switch, confirmed this tab; only used in CONFIG.adultSection
   history: [],          // every card dealt this visit, in order; null = no question
   currentPosition: 0,   // which entry of history is on top
   cardStack: null,
@@ -128,7 +133,7 @@ function loadPlace() {
 // dealt from the shuffler at the current level.
 function getCardAt(position) {
   while (session.history.length <= position) {
-    session.history.push(session.shuffler.dealNext(session.section, session.level));
+    session.history.push(session.shuffler.dealNext(session.section, session.level, isAdultIncludedHere()));
   }
   return buildCardContent(session.history[position]);
 }
@@ -162,7 +167,7 @@ function handleCardShown(position) {
     section: session.section,
     level: question ? question.level : session.level,
     cardId: question ? question.id : EMPTY_CARD.id,
-    cardsLeftInPool: session.shuffler.cardsLeft(session.section, session.level),
+    cardsLeftInPool: session.shuffler.cardsLeft(session.section, session.level, isAdultIncludedHere()),
   });
 }
 
@@ -198,6 +203,49 @@ function updateLevelDisplay() {
 }
 
 // ----------------------------------------------------------
+// 18+ questions
+// ----------------------------------------------------------
+
+// True only when the switch is on (and confirmed) and this section allows 18+.
+function isAdultIncludedHere() {
+  return session.includeAdult && session.section === CONFIG.adultSection;
+}
+
+// The switch was flipped. Turning on needs both people to confirm their
+// age first; until they do, the switch stays off.
+async function handleAdultToggleChange() {
+  if (!elements.adultToggle.checked) {
+    setIncludeAdult(false);
+    restartVisitWithoutAdultCards();
+    return;
+  }
+  elements.adultToggle.checked = false;
+  const confirmed = await askToConfirm({
+    message: 'Both of you confirm you are 18 or older.',
+  });
+  if (confirmed) {
+    elements.adultToggle.checked = true;
+    setIncludeAdult(true);
+    session.cardStack.refreshUpcoming();
+  }
+}
+
+// Store the 18+ choice for this tab only (sessionStorage).
+function setIncludeAdult(include) {
+  session.includeAdult = include;
+  save(CONFIG.storageKeys.includeAdult, include, 'session');
+  debugLog('18+ questions', { included: include });
+}
+
+// Reopen the section so no 18+ card is showing, lined up, or reachable
+// with Back. Keeps the current card if it isn't 18+.
+function restartVisitWithoutAdultCards() {
+  const currentQuestion = session.history[session.currentPosition];
+  const keepCardId = currentQuestion && !currentQuestion.adult ? currentQuestion.id : null;
+  openSection(session.section, session.level, keepCardId);
+}
+
+// ----------------------------------------------------------
 // Screens
 // ----------------------------------------------------------
 
@@ -214,16 +262,18 @@ function showStartScreen() {
 // section, it goes back on top so you continue where you left off.
 function openSection(section, level, resumeCardId) {
   closeCardStack();
-  const resumeQuestion = resumeCardId ? session.shuffler.findById(resumeCardId) : null;
   session.section = section;
   session.level = Math.min(CONFIG.deepestLevel, Math.max(CONFIG.lowestLevel, level));
-  session.history = resumeQuestion && resumeQuestion.section === section ? [resumeQuestion] : [];
+  const resumeQuestion = findResumableQuestion(resumeCardId);
+  session.history = resumeQuestion ? [resumeQuestion] : [];
   session.currentPosition = 0;
   session.isFirstCardOfVisit = true;
 
   elements.startScreen.hidden = true;
   elements.cardScreen.hidden = false;
   elements.sectionTitle.textContent = CONFIG.sectionNames[section];
+  elements.adultSetting.hidden = section !== CONFIG.adultSection;
+  elements.adultToggle.checked = isAdultIncludedHere();
   applyTheme(section);
   updateLevelDisplay();
   session.cardStack = createCardStack({
@@ -232,6 +282,16 @@ function openSection(section, level, resumeCardId) {
     onCardShown: handleCardShown,
     forgetCardsAfter,
   });
+}
+
+// The saved card to put back on top, if it belongs to the open section
+// and is allowed right now (an 18+ card needs the switch on).
+function findResumableQuestion(cardId) {
+  const question = cardId ? session.shuffler.findById(cardId) : null;
+  if (question === null || question.section !== session.section) {
+    return null;
+  }
+  return question.adult && !isAdultIncludedHere() ? null : question;
 }
 
 // Remove the current card stack, returning any unshown cards to their pools.
@@ -256,8 +316,11 @@ function chooseSection(section) {
 }
 
 // Clear seen cards and the saved place, after asking first.
-function resetProgress() {
-  const confirmed = window.confirm('Reset? This forgets which cards you have seen and where you were.');
+async function resetProgress() {
+  const confirmed = await askToConfirm({
+    message: 'Reset? This forgets which cards you have seen and where you were.',
+    confirmLabel: 'Reset',
+  });
   if (!confirmed) {
     return;
   }
@@ -286,12 +349,14 @@ function connectControls() {
   elements.nextButton.addEventListener('click', () => session.cardStack.showNext('left'));
   elements.backButton.addEventListener('click', () => session.cardStack.showPrevious());
   elements.soundToggle.addEventListener('click', toggleSound);
+  elements.adultToggle.addEventListener('change', handleAdultToggleChange);
   document.addEventListener('keydown', handleArrowKeys);
 }
 
-// Left/right arrows move through cards, but only on the card screen.
+// Left/right arrows move through cards, but only on the card screen
+// and not while a dialog is open.
 function handleArrowKeys(event) {
-  if (session.cardStack === null) {
+  if (session.cardStack === null || isDialogOpen()) {
     return;
   }
   if (event.key === 'ArrowRight') {
@@ -344,6 +409,7 @@ async function startApp() {
     return;
   }
   session.sourcesById = new Map(sources.map((source) => [source.id, source]));
+  session.includeAdult = loadSaved(CONFIG.storageKeys.includeAdult, false, 'session') === true;
   session.shuffler = createShuffler(questions, loadSaved(CONFIG.storageKeys.seenIds, []));
   connectControls();
   restorePlace();

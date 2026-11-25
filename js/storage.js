@@ -1,16 +1,24 @@
 // ==========================================================
 // Saved progress
-// Small wrappers around localStorage. Storage can be blocked
+// Small wrappers around localStorage (kept between visits) and
+// sessionStorage (cleared when the tab closes). Storage can be blocked
 // (private browsing, strict settings), so every read and write is
 // guarded and the app keeps working without it.
 // ==========================================================
 
 import { debugLog } from './debug.js';
 
+// Pick the storage area by name. Done inside each try block, because
+// just touching localStorage can throw when storage is blocked.
+function getStorageArea(areaName) {
+  return areaName === 'session' ? sessionStorage : localStorage;
+}
+
 // Read a saved value, or return fallback if it's missing or unreadable.
-export function loadSaved(key, fallback) {
+// areaName is 'local' (default) or 'session'.
+export function loadSaved(key, fallback, areaName = 'local') {
   try {
-    const savedText = localStorage.getItem(key);
+    const savedText = getStorageArea(areaName).getItem(key);
     return savedText === null ? fallback : JSON.parse(savedText);
   } catch {
     debugLog('Could not read saved progress', { key });
@@ -19,9 +27,9 @@ export function loadSaved(key, fallback) {
 }
 
 // Save a value as JSON. If storage is unavailable, carry on without saving.
-export function save(key, value) {
+export function save(key, value, areaName = 'local') {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    getStorageArea(areaName).setItem(key, JSON.stringify(value));
   } catch {
     debugLog('Could not save progress', { key });
   }

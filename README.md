@@ -22,15 +22,16 @@ to see debug logs in the browser console.
 
 | File | What it does |
 | --- | --- |
-| `index.html` | The single page. Loads the stylesheet and `js/app.js` as a module. Holds two screens: the start screen (Icebreaker / Dating buttons, Reset) and the card screen (Home, sound toggle, card stack, level controls, Back/Next), plus the error message. |
+| `index.html` | The single page. Loads the stylesheet and `js/app.js` as a module. Holds two screens: the start screen (Icebreaker / Dating buttons, Reset) and the card screen (Home, sound toggle, 18+ switch for Dating, card stack, level controls, Back/Next), the confirmation dialog and the error message. |
 | `css/styles.css` | All styling. Colours, sizes and animation timings are CSS variables at the top; reduced-motion settings shorten the timings. Card depth (0 = top) is styled with `data-depth`. |
-| `js/config.js` | The one `CONFIG` object: data file paths, section and level names, storage keys, swipe distance and flick speed, vibration length, click sound. |
-| `js/app.js` | Entry point. Loads the data once, switches between the two screens, deals cards from the shuffler into the stack, handles level changes, saves your place and connects every control. |
+| `js/config.js` | The one `CONFIG` object: data file paths, section and level names, which section allows 18+, storage keys, swipe distance and flick speed, vibration length, click sound. |
+| `js/app.js` | Entry point. Loads the data once, switches between the two screens, deals cards from the shuffler into the stack, handles level changes and the 18+ switch, saves your place and connects every control. |
 | `js/cards.js` | The card stack. Keeps at most 3 cards in the page, flies the top card off for "next" and slides the previous card back in for "back". Asks `app.js` which card belongs at each position, and can rebuild the cards behind the top one after a level change. |
 | `js/swipe.js` | Dragging with touch or mouse. Moves the card on each animation frame; on release, reports a swipe (past 30% of the screen width or a fast flick) or snaps back. |
 | `js/feedback.js` | A short vibration (where the phone supports it) and an optional soft click, off by default, when the card changes. |
-| `js/shuffler.js` | One shuffled pool per section and level. Deals without repeats, reshuffles a pool when it runs out (never showing the last card straight away), takes back cards that were lined up but not shown, and skips cards seen on earlier visits. |
-| `js/storage.js` | Safe read/write/clear for localStorage, so the app still works if storage is blocked. |
+| `js/shuffler.js` | One shuffled pool per section and level, with 18+ questions in separate pools that are only dealt in Dating when asked for. Deals without repeats, reshuffles a pool when it runs out (never showing the last card straight away), takes back cards that were lined up but not shown, and skips cards seen on earlier visits. |
+| `js/storage.js` | Safe read/write/clear for localStorage and sessionStorage, so the app still works if storage is blocked. |
+| `js/dialog.js` | One reusable in-page confirmation dialog (`askToConfirm`), used for the 18+ age check and for Reset. |
 | `js/theme.js` | Switches the page theme by setting `data-theme` on `<body>`. |
 | `js/debug.js` | `debugLog()`: the only console output in the app, shown only with `?debug=1`. |
 | `data/questions.json` | The question bank (currently empty). Format below. |
@@ -114,6 +115,18 @@ Two things are kept in localStorage on your device (nothing is sent anywhere):
 - `getting-to-know.place`: the last screen, section, level and card, so a reload keeps your place.
 
 "Reset seen cards" on the start screen clears both.
+
+One thing is kept in sessionStorage, which the browser clears when the tab closes:
+
+- `getting-to-know.include-adult`: whether the 18+ switch is on.
+
+## 18+ questions
+
+- Only Dating has the "Include 18+ questions" switch. It is off by default.
+- Turning it on shows "Both of you confirm you are 18 or older." with Cancel and Confirm. Only Confirm turns it on; Cancel or Escape leaves it off.
+- Questions with `"adult": true` are dealt only when the switch is on, and only in Dating. The shuffler enforces the Dating-only rule itself, and `validate.py` rejects 18+ questions outside Dating levels 2 and 3.
+- Turning it off restarts the current visit, so no 18+ card stays on screen, lined up, or reachable with Back.
+- A new tab always starts with the switch off. A saved 18+ card is not reopened unless the switch is on.
 
 ## Controls
 

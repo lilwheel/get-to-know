@@ -1,12 +1,14 @@
 // ==========================================================
 // Shuffler
-// Keeps one shuffled pool of questions per section and level.
-// Cards are dealt from a pool without repeats; when a pool runs out
-// it is reshuffled, and the card just shown is kept from coming
-// straight back. Cards already seen (saved from an earlier visit)
-// start outside their pool.
+// Keeps one shuffled pool of questions per section and level, with
+// 18+ questions in a pool of their own so they can be left out.
+// Cards are dealt without repeats; when the pools in use run out they
+// are reshuffled, and the card just shown is kept from coming straight
+// back. Cards already seen (saved from an earlier visit) start outside
+// their pool. 18+ cards are only ever dealt in CONFIG.adultSection.
 // ==========================================================
 
+import { CONFIG } from './config.js';
 import { debugLog } from './debug.js';
 
 // ----------------------------------------------------------
@@ -27,12 +29,12 @@ export function createShuffler(questions, seenIds = []) {
   fillAllPools(state);
 
   return {
-    dealNext: (section, level) => dealNext(state, section, level),
+    dealNext: (section, level, includeAdult) => dealNext(state, section, level, includeAdult),
     putBack: (question) => putBack(state, question),
     markShown: (question) => markShown(state, question),
     findById: (id) => state.questionsById.get(id) || null,
     getSeenIds: () => [...state.seenIds],
-    cardsLeft: (section, level) => (state.pools.get(poolKey(section, level)) || []).length,
+    cardsLeft: (section, level, includeAdult) => countRemaining(state, poolKeysFor(state, section, level, includeAdult)),
     reset: () => resetAll(state),
   };
 }
@@ -41,16 +43,21 @@ export function createShuffler(questions, seenIds = []) {
 // Building pools
 // ----------------------------------------------------------
 
-// The name of the pool for one section and level, e.g. "dating-2".
-function poolKey(section, level) {
-  return `${section}-${level}`;
+// The name of a pool, e.g. "dating-2-general" or "dating-2-adult".
+function poolKey(section, level, isAdult) {
+  return `${section}-${level}-${isAdult ? 'adult' : 'general'}`;
+}
+
+// The name of the pool a question belongs to.
+function poolKeyOf(question) {
+  return poolKey(question.section, question.level, question.adult === true);
 }
 
 // Index every question by its pool once, so dealing never scans the whole bank.
 function groupByPool(questions) {
   const questionsByPool = new Map();
   for (const question of questions) {
-    const key = poolKey(question.section, question.level);
+    const key = poolKeyOf(question);
     if (!questionsByPool.has(key)) {
       questionsByPool.set(key, []);
     }
@@ -81,26 +88,54 @@ function shuffle(list) {
 // Dealing
 // ----------------------------------------------------------
 
-// Take the next card from a pool, reshuffling first if the pool is empty.
-// Returns null only if the section and level have no questions at all.
-function dealNext(state, section, level) {
-  const key = poolKey(section, level);
-  const allQuestions = state.questionsByPool.get(key);
-  if (!allQuestions || allQuestions.length === 0) {
+// Take the next card for a section and level, reshuffling first if every
+// pool in use is empty. Returns null only if there are no questions at all.
+function dealNext(state, section, level, includeAdult) {
+  const keys = poolKeysFor(state, section, level, includeAdult);
+  if (keys.length === 0) {
     return null;
   }
-  if (state.pools.get(key).length === 0) {
-    reshufflePool(state, key, allQuestions);
+  if (countRemaining(state, keys) === 0) {
+    keys.forEach((key) => reshufflePool(state, key));
   }
-  const question = state.pools.get(key).pop();
+  const question = state.pools.get(pickPoolByRemaining(state, keys)).pop();
   state.dealtButNotShownIds.add(question.id);
   return question;
+}
+
+// The non-empty pools to deal from. 18+ pools are included only when
+// asked for and only in the adult section, so Icebreaker never gets them.
+function poolKeysFor(state, section, level, includeAdult) {
+  const keys = [poolKey(section, level, false)];
+  if (includeAdult === true && section === CONFIG.adultSection) {
+    keys.push(poolKey(section, level, true));
+  }
+  return keys.filter((key) => (state.questionsByPool.get(key) || []).length > 0);
+}
+
+// How many cards are left across some pools.
+function countRemaining(state, keys) {
+  return keys.reduce((total, key) => total + state.pools.get(key).length, 0);
+}
+
+// Choose a pool with odds matching how many cards it has left, which is
+// the same as dealing from one combined shuffled pool.
+function pickPoolByRemaining(state, keys) {
+  let target = Math.random() * countRemaining(state, keys);
+  for (const key of keys) {
+    target -= state.pools.get(key).length;
+    if (target < 0) {
+      return key;
+    }
+  }
+  return keys.find((key) => state.pools.get(key).length > 0);
 }
 
 // Refill an emptied pool: everything in it becomes unseen again, except
 // cards already dealt into the stack. The last card shown goes to the
 // bottom so it doesn't come straight back.
-function reshufflePool(state, key, allQuestions) {
+function reshufflePool(state, key) {
+  const allQuestions = state.questionsByPool.get(key);
   allQuestions.forEach((question) => state.seenIds.delete(question.id));
   let refill = allQuestions.filter((question) => !state.dealtButNotShownIds.has(question.id));
   // Tiny pools can have every card already dealt; then allow repeats.
@@ -132,14 +167,14 @@ function putBack(state, question) {
     return;
   }
   state.dealtButNotShownIds.delete(question.id);
-  state.pools.get(poolKey(question.section, question.level)).push(question);
+  state.pools.get(poolKeyOf(question)).push(question);
 }
 
 // Record that a card reached the top of the stack.
 function markShown(state, question) {
   state.dealtButNotShownIds.delete(question.id);
   state.seenIds.add(question.id);
-  state.lastShownIdByPool.set(poolKey(question.section, question.level), question.id);
+  state.lastShownIdByPool.set(poolKeyOf(question), question.id);
 }
 
 // Forget everything seen and reshuffle every pool from scratch.

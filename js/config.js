@@ -23,10 +23,15 @@ export const CONFIG = {
   lowestLevel: 1,
   deepestLevel: 3,
 
-  // localStorage keys for saved progress.
+  // The only section that can ever show 18+ questions.
+  adultSection: 'dating',
+
+  // Storage keys for saved progress and settings.
   storageKeys: {
     seenIds: 'getting-to-know.seen-ids',
     place: 'getting-to-know.place',
+    // Kept in sessionStorage, so it resets when the tab is closed.
+    includeAdult: 'getting-to-know.include-adult',
   },
 
   // Swiping: a drag past this share of the screen width counts as a swipe.
