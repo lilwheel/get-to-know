@@ -233,9 +233,16 @@ That's 2,000 in total. With 18+ switched off, every pool still has at least 300 
 
 All questions are original. The sources inspired their style and principles; nothing is copied.
 
-### Question format (`data/questions.json`)
+### Card format (`data/questions.json`)
 
-A list of objects. Every field is required:
+A list of card objects. There are two kinds of card, set by `type`:
+
+- **question:** everyone answers it, in turn.
+- **dare:** a quick table activity, done by the group or by one person for the group.
+
+Every field is required on every card.
+
+A question:
 
 ```json
 {
@@ -244,6 +251,8 @@ A list of objects. Every field is required:
   "level": 1,
   "category": "Daily life",
   "adult": false,
+  "type": "question",
+  "party": false,
   "text": "What's been taking up the most space in your head this week, and why?",
   "why": "Builds Love Maps by learning their current worries.",
   "framework": "Gottman: Love Maps",
@@ -251,14 +260,36 @@ A list of objects. Every field is required:
 }
 ```
 
+A dare (Friends & Teammates only):
+
+```json
+{
+  "id": "fri-1-0001",
+  "section": "friends",
+  "level": 1,
+  "category": "Warm-up",
+  "adult": false,
+  "type": "dare",
+  "party": false,
+  "text": "Everyone mimes their dream job at the same time. The table guesses each one.",
+  "why": "Shared play gives everyone an equal turn, which builds psychological safety.",
+  "framework": "Team: Psychological Safety",
+  "source_id": "rework-team-effectiveness"
+}
+```
+
+The dare example shows the planned Friends format. Its `source_id` is added to `sources.json` in Phase 2, Step P2-2.
+
 | Field | Rule |
 | --- | --- |
-| `id` | `ice-<level>-<4 digits>` for Icebreaker, `date-<level>-<4 digits>` for Dating. Must agree with `section` and `level`, and be unique. |
-| `section` | `"icebreaker"` or `"dating"`. |
+| `id` | `ice-<level>-<4 digits>` for Icebreaker, `date-<level>-<4 digits>` for Dating, `fri-<level>-<4 digits>` for Friends & Teammates. Must agree with `section` and `level`, and be unique. |
+| `section` | `"icebreaker"`, `"dating"` or `"friends"`. |
 | `level` | `1`, `2` or `3`, as a number, not a string. |
 | `category` | A short topic label, such as "Quirky habits". |
-| `adult` | `true` or `false`. Always `false` in Icebreaker. `true` only in Dating levels 2 and 3. |
-| `text` | The question. Open-ended (not yes/no), and both people answer it. |
+| `adult` | `true` or `false`. `true` only in Dating levels 2 and 3; always `false` in Icebreaker and Friends. |
+| `type` | `"question"` or `"dare"`. Icebreaker and Dating hold only questions. |
+| `party` | `true` or `false`. `true` only in Friends, for Party mode cards. |
+| `text` | A question must be open-ended (not yes/no), and everyone answers it. A dare is an instruction and must not end with "?". |
 | `why` | The card footnote: one sentence, under 20 words, naming the principle. |
 | `framework` | Must equal the `framework` of the source it cites. |
 | `source_id` | Must match an `id` in `data/sources.json`. |
@@ -282,12 +313,12 @@ Every link in the app comes from this file. Only add a source after opening its 
 python3 scripts/validate.py
 ```
 
-It prints the counts table, then flags:
+It prints a counts table (total, 18+, party and dares for each section and level), then flags:
 - missing or wrong-type fields, and badly formed ids
-- 18+ questions outside Dating levels 2 and 3
+- 18+ cards outside Dating levels 2 and 3, and party cards outside Friends
+- questions that open like a yes/no question, and dares that end with "?"
 - "why" lines of 20 words or more
 - unknown `source_id`s, and a `framework` that doesn't match its source
-- questions that open like a yes/no question ("Do you…", "Have you…")
 - duplicate ids or URLs
 - exact duplicate questions (ignoring case and punctuation)
 - near-duplicates (over 80% word overlap)

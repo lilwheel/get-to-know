@@ -7,6 +7,8 @@ Checks data/sources.json and data/questions.json and prints:
   - exact duplicates (after lowercasing and removing punctuation)
   - near-duplicates (word-overlap similarity above 0.8)
   - questions that open like a yes/no question ("Do you...", "Have you...")
+  - dares that end with a question mark (probably a question filed as a dare)
+  - party cards outside Friends, and 18+ cards outside Dating levels 2 and 3
 
 Exits with status 1 if any problem is found, 0 otherwise.
 
@@ -29,18 +31,23 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 QUESTIONS_PATH = PROJECT_ROOT / "data" / "questions.json"
 SOURCES_PATH = PROJECT_ROOT / "data" / "sources.json"
 
-SECTIONS = ("icebreaker", "dating")
+# Sections and the id prefix each one uses ("ice-1-0001", "fri-2-0042").
+SECTION_ID_PREFIX = {"icebreaker": "ice", "dating": "date", "friends": "fri"}
+SECTIONS = tuple(SECTION_ID_PREFIX)
 LEVELS = (1, 2, 3)
-SECTION_ID_PREFIX = {"icebreaker": "ice", "dating": "date"}
+CARD_TYPES = ("question", "dare")
+# Which sections may hold 18+ cards (and at which levels), and party cards.
+ADULT_SECTIONS = ("dating",)
 ADULT_ALLOWED_LEVELS = (2, 3)
+PARTY_SECTIONS = ("friends",)
 
-QUESTION_FIELDS = ("id", "section", "level", "category", "adult",
+QUESTION_FIELDS = ("id", "section", "level", "category", "adult", "type", "party",
                    "text", "why", "framework", "source_id")
 SOURCE_FIELDS = ("id", "title", "url", "framework")
 
 MAX_WHY_WORDS = 19                     # "one sentence under 20 words"
 NEAR_DUPLICATE_THRESHOLD = 0.8         # word-overlap (Jaccard) similarity
-QUESTION_ID_PATTERN = re.compile(r"^(ice|date)-([123])-(\d{4})$")
+QUESTION_ID_PATTERN = re.compile(r"^(" + "|".join(SECTION_ID_PREFIX.values()) + r")-([123])-(\d{4})$")
 # Questions must be open-ended, so these opening words are flagged.
 # "Would you rather" is allowed because it asks for a choice and a reason.
 YES_NO_OPENERS = {"am", "are", "is", "was", "were", "do", "does", "did", "have", "has",
@@ -149,6 +156,10 @@ def check_question_basics(question, label):
         problems.append(f"{label}: level must be 1, 2 or 3")
     if not isinstance(question.get("adult"), bool):
         problems.append(f"{label}: adult must be true or false")
+    if question.get("type") not in CARD_TYPES:
+        problems.append(f"{label}: type must be 'question' or 'dare'")
+    if not isinstance(question.get("party"), bool):
+        problems.append(f"{label}: party must be true or false")
     return problems
 
 
@@ -156,7 +167,7 @@ def check_question_id(question, label):
     """Check the id looks like 'ice-1-0001' and agrees with section and level."""
     match = QUESTION_ID_PATTERN.match(str(question.get("id", "")))
     if not match:
-        return [f"{label}: id must look like ice-1-0001 or date-2-0042"]
+        return [f"{label}: id must look like ice-1-0001, date-2-0042 or fri-3-0007"]
     prefix, level_text, _ = match.groups()
     problems = []
     if SECTION_ID_PREFIX.get(question.get("section")) != prefix:
@@ -166,20 +177,39 @@ def check_question_id(question, label):
     return problems
 
 
-def check_question_rules(question, label, sources_by_id):
-    """Check the content rules: adult placement, why length, source and framework."""
+def check_placement_rules(question, label):
+    """Check 18+ cards sit only in Dating levels 2-3, and party cards only in Friends."""
     problems = []
     if question.get("adult") is True:
-        if question.get("section") != "dating":
-            problems.append(f"{label}: adult questions are only allowed in dating")
+        if question.get("section") not in ADULT_SECTIONS:
+            problems.append(f"{label}: adult cards are only allowed in dating")
         elif question.get("level") not in ADULT_ALLOWED_LEVELS:
-            problems.append(f"{label}: adult questions are only allowed in dating levels 2 and 3")
+            problems.append(f"{label}: adult cards are only allowed in dating levels 2 and 3")
+    if question.get("party") is True and question.get("section") not in PARTY_SECTIONS:
+        problems.append(f"{label}: party cards are only allowed in friends")
+    return problems
+
+
+def check_text_rules(question, label):
+    """Check the wording: why length, open-ended questions, and dares that aren't questions."""
+    problems = []
     why = question.get("why")
     if is_filled_string(why) and len(why.split()) > MAX_WHY_WORDS:
         problems.append(f"{label}: why has {len(why.split())} words (must be under 20)")
     text = question.get("text")
-    if is_filled_string(text) and opens_like_yes_no(text):
+    if not is_filled_string(text):
+        return problems
+    # Dares are instructions ("Do an impression..."), so only questions get the yes/no check.
+    if question.get("type") == "question" and opens_like_yes_no(text):
         problems.append(f"{label}: opens like a yes/no question; rephrase to be open-ended")
+    if question.get("type") == "dare" and text.rstrip().endswith("?"):
+        problems.append(f"{label}: dare ends with '?'; is it really a question?")
+    return problems
+
+
+def check_question_rules(question, label, sources_by_id):
+    """Check the content rules: placement, wording, and that the source and framework agree."""
+    problems = check_placement_rules(question, label) + check_text_rules(question, label)
     source = sources_by_id.get(question.get("source_id"))
     if source is None:
         problems.append(f"{label}: source_id '{question.get('source_id')}' is not in sources.json")
@@ -237,19 +267,21 @@ def check_duplicate_texts(questions):
 # ----------------------------------------------------------
 
 def print_counts(questions):
-    """Print how many questions each section and level holds, and how many are adult."""
-    totals = Counter()
-    adult_totals = Counter()
+    """Print a table of cards per section and level, split into the kinds that matter:
+    18+ cards (Dating), party cards (Friends), and dares."""
+    totals, adult, party, dares = Counter(), Counter(), Counter(), Counter()
     for question in questions:
         if isinstance(question, dict):
             key = (question.get("section"), question.get("level"))
             totals[key] += 1
-            adult_totals[key] += question.get("adult") is True
-    print("Question counts (adult in brackets):")
+            adult[key] += question.get("adult") is True
+            party[key] += question.get("party") is True
+            dares[key] += question.get("type") == "dare"
+    print("Card counts (total / 18+ / party / dares):")
     for section in SECTIONS:
-        row = "  ".join(f"L{level}: {totals[(section, level)]} ({adult_totals[(section, level)]})"
-                        for level in LEVELS)
-        print(f"  {section:<11} {row}")
+        cells = [f"L{level}: {totals[(section, level)]:>4} / {adult[(section, level)]:>3} / "
+                 f"{party[(section, level)]:>3} / {dares[(section, level)]:>3}" for level in LEVELS]
+        print(f"  {section:<11} " + "   ".join(cells))
     print(f"  Total: {len(questions)}")
 
 

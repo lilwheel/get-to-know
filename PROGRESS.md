@@ -28,3 +28,32 @@ New session? Read this first, then resume from the next unticked step.
   - [x] 7f — Dating Level 3 (2026-11-25, commit 556ee37, 300 questions incl. 50 adult)
   - [x] 7g — Top up to ~2,000 and switch the app to the real bank (2026-11-25, commit dcf200d, 2,000 questions)
 - [x] Step 8 — Final check and deploy (2026-11-25, commit 27c48b4; live on GitHub Pages)
+
+## Phase 2: Friends & Teammates
+
+Plan: `PHASE2_PLAN.md`, kept next to `BUILD_PLAN.md` in the folder above this project.
+
+Decisions:
+- P2-3 (2026-11-25): every dare is done by the whole table. Dare cards show "Whole table"; no extra field in the data.
+- P2-6g (2026-11-25): the 18+ top-up is additive. New 18+ questions are added on top of the 300 regular
+  questions per level (for example, 40% of 300 = 120 18+ questions), never by turning regular ones into 18+.
+  Still to confirm before 6g: the exact percentage, and whether the 50 existing 18+ questions count towards it.
+
+Still open:
+- P2-4b: when the 18+ pool runs out, reshuffle it (keeps the rate) or fall back to normal cards?
+
+- [x] P2-1 — 18+ count and data schema update (2026-11-25, commit PENDING). Before: Dating L2 50/350 (14.3%), L3 50/350 (14.3%), L1 0.
+- [ ] P2-2 — Sources
+- [ ] P2-3 — Third section on screen
+- [ ] P2-4 — Party mode toggle
+- [ ] P2-4b — 18+ card frequency (Dating)
+- [ ] P2-5 — Theme
+- [ ] P2-6 — Card bank
+  - [ ] 6a — Friends Level 1
+  - [ ] 6b — Friends Level 2
+  - [ ] 6c — Friends Level 3
+  - [ ] 6d — Party Level 1
+  - [ ] 6e — Party Level 2
+  - [ ] 6f — Party Level 3
+  - [ ] 6g — Dating 18+ top-up
+- [ ] P2-7 — Final check and deploy
