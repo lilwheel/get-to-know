@@ -47,7 +47,7 @@ Decisions:
 - [x] P2-2 — Sources (2026-11-25, commit ed358e6, 12 added, 0 dropped)
 - [x] P2-3 — Third section on screen (2026-11-25, commit 02197c7; 10 sample cards in data/sample-friends.json)
 - [x] P2-4 — Party mode toggle (2026-11-25, commit ce74112; 6 Party sample cards)
-- [ ] P2-4b — 18+ card frequency (Dating)
+- [x] P2-4b — 18+ card frequency (Dating) (2026-11-25, commit e1b7af8; 30 swipes: L1 0, L2 6, L3 10 adult)
 - [ ] P2-5 — Theme
 - [ ] P2-6 — Card bank
   - [ ] 6a — Friends Level 1
