@@ -62,22 +62,60 @@ function renderInitialCards(stack) {
   }
 }
 
-// Build one card: the question in the middle and the footnote at the bottom.
+// Build one card: the text in the middle (with the dare label and "who"
+// line on dares), an optional Pass button, and the footnote at the bottom.
 function createCardElement(stack, card) {
   const cardElement = document.createElement('article');
-  cardElement.className = 'card';
+  cardElement.className = card.type === 'dare' ? 'card card--dare' : 'card';
   cardElement.dataset.cardId = card.id;
 
-  const questionElement = document.createElement('p');
-  questionElement.className = 'card__question';
-  questionElement.textContent = card.text;
-
-  cardElement.append(questionElement, createFootnoteElement(card));
+  cardElement.append(createBodyElement(card));
+  if (card.canPass) {
+    cardElement.append(createPassButton(stack, card));
+  }
+  cardElement.append(createFootnoteElement(card));
   attachSwipe(cardElement, {
     canSwipe: () => cardElement.dataset.depth === '0' && !stack.isAnimating,
     onSwipe: (direction) => showNext(stack, direction),
   });
   return cardElement;
+}
+
+// Build the middle of the card. A dare gets a small "Dare" label above the
+// text and a "Whole table" line under it; a question is just its text.
+function createBodyElement(card) {
+  const bodyElement = document.createElement('div');
+  bodyElement.className = 'card__body';
+
+  const textElement = document.createElement('p');
+  textElement.className = 'card__question';
+  textElement.textContent = card.text;
+
+  if (card.type !== 'dare') {
+    bodyElement.append(textElement);
+    return bodyElement;
+  }
+  const labelElement = document.createElement('p');
+  labelElement.className = 'card__label';
+  labelElement.textContent = CONFIG.cardLabels.dare;
+  const whoElement = document.createElement('p');
+  whoElement.className = 'card__who';
+  whoElement.textContent = CONFIG.cardLabels.dareWho;
+  bodyElement.append(labelElement, textElement, whoElement);
+  return bodyElement;
+}
+
+// Build the Pass button: skips this card with no penalty, exactly like Next.
+function createPassButton(stack, card) {
+  const passButton = document.createElement('button');
+  passButton.type = 'button';
+  passButton.className = 'toggle-button card__pass';
+  passButton.textContent = CONFIG.cardLabels.pass;
+  passButton.addEventListener('click', () => {
+    debugLog('Card passed', { cardId: card.id });
+    showNext(stack, 'left');
+  });
+  return passButton;
 }
 
 // Build the footnote: the "why" line, then a link to the source in a new tab.

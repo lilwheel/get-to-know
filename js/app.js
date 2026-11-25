@@ -21,7 +21,7 @@ import { applyTheme, changeScreenWithFade } from './theme.js';
 const elements = {
   startScreen: document.getElementById('start-screen'),
   cardScreen: document.getElementById('card-screen'),
-  sectionButtons: document.querySelectorAll('[data-section]'),
+  sectionChoices: document.getElementById('section-choices'),
   resetButton: document.getElementById('reset-button'),
   homeButton: document.getElementById('home-button'),
   sectionTitle: document.getElementById('section-title'),
@@ -43,10 +43,12 @@ const elements = {
 // Shown if a section and level has no questions at all.
 const EMPTY_CARD = {
   id: 'empty',
+  type: 'question',
   text: 'No questions here yet. Try another level.',
   why: '',
   sourceTitle: '',
   sourceUrl: '',
+  canPass: false,
 };
 
 const session = {
@@ -65,6 +67,17 @@ const session = {
 // ----------------------------------------------------------
 // Data loading
 // ----------------------------------------------------------
+
+// Fetch every card file and the sources together. The card files are
+// merged into one list; each file must be a list for the merge to work.
+async function loadAllData() {
+  const [sources, ...cardLists] = await Promise.all([
+    loadJsonFile(CONFIG.sourcesUrl),
+    ...CONFIG.questionFileUrls.map(loadJsonFile),
+  ]);
+  const allAreLists = Array.isArray(sources) && cardLists.every(Array.isArray);
+  return allAreLists ? { sources, questions: cardLists.flat() } : null;
+}
 
 // Fetch one JSON file and return its contents, with a clear error if it fails.
 async function loadJsonFile(url) {
@@ -93,11 +106,23 @@ function buildCardContent(question) {
   const source = session.sourcesById.get(question.source_id);
   return {
     id: question.id,
+    type: question.type,
     text: question.text,
     why: question.why,
     sourceTitle: source ? source.title : '',
     sourceUrl: source ? source.url : '',
+    canPass: CONFIG.sections[question.section].hasPassButton,
   };
+}
+
+// What screen readers hear for a card: dares are announced as dares,
+// with who does them, so the difference isn't only visual.
+function describeForScreenReader(card) {
+  if (card.type !== 'dare') {
+    return card.text;
+  }
+  const { dare, dareWho } = CONFIG.cardLabels;
+  return `${dare}: ${card.text} ${dareWho}.`;
 }
 
 // ----------------------------------------------------------
@@ -128,7 +153,7 @@ function saveStartScreenVisit() {
 function loadPlace() {
   const place = loadSaved(CONFIG.storageKeys.place, null);
   const isValid = place !== null
-    && Object.hasOwn(CONFIG.sectionNames, place.section)
+    && Object.hasOwn(CONFIG.sections, place.section)
     && Number.isInteger(place.level);
   return isValid ? place : null;
 }
@@ -167,7 +192,7 @@ function handleCardShown(position) {
     save(CONFIG.storageKeys.seenIds, session.shuffler.getSeenIds());
   }
   savePlace('cards');
-  elements.cardAnnouncer.textContent = buildCardContent(question).text;
+  elements.cardAnnouncer.textContent = describeForScreenReader(buildCardContent(question));
   elements.backButton.disabled = position === 0;
   if (!session.isFirstCardOfVisit) {
     playCardChangeFeedback();
@@ -290,7 +315,7 @@ function openSection(section, level, resumeCardId) {
 
   elements.startScreen.hidden = true;
   elements.cardScreen.hidden = false;
-  elements.sectionTitle.textContent = CONFIG.sectionNames[section];
+  elements.sectionTitle.textContent = CONFIG.sections[section].name;
   elements.adultSetting.hidden = section !== CONFIG.adultSection;
   elements.adultToggle.checked = isAdultIncludedHere();
   applyTheme(section);
@@ -356,12 +381,32 @@ async function resetProgress() {
 // Controls
 // ----------------------------------------------------------
 
+// Add one start-screen button per section in CONFIG.sections. Each button
+// wears its own section's theme, so it previews the colours inside.
+function renderSectionButtons() {
+  for (const [sectionId, section] of Object.entries(CONFIG.sections)) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'section-button';
+    button.dataset.theme = sectionId;
+
+    const nameElement = document.createElement('span');
+    nameElement.className = 'section-button__name';
+    nameElement.textContent = section.name;
+    const hintElement = document.createElement('span');
+    hintElement.className = 'section-button__hint';
+    hintElement.textContent = section.hint;
+    button.append(nameElement, hintElement);
+
+    const openThisSection = () => chooseSection(sectionId);
+    button.addEventListener('click', () => changeScreenWithFade(openThisSection));
+    elements.sectionChoices.append(button);
+  }
+}
+
 // Connect every button and the arrow keys. Runs once at startup.
 function connectControls() {
-  elements.sectionButtons.forEach((button) => {
-    const openThisSection = () => chooseSection(button.dataset.section);
-    button.addEventListener('click', () => changeScreenWithFade(openThisSection));
-  });
+  renderSectionButtons();
   elements.resetButton.addEventListener('click', resetProgress);
   elements.homeButton.addEventListener('click', () => changeScreenWithFade(showStartScreen));
   elements.shallowerButton.addEventListener('click', () => changeLevel(-1));
@@ -414,23 +459,21 @@ function showError(message) {
 // Load all data, set up the shuffler, then reopen where you left off.
 async function startApp() {
   applyTheme('neutral');
-  let questions;
-  let sources;
+  let data;
   try {
-    [questions, sources] = await Promise.all([
-      loadJsonFile(CONFIG.questionsUrl),
-      loadJsonFile(CONFIG.sourcesUrl),
-    ]);
+    data = await loadAllData();
   } catch (error) {
     showError(error.message);
     return;
   }
-  if (!Array.isArray(questions) || !Array.isArray(sources)) {
-    showError(`Couldn't read the questions. Check ${CONFIG.questionsUrl} and ${CONFIG.sourcesUrl} are lists.`);
+  const allFiles = [...CONFIG.questionFileUrls, CONFIG.sourcesUrl].join(', ');
+  if (data === null) {
+    showError(`Couldn't read the questions. Check that each of these files is a list: ${allFiles}.`);
     return;
   }
+  const { questions, sources } = data;
   if (questions.length === 0) {
-    showError(`No questions found. Check ${CONFIG.questionsUrl}.`);
+    showError(`No questions found. Check ${CONFIG.questionFileUrls.join(', ')}.`);
     return;
   }
   session.sourcesById = new Map(sources.map((source) => [source.id, source]));

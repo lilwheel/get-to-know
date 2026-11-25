@@ -2,10 +2,11 @@
 
 **Ask each other anything. If it's awkward, blame the cards.**
 
-Swipeable question cards for two people getting to know each other. There are two sections, each with three levels:
+Swipeable question cards for getting to know each other. There are three sections, each with three levels:
 
 - **Icebreaker:** first dates and people who have just met.
 - **Dating:** couples a few months in. Includes optional 18+ questions.
+- **Friends & Teammates:** a group around a table. Questions plus dares (quick activities for the whole table), with a Pass button on every card. Being built in Phase 2; it uses 10 sample cards for now.
 
 The app is a static site: plain HTML, CSS and JavaScript. It has no backend, no build step, no accounts and no tracking.
 
@@ -54,7 +55,7 @@ Nothing needs installing apart from Python 3, which is used only for the local s
 
 | Screen | What's on it |
 | --- | --- |
-| Start screen | Title, the Icebreaker and Dating buttons, and "Reset seen cards". |
+| Start screen | Title, one button per section (built from `CONFIG.sections`), and "Reset seen cards". |
 | Card screen | Home and Sound buttons, the 18+ switch (Dating only), the card stack, Go Shallower / Go Deeper with three level dots, and Back / Next. |
 
 Only one screen shows at a time. A third element, the error message, replaces both if the data can't load.
@@ -62,10 +63,10 @@ Only one screen shows at a time. A third element, the error message, replaces bo
 ### What happens at startup (`js/app.js`, `startApp`)
 
 1. Apply the neutral theme (the start screen's colours).
-2. Fetch `data/questions.json` and `data/sources.json` together. This happens once per visit.
+2. Fetch every card file in `CONFIG.questionFileUrls` and `data/sources.json` together, and merge the card files into one bank. This happens once per visit.
 3. If either fails, show a plain error message and stop.
 4. Build the shuffler (`js/shuffler.js`). It sorts every question into a pool by section, level and adult/not adult, leaving out cards you've already seen.
-5. Connect every button and the arrow keys.
+5. Add the section buttons to the start screen, then connect every button and the arrow keys.
 6. Restore your place. If you were on the card screen last time, reopen the same section, level and card. Otherwise show the start screen.
 
 ### How a card gets on screen
@@ -95,6 +96,13 @@ app.js    handleCardShown()  marks it seen, saves progress, reads it to screen
 
 - **History:** `app.js` keeps every card dealt this visit in `session.history`, so Back can return to earlier cards.
 - **Cards in the page:** the page never holds more than three cards: the top card and two behind it.
+
+### Questions, dares and Pass
+
+- A card's `type` is "question" or "dare".
+- A dare shows a small **DARE** tag above its text and **Whole table** under it, because every dare is done by the whole table. Screen readers hear "Dare: … Whole table."
+- Sections with `hasPassButton: true` in `CONFIG.sections` (only Friends & Teammates) show a **Pass** button on every card. Pass works exactly like Next, with no penalty; with `?debug=1` it logs `Card passed`.
+- Pressing Pass, or the source link, never starts a drag (`swipe.js` ignores presses on links and buttons).
 
 ### Levels
 
@@ -135,6 +143,7 @@ app.js    handleCardShown()  marks it seen, saves progress, reads it to screen
 | `js/timing.js` | Reads animation durations from CSS variables and waits for them. | `readCssDurationMs`, `wait` |
 | `js/debug.js` | `debugLog()`, the **only** place that writes to the console, and only with `?debug=1`. | `debugLog` |
 | `data/questions.json` | The 2,000 questions. See [The question bank](#5-the-question-bank). | — |
+| `data/sample-friends.json` | **Temporary.** 10 sample Friends & Teammates cards (5 questions, 5 dares) used until the real Friends cards are written (Phase 2, Step P2-6). Then it is deleted and removed from `CONFIG.questionFileUrls`. | — |
 | `data/sources.json` | The 24 verified sources that card footnotes link to. | — |
 | `scripts/validate.py` | Offline checker for both data files. Run it after any data change. | — |
 | `scripts/check_contrast.py` | Offline WCAG AA contrast check of every colour pair in all three themes, read from `css/styles.css`. Run it after any colour change. | — |
@@ -171,6 +180,7 @@ Add `?debug=1` to the address, open the browser's developer tools (F12, or Cmd+O
 | `Restoring place` | Startup | The saved place: `screen`, `section`, `level`, `currentCardId`. `null` means nothing was saved. |
 | `Theme applied` | Every screen change | `theme`: `neutral`, `icebreaker` or `dating`. |
 | `Card shown` | Every time a card settles on top | `section`, `level`, `cardId`, and `cardsLeftInPool`: cards left to deal at this level before a reshuffle. |
+| `Card passed` | Pass pressed (Friends & Teammates) | `cardId` of the card that was passed. |
 | `Card stack moved` | After Next or Back finishes | `position` in this visit's history, and `cardsInPage`, which should never be more than 3. |
 | `Level changed` | Go Deeper / Go Shallower | The new `level`. |
 | `Pool reshuffled` | A pool ran out | `pool` (for example `dating-2-general` or `dating-2-adult`) and how many `cards` it now holds. |
@@ -190,7 +200,7 @@ In developer tools, go to **Application** (Chrome) or **Storage** (Firefox), the
 | "Couldn't load data/questions.json. Check your connection, or open the app through a web server." | The page was opened as a file, or you're offline | Run `python3 -m http.server 8000` and use <http://localhost:8000>. |
 | "Couldn't load data/questions.json. Check that the file exists." | The file is missing or misnamed (the server returned 404) | Check the file is at `data/questions.json`, with lower-case letters. |
 | "Couldn't read data/questions.json. Check that it is valid JSON." | A typo in the data file, such as a missing comma or quote | Run `python3 scripts/validate.py`. It names the line. |
-| "Couldn't read the questions. Check … are lists." | The file is valid JSON but not a `[ … ]` list | The file must start with `[` and end with `]`. |
+| "Couldn't read the questions. Check that each of these files is a list: …" | A data file is valid JSON but not a `[ … ]` list | Each file named must start with `[` and end with `]`. |
 | A blank page with no message | A JavaScript error stopped startup | Open the Console (no `?debug=1` needed for errors) and read the red error with its file and line. |
 | "No questions here yet. Try another level." on a card | That section and level has no questions | Run `validate.py` and check the counts table. |
 | Old text or old behaviour after a change | The browser cached the old files | Hard refresh: Ctrl+Shift+R (Cmd+Shift+R on a Mac). GitHub Pages can take 1–2 minutes to update after a push. |
@@ -376,8 +386,10 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
-| `questionsUrl`, `sourcesUrl` | `data/…json` | Where the data files are. |
-| `sectionNames`, `levelNames` | Icebreaker/Dating, Light/Personal/Deep | Names shown on screen. |
+| `questionFileUrls`, `sourcesUrl` | `data/…json` | Where the data files are. Every card file in the list is merged into one bank. |
+| `sections` | Icebreaker, Dating, Friends & Teammates | One entry per section, in start-screen order: `name`, `hint` (the line under the name) and `hasPassButton`. Adding a section starts here. |
+| `cardLabels` | Dare, Whole table, Pass | Words shown on cards. |
+| `levelNames` | Light, Personal, Deep | Level names shown under the dots. |
 | `lowestLevel`, `deepestLevel` | 1, 3 | Level limits. |
 | `adultSection` | `dating` | The only section that can ever show 18+ questions. |
 | `storageKeys` | see [Saved data](#7-saved-data) | Names of the saved values. |
@@ -409,6 +421,12 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 **Change a colour**
 1. Change the palette value or role in `css/styles.css`.
 2. Run `python3 scripts/check_contrast.py`. Every line must say PASS.
+
+**Add a section**
+1. Add an entry to `CONFIG.sections` in `js/config.js`. Its key is the section id used in the data (for example `"family"`).
+2. Add the id and its id prefix to `SECTION_ID_PREFIX` in `scripts/validate.py`.
+3. Give it a theme in `css/styles.css` (a `[data-theme="family"]` block of colour roles), plus a background layer in `index.html`. Run `check_contrast.py`.
+4. Add its cards and run `validate.py`.
 
 **Change the title or subtitle**
 Edit the `<h1>` and the `start-screen__subtitle` paragraph in `index.html`. Also change `<title>` (the browser tab).

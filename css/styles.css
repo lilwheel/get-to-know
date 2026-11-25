@@ -80,6 +80,8 @@
   --line-height-body: 1.5;
   --line-height-heading: 1.3;
   --line-height-start-title: 1.1;
+  /* Extra space between letters in small upper-case tags like "DARE" */
+  --letter-spacing-label: 0.08em;
 
   --radius-medium: 12px;
   --radius-large: 24px;
@@ -366,9 +368,23 @@ body[data-theme="dating"] .theme-backdrop[data-theme="dating"] {
   justify-content: space-between;
 }
 
+/* The buttons keep their size; a long section name wraps instead */
+.app-header {
+  gap: var(--space-small);
+}
+
+.app-header .toggle-button {
+  flex: none;
+  white-space: nowrap;
+}
+
 .app-header__title {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   font-size: var(--font-size-app-title);
+  line-height: var(--line-height-heading);
+  text-align: center;
 }
 
 .level-controls {
@@ -495,11 +511,18 @@ body[data-theme="dating"] .theme-backdrop[data-theme="dating"] {
   transition: none;
 }
 
-.card__question {
+/* The middle of the card: fills the space above the footnote and centres its text */
+.card__body {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--space-medium);
+  text-align: center;
+}
+
+.card__question {
   margin: 0;
   font-family: var(--font-family-question);
   font-size: var(--font-size-question);
@@ -507,6 +530,31 @@ body[data-theme="dating"] .theme-backdrop[data-theme="dating"] {
   line-height: var(--line-height-heading);
   text-align: center;
   text-wrap: balance;
+}
+
+/* Dares: a small "Dare" tag above the text and a "Whole table" line under it */
+.card__label {
+  margin: 0;
+  padding: var(--space-xsmall) var(--space-small);
+  border: 1px solid var(--color-button-border);
+  border-radius: var(--radius-medium);
+  font-size: var(--font-size-footnote);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+}
+
+.card__who {
+  margin: 0;
+  font-size: var(--font-size-footnote);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+/* Pass: sits between the card text and the footnote */
+.card__pass {
+  align-self: center;
+  margin-bottom: var(--space-medium);
 }
 
 .card__footnote {

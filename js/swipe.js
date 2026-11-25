@@ -23,10 +23,11 @@ export function attachSwipe(cardElement, { canSwipe, onSwipe }) {
     frameId: null,
   };
 
-  // Start a drag, unless the press was on the source link or dragging isn't allowed.
+  // Start a drag, unless the press was on the source link or a button on the
+  // card (such as Pass), or dragging isn't allowed right now.
   function handlePointerDown(event) {
     const isMainButton = event.button === 0;
-    if (!isMainButton || !canSwipe() || event.target.closest('a')) {
+    if (!isMainButton || !canSwipe() || event.target.closest('a, button')) {
       return;
     }
     drag.pointerId = event.pointerId;

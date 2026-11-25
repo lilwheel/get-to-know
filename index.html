@@ -23,16 +23,8 @@
         <h1 id="app-title" class="start-screen__title">Question Cards</h1>
         <p class="start-screen__subtitle">Ask each other anything. If it's awkward, blame the cards.</p>
       </div>
-      <div class="section-choices">
-        <button class="section-button" type="button" data-section="icebreaker" data-theme="icebreaker">
-          <span class="section-button__name">Icebreaker</span>
-          <span class="section-button__hint">First dates and new connections</span>
-        </button>
-        <button class="section-button" type="button" data-section="dating" data-theme="dating">
-          <span class="section-button__name">Dating</span>
-          <span class="section-button__hint">Couples a few months in</span>
-        </button>
-      </div>
+      <!-- js/app.js adds one button per section, from CONFIG.sections -->
+      <div id="section-choices" class="section-choices"></div>
       <button id="reset-button" class="text-button" type="button">Reset seen cards</button>
     </section>
 

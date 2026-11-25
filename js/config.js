@@ -6,15 +6,44 @@
 // ==========================================================
 
 export const CONFIG = {
-  // Data files, loaded once at startup.
-  questionsUrl: 'data/questions.json',
+  // Data files, loaded once at startup. Every card file is merged into one bank.
+  // data/sample-friends.json is temporary: it holds Friends & Teammates sample
+  // cards until the real ones are written (Phase 2, Step P2-6), then it goes.
+  questionFileUrls: ['data/questions.json', 'data/sample-friends.json'],
   sourcesUrl: 'data/sources.json',
 
-  // Sections and levels, with the names shown on screen.
-  sectionNames: {
-    icebreaker: 'Icebreaker',
-    dating: 'Dating',
+  // The sections, in the order their buttons appear on the start screen.
+  // The key is the section id used in the data and as the theme name.
+  //   name:           shown on the start button and the card screen header
+  //   hint:           the line under the name on the start button
+  //   hasPassButton:  show a Pass button on every card (no penalty for using it)
+  // To add a section: add it here, add its cards, and give it a theme in css/styles.css.
+  sections: {
+    icebreaker: {
+      name: 'Icebreaker',
+      hint: 'First dates and new connections',
+      hasPassButton: false,
+    },
+    dating: {
+      name: 'Dating',
+      hint: 'Couples a few months in',
+      hasPassButton: false,
+    },
+    friends: {
+      name: 'Friends & Teammates',
+      hint: 'Questions and dares for the whole table',
+      hasPassButton: true,
+    },
   },
+
+  // Words shown on cards.
+  cardLabels: {
+    dare: 'Dare',
+    // Every dare is done by the whole table (decided for Phase 2).
+    dareWho: 'Whole table',
+    pass: 'Pass',
+  },
+
   levelNames: {
     1: 'Light',
     2: 'Personal',
