@@ -63,7 +63,7 @@ Only one screen shows at a time. A third element, the error message, replaces bo
 ### What happens at startup (`js/app.js`, `startApp`)
 
 1. Apply the neutral theme (the start screen's colours).
-2. Fetch every card file in `CONFIG.questionFileUrls` and `data/sources.json` together, and merge the card files into one bank. This happens once per visit.
+2. Fetch every card file in `CONFIG.questionFileUrls`, `data/sources.json` and `data/facts.json` together, and merge the card files into one bank. This happens once per visit.
 3. If either fails, show a plain error message and stop.
 4. Build the shuffler (`js/shuffler.js`). It sorts every question into a pool by section, level and kind (normal, 18+ or Party), leaving out cards you've already seen.
 5. Add the section buttons to the start screen, then connect every button and the arrow keys.
@@ -158,8 +158,9 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 | `js/debug.js` | `debugLog()`, the **only** place that writes to the console, and only with `?debug=1`. | `debugLog` |
 | `data/questions.json` | The 3,340 cards for all three sections. See [The question bank](#5-the-question-bank). | — |
 | `fonts/` | Self-hosted web fonts, Latin characters only: Zen Maru Gothic 500 and 700 (body and questions) and Mochiy Pop One (headings and labels), about 41 KB in all, with their licences (`OFL-*.txt`, SIL Open Font License). Nothing is loaded from Google, so no visitor data reaches a third party. | — |
-| `data/sources.json` | The 24 verified sources that card footnotes link to. | — |
-| `scripts/validate.py` | Offline checker for both data files. Run it after any data change. | — |
+| `data/sources.json` | The 24 verified sources the cards were based on (the footnote's "Card idea" link). | — |
+| `data/facts.json` | The 63 checked research findings shown as "Did you know?" in card footnotes, each with its study link. See [Fact format](#fact-format-datafactsjson). | — |
+| `scripts/validate.py` | Offline checker for the three data files (cards, sources and facts). Run it after any data change. | — |
 | `scripts/check_style.py` | Offline check of the look's rules: no gradients, blurs, CSS filters, blurred shadows or see-through colours, and no colour values outside the Theme tokens block in `css/styles.css`. Run it after any style change. | — |
 | `scripts/check_contrast.py` | Offline WCAG AA contrast check of every colour pair in all five themes (neutral, Icebreaker, Dating, Friends, Friends Party), read from `css/styles.css`. Run it after any colour change. | — |
 | `PROGRESS.md` | Build history: each step of the build plan, its date and commit. | — |
@@ -284,7 +285,7 @@ A question:
   "type": "question",
   "party": false,
   "text": "What's been taking up the most space in your head this week, and why?",
-  "why": "Builds Love Maps by learning their current worries.",
+  "fact_id": "aron-36-questions",
   "framework": "Gottman: Love Maps",
   "source_id": "gottman-love-maps"
 }
@@ -302,7 +303,7 @@ A dare (Friends & Teammates only):
   "type": "dare",
   "party": false,
   "text": "Everyone mimes their dream job at the same time. The table guesses each one.",
-  "why": "Shared play gives everyone an equal turn, which builds psychological safety.",
+  "fact_id": "improv-uncertainty",
   "framework": "Team: Psychological Safety",
   "source_id": "rework-team-effectiveness"
 }
@@ -320,7 +321,7 @@ The dare example shows the Friends & Teammates format.
 | `type` | `"question"` or `"dare"`. Icebreaker and Dating hold only questions. |
 | `party` | `true` or `false`. `true` only in Friends, for Party mode cards. |
 | `text` | A question must be open-ended (not yes/no), and everyone answers it. A dare is an instruction and must not end with "?". |
-| `why` | The card footnote: one sentence, under 20 words, naming the principle. |
+| `fact_id` | The research finding shown in the footnote. Must match an `id` in `data/facts.json` whose `sections` include this card's section. 18+ facts (`adult_only`) go only on 18+ cards. |
 | `framework` | Must equal the `framework` of the source it cites. |
 | `source_id` | Must match an `id` in `data/sources.json`. |
 
@@ -329,13 +330,54 @@ The dare example shows the Friends & Teammates format.
 ```json
 {
   "id": "gottman-love-maps",
+  "name": "The Gottman Institute",
   "title": "The Sound Relationship House: Build Love Maps",
   "url": "https://www.gottman.com/blog/the-sound-relationship-house-build-love-maps/",
   "framework": "Gottman: Love Maps"
 }
 ```
 
-Every link in the app comes from this file. Only add a source after opening its URL and checking that it loads and matches its title. Never guess a URL.
+`name` is the short credit shown on the card ("Card idea: The Gottman Institute"); `title` is the page's full title.
+
+Only add a source after opening its URL and checking that it loads and matches its title. Never guess a URL.
+
+### Fact format (`data/facts.json`)
+
+Every card's footnote reads "Did you know?" and a short research finding, then two links: **Study** (the finding's source) and **Card idea** (the source in `data/sources.json`). A fact looks like this:
+
+```json
+{
+  "id": "aron-36-questions",
+  "text": "Strangers who spent 45 minutes asking each other gradually deeper questions felt closer afterwards than pairs who stuck to small talk.",
+  "citation": "Aron et al., 1997",
+  "title": "The Experimental Generation of Interpersonal Closeness: A Procedure and Some Preliminary Findings",
+  "url": "https://doi.org/10.1177/0146167297234003",
+  "evidence": "Study 1 found greater postinteraction closeness with these tasks versus comparable small-talk tasks.",
+  "themes": ["closeness", "love-maps"],
+  "sections": ["dating"],
+  "adult_only": false
+}
+```
+
+| Field | Rule |
+| --- | --- |
+| `id` | Unique, short, kebab-case. |
+| `text` | Shown on the card. 160 characters at most. Plain words in our own phrasing, British spelling. Says only what the study found: "linked to" for correlations, the group studied ("newlyweds", "students") when it matters, no "always". |
+| `citation` | Shown as the Study link: "Author et al., year", or the organisation for a web page. |
+| `title` | The paper's or page's full title. |
+| `url` | A page anyone can open: the PubMed page (`https://pubmed.ncbi.nlm.nih.gov/<PMID>/`) when there is one, otherwise `https://doi.org/<DOI>`, or the organisation's own page. Never an API link. |
+| `evidence` | The exact words from the abstract or page that support `text`. Not shown in the app; it lets anyone re-check the fact in seconds. |
+| `themes` | Topic tags, used only when choosing facts for new cards. |
+| `sections` | Which sections may show it. |
+| `adult_only` | `true` for facts about sex, which appear only on 18+ cards. |
+
+How the facts were checked (November 2026):
+- Each one came from the study's own abstract (through PubMed, Europe PMC or Crossref) or the research organisation's page, and was then re-checked by a second, independent reader against the raw abstract.
+- Wording that made a correlation sound like cause and effect, or stretched a small or specific group to everyone, was rewritten.
+- Dropped: findings that failed to replicate or are disputed (for example the "collective intelligence" study and prosocial spending), findings with a co-author under misconduct findings where the data's origin couldn't be cleared, a figure whose survey source couldn't be confirmed (Gottman's "9%"), and one from a lab with many retracted papers.
+- Gottman Institute claims that come from the Institute rather than a published paper say "Gottman suggests" or "Gottman's research suggests".
+
+Facts were matched to cards by topic: Icebreaker and Dating by `category`, Friends & Teammates by keywords. Many cards share a fact. To change a card's fact, edit its `fact_id` and run `validate.py`.
 
 ### Checking the data
 
@@ -348,8 +390,9 @@ It prints a counts table (total, 18+, party and dares for each section and level
 - 18+ cards outside Dating levels 2 and 3, and party cards outside Friends
 - Party mode safety: party cards that mention drinking other than "take a sip" (drink, chug, shot, "finish your" and similar)
 - questions that open like a yes/no question, and dares that end with "?"
-- "why" lines of 20 words or more
 - unknown `source_id`s, and a `framework` that doesn't match its source
+- unknown `fact_id`s, facts used outside their `sections`, 18+ facts on cards that aren't 18+, facts with missing fields, texts over 160 characters or non-https links, and facts no card uses
+- Party cards whose fact mentions drinking
 - duplicate ids or URLs
 - exact duplicate questions (ignoring case and punctuation)
 - near-duplicates (over 80% word overlap)
@@ -368,6 +411,7 @@ A pastel flower field drawn in a comics/manga style (Phase 3; the plan, `PHASE3_
 - **Ink outlines:** cards, buttons, the switch and the dialog have a 3 px outline in `--ink` (a dark leaf green, used instead of black).
 - **Hard shadows:** a 4 px offset shadow with no blur, like a printed comic. A pressed button moves 2 px towards its shadow and turns its darker shade.
 - **Manga details:** cards are panels with 14 px corners, the footnote is a cream caption box, DARE and PARTY are starburst stickers, and the level indicator is three small flowers. The next card gives one short "pop" when the top card leaves (off for reduced motion).
+- **Short cards:** each card is a CSS size container (`container: card / size`). When a card is under 480 px tall (small phones such as a 375 × 667 screen), the stickers, text, gaps and footnote tighten so nothing spills out. On Party questions the text starts below the PARTY sticker. Checked with the longest card and fact pairs at 375 × 667, 375 × 812 and 820 × 1180.
 - **Fonts:** Zen Maru Gothic (500 and 700) for questions and body text, Mochiy Pop One for headings, section buttons and stickers. Both are self-hosted in `fonts/`.
 - **Text is always `--ink`**, never a pastel on a pastel.
 
@@ -448,6 +492,7 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 | `questionFileUrls`, `sourcesUrl` | `data/…json` | Where the data files are. Every card file in the list is merged into one bank. |
 | `sections` | Icebreaker, Dating, Friends & Teammates | One entry per section, in start-screen order: `name`, `hint` (the line under the name), `hasPassButton` and `toggle`. Adding a section starts here. |
 | `buttonLabels` | Sound on, Sound off | The Sound button's two labels. |
+| `longCardTextCharacters` | 110 | Card text longer than this is set a little smaller (`.card__question--long`) so it fits with the footnote. |
 | `cardLabels` | Dare, Whole table, Pass, Party, 18+ | Words shown on cards. |
 | `levelNames` | Light, Personal, Deep | Level names shown under the dots. |
 | `lowestLevel`, `deepestLevel` | 1, 3 | Level limits. |
@@ -474,9 +519,14 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 2. Run `python3 scripts/validate.py` and fix anything it lists.
 3. Refresh the app (hard refresh if needed). Use "Reset seen cards" if you want to see new cards sooner.
 
+**Add a fact**
+1. Read the study's abstract (PubMed or the journal page) and copy the sentence that supports the finding into `evidence`.
+2. Write `text` in your own words, saying no more than the study found. Link the PubMed page if it has one, otherwise the DOI.
+3. Add it to `data/facts.json`, point at least one card's `fact_id` to it, and run `validate.py`.
+
 **Add a source**
 1. Open the URL and check that it loads and matches its title.
-2. Add it to `data/sources.json` with a unique `id` and the right `framework`.
+2. Add it to `data/sources.json` with a unique `id`, a short `name` and the right `framework`.
 3. Point questions to it with `source_id`, using the same `framework`. Run `validate.py`.
 
 **Change a colour**
@@ -499,7 +549,7 @@ Edit the `<h1>` and the `start-screen__subtitle` paragraph in `index.html`. Also
 The site is served by GitHub Pages from the `main` branch, root folder.
 
 1. Run `python3 scripts/validate.py`, `python3 scripts/check_style.py` and `python3 scripts/check_contrast.py`.
-2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.3`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
+2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.4`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
 3. Commit and push to `main`.
 4. Wait 1–2 minutes, then refresh <https://lilwheel.github.io/get-to-know/>.
 

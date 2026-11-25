@@ -75,3 +75,7 @@ Decisions (2026-11-25):
 - [x] P3-3 — Section themes and toggle states (2026-11-25, commit 07ddab4)
 - [x] P3-4 — Manga details (2026-11-25, commit 2825824)
 - [x] P3-5 — Final check and deploy (2026-11-26, commit 63315de; live on GitHub Pages)
+
+## After Phase 3
+
+- [x] Research facts in card footnotes (2026-11-26): "Did you know?" findings from 55 checked studies and pages replace the "why" lines; every fact was re-checked by an independent reader against the raw abstract, and disputed or unconfirmable findings were dropped. 106 cards reworded after a phrasing review of all 3,340. Short-card layout added so footnotes fit on small phones.

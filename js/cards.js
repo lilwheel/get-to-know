@@ -20,8 +20,8 @@ const HIDDEN_DEPTH = CONFIG.maxCardsInPage;
 // ----------------------------------------------------------
 
 // Build a card stack inside containerElement.
-// getCardAt(position) returns what that card shows: {id, type, text, why,
-// sourceTitle, sourceUrl, canPass, isParty, isAdult}.
+// getCardAt(position) returns what that card shows: {id, type, text, factText,
+// factCitation, factUrl, sourceName, sourceUrl, canPass, isParty, isAdult}.
 // onCardShown(position) runs whenever a new card settles on top.
 // forgetCardsAfter(position) runs just before the upcoming cards are rebuilt,
 // so the app can drop the cards it had lined up after that position.
@@ -97,6 +97,7 @@ function createBodyElement(card) {
 
   const textElement = document.createElement('p');
   textElement.className = 'card__question';
+  textElement.classList.toggle('card__question--long', card.text.length > CONFIG.longCardTextCharacters);
   textElement.textContent = card.text;
 
   if (card.type !== 'dare') {
@@ -136,29 +137,50 @@ function createPassButton(stack, card) {
   return passButton;
 }
 
-// Build the footnote: the "why" line, then a link to the source in a new tab.
-// Either part is left out when the card has none (the "no questions" card).
+// Build the footnote: "Did you know?" and a research finding, then two links
+// (opening in a new tab): the study behind the finding, and where the card
+// idea came from. Any part is left out when the card has none (the
+// "no questions" card has no footnote content at all).
 function createFootnoteElement(card) {
+  const { factIntro, study, cardSource } = CONFIG.cardLabels;
   const footnoteElement = document.createElement('footer');
   footnoteElement.className = 'card__footnote';
 
-  if (card.why) {
-    const whyElement = document.createElement('p');
-    whyElement.className = 'card__why';
-    whyElement.textContent = card.why;
-    footnoteElement.append(whyElement);
+  if (card.factText) {
+    const factElement = document.createElement('p');
+    factElement.className = 'card__fact';
+    const introElement = document.createElement('strong');
+    introElement.className = 'card__fact-intro';
+    introElement.textContent = factIntro;
+    factElement.append(introElement, ` ${card.factText}`);
+    footnoteElement.append(factElement);
   }
 
+  const links = [];
+  if (card.factUrl) {
+    links.push(createFootnoteLink(card.factUrl, `${study}: ${card.factCitation}`));
+  }
   if (card.sourceUrl) {
-    const sourceLink = document.createElement('a');
-    sourceLink.className = 'card__source';
-    sourceLink.href = card.sourceUrl;
-    sourceLink.target = '_blank';
-    sourceLink.rel = 'noopener noreferrer';
-    sourceLink.textContent = `Source: ${card.sourceTitle}`;
-    footnoteElement.append(sourceLink);
+    links.push(createFootnoteLink(card.sourceUrl, `${cardSource}: ${card.sourceName}`));
+  }
+  if (links.length > 0) {
+    const linksElement = document.createElement('p');
+    linksElement.className = 'card__links';
+    linksElement.append(...links);
+    footnoteElement.append(linksElement);
   }
   return footnoteElement;
+}
+
+// Build one footnote link that opens in a new tab.
+function createFootnoteLink(url, text) {
+  const linkElement = document.createElement('a');
+  linkElement.className = 'card__source';
+  linkElement.href = url;
+  linkElement.target = '_blank';
+  linkElement.rel = 'noopener noreferrer';
+  linkElement.textContent = text;
+  return linkElement;
 }
 
 // Place a card at a depth in the stack. Only the top card can be used;

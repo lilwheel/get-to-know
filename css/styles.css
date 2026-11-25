@@ -86,6 +86,9 @@
   /* Starburst sticker (Party badge): size and a 12-point star outline */
   --starburst-size: 88px;
   --starburst-size-small: 72px;
+  /* Smaller stickers for short cards (see "Short cards" below) */
+  --starburst-size-compact: 64px;
+  --starburst-size-small-compact: 56px;
   --font-size-sticker: 0.6875rem;
   --starburst-shape: polygon(50% 0%, 59% 17%, 75% 7%, 75% 25%, 93% 25%, 83% 41%, 100% 50%, 83% 59%, 93% 75%, 75% 75%, 75% 93%, 59% 83%, 50% 100%, 41% 83%, 25% 93%, 25% 75%, 7% 75%, 17% 59%, 0% 50%, 17% 41%, 7% 25%, 25% 25%, 25% 7%, 41% 17%);
 
@@ -98,6 +101,11 @@
   --font-size-body: 1rem;
   --font-size-question: clamp(1.375rem, 5.5vw, 2rem);
   --font-size-footnote: 0.8125rem;
+  /* Long card text (over CONFIG.longCardTextCharacters) and short cards */
+  --font-size-question-long: clamp(1.1875rem, 4.75vw, 1.75rem);
+  --font-size-question-compact: 1.125rem;
+  --font-size-question-compact-long: 1rem;
+  --font-size-footnote-compact: 0.75rem;
   --font-size-start-title: clamp(2.25rem, 9vw, 3.5rem);
   --font-size-section-name: 1.5rem;
   --line-height-body: 1.5;
@@ -540,6 +548,8 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 .card {
   position: absolute;
   inset: 0;
+  /* The card's own height decides when its contents tighten up ("Short cards") */
+  container: card / size;
   display: flex;
   flex-direction: column;
   padding: var(--card-padding);
@@ -648,6 +658,11 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   text-wrap: balance;
 }
 
+/* Long card text is set a little smaller so it fits with the footnote */
+.card__question--long {
+  font-size: var(--font-size-question-long);
+}
+
 /* Dares: a "Dare" starburst sticker above the text (in the section's accent
    colour; see the starburst rules below) and a "Whole table" line under it */
 .card__label {
@@ -691,6 +706,14 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 .card__badge--party {
   width: var(--starburst-size);
   height: var(--starburst-size);
+}
+
+/* Keep a long Party question clear of the starburst in the top corner: the
+   text area starts below the sticker (the sticker's top offset plus its
+   height, less the card padding the text already sits inside). Dares don't
+   need this: their centred DARE sticker comes first, beside the corner one. */
+.card__badge--party ~ .card__body:not(:has(.card__label)) {
+  padding-top: max(0px, calc(var(--space-medium) + var(--starburst-size) - var(--card-padding)));
 }
 
 .card__badge--party,
@@ -740,8 +763,22 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   text-align: center;
 }
 
-.card__why {
+.card__fact {
   margin: 0 0 var(--space-xsmall);
+}
+
+/* "Did you know?" reads as a small heading inside the caption box */
+.card__fact-intro {
+  color: var(--color-text);
+}
+
+/* The study and card-idea links sit side by side, wrapping on narrow cards */
+.card__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: var(--space-medium);
+  margin: 0;
 }
 
 .card__source {
@@ -750,6 +787,39 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   /* A larger tap target without changing how the link looks */
   display: inline-block;
   padding: var(--space-xsmall) 0 0;
+}
+
+/* Short cards (small phones, where the header and controls leave little
+   height): smaller stickers, text and gaps, so the card text, Pass and the
+   footnote all fit without anything spilling out of the card. */
+@container card (max-height: 480px) {
+  .card__badge--party,
+  .card__body {
+    --starburst-size: var(--starburst-size-compact);
+    --starburst-size-small: var(--starburst-size-small-compact);
+  }
+
+  .card__body {
+    gap: var(--space-small);
+  }
+
+  .card__question {
+    font-size: var(--font-size-question-compact);
+  }
+
+  .card__question--long {
+    font-size: var(--font-size-question-compact-long);
+  }
+
+  .card__pass {
+    margin-bottom: var(--space-small);
+  }
+
+  .card__footnote {
+    padding: var(--space-xsmall) var(--space-small);
+    font-size: var(--font-size-footnote-compact);
+    line-height: var(--line-height-heading);
+  }
 }
 
 /* ==========================================================

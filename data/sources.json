@@ -1,144 +1,168 @@
 [
   {
     "id": "gottman-love-maps",
+    "name": "The Gottman Institute",
     "title": "The Sound Relationship House: Build Love Maps",
     "url": "https://www.gottman.com/blog/the-sound-relationship-house-build-love-maps/",
     "framework": "Gottman: Love Maps"
   },
   {
     "id": "gottman-love-maps-questions-pdf",
+    "name": "Gottman Love Maps questions",
     "title": "The Love Maps Questions",
     "url": "https://loveyourpeoplewell.com/wp-content/uploads/2021/08/Love-Maps-Questions.pdf",
     "framework": "Gottman: Love Maps"
   },
   {
     "id": "gottman-sound-relationship-house-pdf",
+    "name": "Gottman Love Maps",
     "title": "Love Maps, by The Gottman Institute",
     "url": "https://static1.squarespace.com/static/57cf7037d2b857215af71cc5/t/63dac6d2b21c760a5887a53f/1675282130310/love-map-questions.pdf",
     "framework": "Gottman: Sound Relationship House"
   },
   {
     "id": "gottman-fondness-admiration",
+    "name": "The Gottman Institute",
     "title": "Build Love Maps: Gottman Method for Stronger Relationships",
     "url": "https://relationshipsuite.com/enhancing-daily-connection-building-love-maps-and-strengthening-your-relationship-with-the-gottman-method/",
     "framework": "Gottman: Fondness and Admiration"
   },
   {
     "id": "aron-36-questions-amq",
+    "name": "The 36 Questions",
     "title": "36 questions that can lead to love",
     "url": "https://amorebeautifulquestion.com/36-questions/",
     "framework": "Aron: 36 Questions"
   },
   {
     "id": "general-eharmony-first-date",
+    "name": "eharmony",
     "title": "189 First date questions",
     "url": "https://www.eharmony.com/dating-advice/getting-to-know/questions-to-ask-first-date/",
     "framework": "General"
   },
   {
     "id": "general-thoughtcatalog-first-date",
+    "name": "Thought Catalog",
     "title": "400+ First Date Questions",
     "url": "https://thoughtcatalog.com/kendra-syrdal/2018/05/first-date-questions/",
     "framework": "General"
   },
   {
     "id": "general-wondermind-first-date",
+    "name": "Wondermind",
     "title": "35 First Date Questions to Ask Anyone",
     "url": "https://www.wondermind.com/article/first-date-questions/",
     "framework": "General"
   },
   {
     "id": "general-onelove-first-date",
+    "name": "One Love",
     "title": "10 Perfect Questions to Ask On The First Date To Really Get To Know Someone",
     "url": "https://www.joinonelove.org/learn/10-perfect-questions-to-ask-on-the-first-date-to-really-get-to-know-someone/",
     "framework": "General"
   },
   {
     "id": "gottman-intimacy-talk-about-sex",
+    "name": "The Gottman Institute",
     "title": "Couples That Talk About Sex Have Better Sex",
     "url": "https://www.gottman.com/blog/couples-talk-sex-better-sex/",
     "framework": "Gottman: Intimacy"
   },
   {
     "id": "gottman-intimacy-expressing-desires",
+    "name": "The Gottman Institute",
     "title": "How To Feel Comfortable Expressing Sexual Desires With Your Partner",
     "url": "https://www.gottman.com/blog/how-to-feel-comfortable-expressing-sexual-desires-with-your-partner/",
     "framework": "Gottman: Intimacy"
   },
   {
     "id": "gottman-intimacy-sensual-communication",
+    "name": "The Gottman Institute",
     "title": "The Art of Sensual Communication",
     "url": "https://www.gottman.com/blog/the-art-of-sensual-communication/",
     "framework": "Gottman: Intimacy"
   },
   {
     "id": "rework-team-effectiveness",
+    "name": "Google re:Work",
     "title": "Understand team effectiveness (Google re:Work)",
     "url": "https://rework.withgoogle.com/intl/en/guides/understand-team-effectiveness",
     "framework": "Team: Psychological Safety"
   },
   {
     "id": "psychsafety-project-aristotle",
+    "name": "Psych Safety",
     "title": "Google's Project Aristotle",
     "url": "https://psychsafety.com/googles-project-aristotle/",
     "framework": "Team: Psychological Safety"
   },
   {
     "id": "psychsafety-aristotle-guide",
+    "name": "Psych Safety",
     "title": "Project Aristotle: Guide to Team Effectiveness",
     "url": "https://psychsafety.com/project-aristotle-guide-to-team-effectiveness/",
     "framework": "Team: Psychological Safety"
   },
   {
     "id": "ggia-36-questions",
+    "name": "Greater Good in Action",
     "title": "36 Questions for Increasing Closeness (Greater Good in Action)",
     "url": "https://ggia.berkeley.edu/practice/36_questions_for_increasing_closeness",
     "framework": "Fast Friends"
   },
   {
     "id": "rascl-fast-friends",
+    "name": "Berkeley RASCL",
     "title": "Research Tools: Fast Friends procedure (Berkeley RASCL)",
     "url": "https://rascl.studentorg.berkeley.edu/tools.html",
     "framework": "Fast Friends"
   },
   {
     "id": "greatergood-fast-friends",
+    "name": "Greater Good",
     "title": "36 Questions That Can Help Kids Make Friends (Greater Good)",
     "url": "https://greatergood.berkeley.edu/article/item/36_questions_that_can_help_kids_make_friends",
     "framework": "Fast Friends"
   },
   {
     "id": "ggie-make-fast-friends",
+    "name": "Greater Good in Education",
     "title": "Make Fast Friends (Greater Good in Education)",
     "url": "https://ggie.berkeley.edu/practice/make-fast-friends/",
     "framework": "Fast Friends"
   },
   {
     "id": "cornell-group-games",
+    "name": "Cornell Team and Leadership Center",
     "title": "Group Games and Initiatives (Cornell Team and Leadership Center)",
     "url": "https://scl.cornell.edu/sites/scl/files/downloads/basic_page/Group%20Teambuilding%20Games%20and%20Initiatives%20.pdf",
     "framework": "Team Activity"
   },
   {
     "id": "general-sessionlab-icebreakers",
+    "name": "SessionLab",
     "title": "60 engaging icebreakers (SessionLab)",
     "url": "https://www.sessionlab.com/blog/icebreaker-games/",
     "framework": "General"
   },
   {
     "id": "general-atlassian-icebreakers",
+    "name": "Atlassian",
     "title": "7 icebreaker games to help your team build authentic connections (Atlassian)",
     "url": "https://www.atlassian.com/blog/teamwork/icebreaker-games-authentic-connections",
     "framework": "General"
   },
   {
     "id": "general-asana-team-games",
+    "name": "Asana",
     "title": "45 Team building games to bring teams together at work (Asana)",
     "url": "https://asana.com/resources/team-building-games",
     "framework": "General"
   },
   {
     "id": "general-teambuilding-icebreakers",
+    "name": "TeamBuilding.com",
     "title": "34 Icebreaker Games for Adults That Actually Work",
     "url": "https://teambuilding.com/blog/icebreaker-games",
     "framework": "General"

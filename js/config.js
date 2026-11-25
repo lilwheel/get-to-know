@@ -17,6 +17,8 @@ export const CONFIG = {
   // into one bank, so cards could be split across files later if needed.
   questionFileUrls: ['data/questions.json'],
   sourcesUrl: 'data/sources.json',
+  // The research findings shown in each card's footnote ("Did you know?").
+  factsUrl: 'data/facts.json',
 
   // The sections, in the order their buttons appear on the start screen.
   // The key is the section id used in the data and as the theme name.
@@ -100,6 +102,10 @@ export const CONFIG = {
     soundOff: 'Sound off',
   },
 
+  // Card text longer than this many characters is set a little smaller
+  // (css/styles.css .card__question--long), so it fits with the footnote.
+  longCardTextCharacters: 110,
+
   // Words shown on cards.
   cardLabels: {
     dare: 'Dare',
@@ -109,6 +115,10 @@ export const CONFIG = {
     // The small badges on Party mode cards and 18+ cards.
     party: 'Party',
     adult: '18+',
+    // The footnote: the research finding, then its study and where the card came from.
+    factIntro: 'Did you know?',
+    study: 'Study',
+    cardSource: 'Card idea',
   },
 
   levelNames: {

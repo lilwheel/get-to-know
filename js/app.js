@@ -46,8 +46,10 @@ const EMPTY_CARD = {
   id: 'empty',
   type: 'question',
   text: 'No questions here yet. Try another level.',
-  why: '',
-  sourceTitle: '',
+  factText: '',
+  factCitation: '',
+  factUrl: '',
+  sourceName: '',
   sourceUrl: '',
   canPass: false,
   isParty: false,
@@ -57,6 +59,7 @@ const EMPTY_CARD = {
 const session = {
   shuffler: null,
   sourcesById: new Map(),
+  factsById: new Map(),
   section: null,
   level: CONFIG.lowestLevel,
   // Gated switches confirmed in this tab, by name ('adult', 'party').
@@ -73,15 +76,16 @@ const session = {
 // Data loading
 // ----------------------------------------------------------
 
-// Fetch every card file and the sources together. The card files are
-// merged into one list; each file must be a list for the merge to work.
+// Fetch every card file, the sources and the facts together. The card files
+// are merged into one list; each file must be a list for the merge to work.
 async function loadAllData() {
-  const [sources, ...cardLists] = await Promise.all([
+  const [sources, facts, ...cardLists] = await Promise.all([
     loadJsonFile(CONFIG.sourcesUrl),
+    loadJsonFile(CONFIG.factsUrl),
     ...CONFIG.questionFileUrls.map(loadJsonFile),
   ]);
-  const allAreLists = Array.isArray(sources) && cardLists.every(Array.isArray);
-  return allAreLists ? { sources, questions: cardLists.flat() } : null;
+  const allAreLists = [sources, facts, ...cardLists].every(Array.isArray);
+  return allAreLists ? { sources, facts, questions: cardLists.flat() } : null;
 }
 
 // Fetch one JSON file and return its contents, with a clear error if it fails.
@@ -105,18 +109,22 @@ async function loadJsonFile(url) {
   }
 }
 
-// Combine a question with its source into what a card needs to display.
+// Combine a question with its fact and source into what a card needs to display.
+// A missing fact or source just leaves that part of the footnote out.
 function buildCardContent(question) {
   if (question === null) {
     return EMPTY_CARD;
   }
+  const fact = session.factsById.get(question.fact_id);
   const source = session.sourcesById.get(question.source_id);
   return {
     id: question.id,
     type: question.type,
     text: question.text,
-    why: question.why,
-    sourceTitle: source ? source.title : '',
+    factText: fact ? fact.text : '',
+    factCitation: fact ? fact.citation : '',
+    factUrl: fact ? fact.url : '',
+    sourceName: source ? source.name : '',
     sourceUrl: source ? source.url : '',
     canPass: CONFIG.sections[question.section].hasPassButton,
     isParty: question.party === true,
@@ -532,17 +540,18 @@ async function startApp() {
     showError(error.message);
     return;
   }
-  const allFiles = [...CONFIG.questionFileUrls, CONFIG.sourcesUrl].join(', ');
+  const allFiles = [...CONFIG.questionFileUrls, CONFIG.sourcesUrl, CONFIG.factsUrl].join(', ');
   if (data === null) {
     showError(`Couldn't read the questions. Check that each of these files is a list: ${allFiles}.`);
     return;
   }
-  const { questions, sources } = data;
+  const { questions, sources, facts } = data;
   if (questions.length === 0) {
     showError(`No questions found. Check ${CONFIG.questionFileUrls.join(', ')}.`);
     return;
   }
   session.sourcesById = new Map(sources.map((source) => [source.id, source]));
+  session.factsById = new Map(facts.map((fact) => [fact.id, fact]));
   loadToggles();
   session.shuffler = createShuffler(questions, loadSaved(CONFIG.storageKeys.seenIds, []));
   connectControls();

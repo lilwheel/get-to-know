@@ -1,9 +1,11 @@
-"""Validate the question bank and its sources.
+"""Validate the question bank, its sources and its facts.
 
-Checks data/sources.json and data/questions.json and prints:
+Checks data/sources.json, data/facts.json and data/questions.json and prints:
   - question counts per section and level (adult questions counted separately)
   - missing or invalid fields
   - source_ids that are not in sources.json
+  - fact_ids that are not in facts.json, facts used outside their sections,
+    18+ facts on cards that aren't 18+, and facts no card uses
   - exact duplicates (after lowercasing and removing punctuation)
   - near-duplicates (word-overlap similarity above 0.8)
   - questions that open like a yes/no question ("Do you...", "Have you...")
@@ -31,6 +33,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 QUESTIONS_PATH = PROJECT_ROOT / "data" / "questions.json"
 SOURCES_PATH = PROJECT_ROOT / "data" / "sources.json"
+FACTS_PATH = PROJECT_ROOT / "data" / "facts.json"
 
 # Sections and the id prefix each one uses ("ice-1-0001", "fri-2-0042").
 SECTION_ID_PREFIX = {"icebreaker": "ice", "dating": "date", "friends": "fri"}
@@ -43,10 +46,13 @@ ADULT_ALLOWED_LEVELS = (2, 3)
 PARTY_SECTIONS = ("friends",)
 
 QUESTION_FIELDS = ("id", "section", "level", "category", "adult", "type", "party",
-                   "text", "why", "framework", "source_id")
-SOURCE_FIELDS = ("id", "title", "url", "framework")
+                   "text", "fact_id", "framework", "source_id")
+SOURCE_FIELDS = ("id", "name", "title", "url", "framework")
+# Every fact names its study (citation, title, url) and keeps the exact words
+# it was checked against (evidence), so anyone can re-check it.
+FACT_TEXT_FIELDS = ("id", "text", "citation", "title", "url", "evidence")
 
-MAX_WHY_WORDS = 19                     # "one sentence under 20 words"
+MAX_FACT_CHARACTERS = 160              # keeps the footnote short on a phone card
 NEAR_DUPLICATE_THRESHOLD = 0.8         # word-overlap (Jaccard) similarity
 QUESTION_ID_PATTERN = re.compile(r"^(" + "|".join(SECTION_ID_PREFIX.values()) + r")-([123])-(\d{4})$")
 # Questions must be open-ended, so these opening words are flagged.
@@ -151,6 +157,41 @@ def check_sources(sources):
 
 
 # ----------------------------------------------------------
+# Fact checks
+# ----------------------------------------------------------
+
+def check_facts(facts):
+    """Check every fact has its fields, a short text, an https url and valid sections."""
+    problems = []
+    for index, fact in enumerate(facts):
+        if not isinstance(fact, dict):
+            problems.append(f"fact #{index + 1}: must be an object")
+            continue
+        label = fact["id"] if is_filled_string(fact.get("id")) else f"fact #{index + 1}"
+        for field in FACT_TEXT_FIELDS:
+            if not is_filled_string(fact.get(field)):
+                problems.append(f"{label}: missing or empty '{field}'")
+        if is_filled_string(fact.get("text")) and len(fact["text"]) > MAX_FACT_CHARACTERS:
+            problems.append(f"{label}: text has {len(fact['text'])} characters (max {MAX_FACT_CHARACTERS})")
+        if is_filled_string(fact.get("url")) and not fact["url"].startswith("https://"):
+            problems.append(f"{label}: url should start with https://")
+        sections = fact.get("sections")
+        if not isinstance(sections, list) or not sections or any(s not in SECTIONS for s in sections):
+            problems.append(f"{label}: sections must be a non-empty list from {SECTIONS}")
+        if not isinstance(fact.get("adult_only"), bool):
+            problems.append(f"{label}: adult_only must be true or false")
+    for duplicate_id in find_duplicate_values(f.get("id") for f in facts if isinstance(f, dict)):
+        problems.append(f"Duplicate fact id: {duplicate_id}")
+    return problems
+
+
+def check_unused_facts(facts_by_id, questions):
+    """Flag facts that no card points to, so the fact bank holds only what is shown."""
+    used_ids = {q.get("fact_id") for q in questions if isinstance(q, dict)}
+    return [f"{fact_id}: no card uses this fact" for fact_id in facts_by_id if fact_id not in used_ids]
+
+
+# ----------------------------------------------------------
 # Question field checks
 # ----------------------------------------------------------
 
@@ -160,7 +201,7 @@ def check_question_basics(question, label):
     for field in QUESTION_FIELDS:
         if field not in question:
             problems.append(f"{label}: missing '{field}'")
-    for field in ("id", "category", "text", "why", "framework", "source_id"):
+    for field in ("id", "category", "text", "fact_id", "framework", "source_id"):
         if field in question and not is_filled_string(question[field]):
             problems.append(f"{label}: '{field}' must be non-empty text")
     if question.get("section") not in SECTIONS:
@@ -204,11 +245,8 @@ def check_placement_rules(question, label):
 
 
 def check_text_rules(question, label):
-    """Check the wording: why length, open-ended questions, and dares that aren't questions."""
+    """Check the wording: open-ended questions, and dares that aren't questions."""
     problems = []
-    why = question.get("why")
-    if is_filled_string(why) and len(why.split()) > MAX_WHY_WORDS:
-        problems.append(f"{label}: why has {len(why.split())} words (must be under 20)")
     text = question.get("text")
     if not is_filled_string(text):
         return problems
@@ -232,9 +270,26 @@ def check_party_wording(text, label):
     return []
 
 
-def check_question_rules(question, label, sources_by_id):
-    """Check the content rules: placement, wording, and that the source and framework agree."""
+def check_question_fact(question, label, facts_by_id):
+    """Check the card's fact exists, is allowed in its section, is 18+ only on 18+
+    cards, and (on Party cards) follows the Party wording rule too."""
+    fact = facts_by_id.get(question.get("fact_id"))
+    if fact is None:
+        return [f"{label}: fact_id '{question.get('fact_id')}' is not in facts.json"]
+    problems = []
+    if question.get("section") not in fact.get("sections", []):
+        problems.append(f"{label}: fact '{fact['id']}' isn't allowed in section '{question.get('section')}'")
+    if fact.get("adult_only") is True and question.get("adult") is not True:
+        problems.append(f"{label}: 18+ fact '{fact['id']}' is on a card that isn't 18+")
+    if question.get("party") is True and is_filled_string(fact.get("text")):
+        problems += check_party_wording(fact["text"], f"{label} (fact '{fact['id']}')")
+    return problems
+
+
+def check_question_rules(question, label, sources_by_id, facts_by_id):
+    """Check the content rules: placement, wording, the fact, and that the source and framework agree."""
     problems = check_placement_rules(question, label) + check_text_rules(question, label)
+    problems += check_question_fact(question, label, facts_by_id)
     source = sources_by_id.get(question.get("source_id"))
     if source is None:
         problems.append(f"{label}: source_id '{question.get('source_id')}' is not in sources.json")
@@ -244,7 +299,7 @@ def check_question_rules(question, label, sources_by_id):
     return problems
 
 
-def check_questions(questions, sources_by_id):
+def check_questions(questions, sources_by_id, facts_by_id):
     """Run every per-question check and the unique-id check."""
     problems = []
     for index, question in enumerate(questions):
@@ -254,7 +309,7 @@ def check_questions(questions, sources_by_id):
         label = question_label(question, index)
         problems += check_question_basics(question, label)
         problems += check_question_id(question, label)
-        problems += check_question_rules(question, label, sources_by_id)
+        problems += check_question_rules(question, label, sources_by_id, facts_by_id)
     for duplicate_id in find_duplicate_values(q.get("id") for q in questions if isinstance(q, dict)):
         problems.append(f"Duplicate question id: {duplicate_id}")
     return problems
@@ -309,18 +364,22 @@ def print_counts(questions):
 
 
 def main():
-    """Load both files, run every check, print a report and set the exit code."""
+    """Load the three files, run every check, print a report and set the exit code."""
     questions_path = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else QUESTIONS_PATH
     sources = load_json_list(SOURCES_PATH)
+    facts = load_json_list(FACTS_PATH)
     questions = load_json_list(questions_path)
     print(f"Checking {questions_path.name}")
     sources_by_id = {s["id"]: s for s in sources if isinstance(s, dict) and is_filled_string(s.get("id"))}
+    facts_by_id = {f["id"]: f for f in facts if isinstance(f, dict) and is_filled_string(f.get("id"))}
 
-    print(f"Sources: {len(sources)}")
+    print(f"Sources: {len(sources)}   Facts: {len(facts)}")
     print_counts(questions)
 
     problems = check_sources(sources)
-    problems += check_questions(questions, sources_by_id)
+    problems += check_facts(facts)
+    problems += check_questions(questions, sources_by_id, facts_by_id)
+    problems += check_unused_facts(facts_by_id, questions)
     problems += check_duplicate_texts(questions)
 
     if problems:
