@@ -70,7 +70,7 @@ Decisions (2026-11-25):
 - The dialog backdrop becomes a solid fill of the section's background colour instead of a see-through dimming wash.
 - Section colour changes keep the solid-layer opacity cross-fade (only transform and opacity animate), which looks like a 200 ms colour change.
 
-- [ ] P3-1 — Audit and tokens
+- [x] P3-1 — Audit and tokens (2026-11-25, commit a9b9fac)
 - [ ] P3-2 — New palette, fonts and ink style
 - [ ] P3-3 — Section themes and toggle states
 - [ ] P3-4 — Manga details
