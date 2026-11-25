@@ -22,14 +22,15 @@ to see debug logs in the browser console.
 
 | File | What it does |
 | --- | --- |
-| `index.html` | The single page. Loads the stylesheet and `js/app.js` as a module. Holds the header (title and sound toggle), the empty card stack, the error message and the Back/Next buttons. |
+| `index.html` | The single page. Loads the stylesheet and `js/app.js` as a module. Holds two screens: the start screen (Icebreaker / Dating buttons, Reset) and the card screen (Home, sound toggle, card stack, level controls, Back/Next), plus the error message. |
 | `css/styles.css` | All styling. Colours, sizes and animation timings are CSS variables at the top; reduced-motion settings shorten the timings. Card depth (0 = top) is styled with `data-depth`. |
-| `js/config.js` | The one `CONFIG` object: data file paths, swipe distance and flick speed, vibration length, click sound. |
-| `js/app.js` | Entry point. Loads the questions and `data/sources.json` once, joins each question to its source, builds the card stack and connects the buttons, arrow keys and sound toggle. |
-| `js/cards.js` | The card stack. Keeps at most 3 cards in the page, flies the top card off for "next" and slides the previous card back in for "back". Asks `app.js` which card belongs at each position. |
+| `js/config.js` | The one `CONFIG` object: data file paths, section and level names, storage keys, swipe distance and flick speed, vibration length, click sound. |
+| `js/app.js` | Entry point. Loads the data once, switches between the two screens, deals cards from the shuffler into the stack, handles level changes, saves your place and connects every control. |
+| `js/cards.js` | The card stack. Keeps at most 3 cards in the page, flies the top card off for "next" and slides the previous card back in for "back". Asks `app.js` which card belongs at each position, and can rebuild the cards behind the top one after a level change. |
 | `js/swipe.js` | Dragging with touch or mouse. Moves the card on each animation frame; on release, reports a swipe (past 30% of the screen width or a fast flick) or snaps back. |
 | `js/feedback.js` | A short vibration (where the phone supports it) and an optional soft click, off by default, when the card changes. |
-| `js/shuffler.js` | (Step 4) Keeps a shuffled pool per section and level and deals cards without repeats. |
+| `js/shuffler.js` | One shuffled pool per section and level. Deals without repeats, reshuffles a pool when it runs out (never showing the last card straight away), takes back cards that were lined up but not shown, and skips cards seen on earlier visits. |
+| `js/storage.js` | Safe read/write/clear for localStorage, so the app still works if storage is blocked. |
 | `js/theme.js` | Switches the page theme by setting `data-theme` on `<body>`. |
 | `js/debug.js` | `debugLog()`: the only console output in the app, shown only with `?debug=1`. |
 | `data/questions.json` | The question bank (currently empty). Format below. |
@@ -96,16 +97,29 @@ an error if it finds any problem.
 ## How the pieces fit together
 
 `index.html` loads `js/app.js`. `app.js` reads its settings from `config.js`,
-fetches the data once, and hands the cards to `cards.js`. `cards.js` draws
+fetches the data once and gives the questions to `shuffler.js`, which indexes
+them by section and level. When `cards.js` needs a card, `app.js` deals one
+from the shuffler; `storage.js` saves what has been seen and where you are. `cards.js` draws
 the stack and gives each card to `swipe.js`, which turns a drag into "next".
 The Back/Next buttons and arrow keys call the same `cards.js` functions.
 Each time a card settles, `app.js` triggers `feedback.js` (vibration and
 optional click). `theme.js` changes the look, and every module logs only
 through `debug.js`.
 
+## Saved progress
+
+Two things are kept in localStorage on your device (nothing is sent anywhere):
+
+- `getting-to-know.seen-ids`: ids of cards already shown, so they aren't dealt again until their pool runs out.
+- `getting-to-know.place`: the last screen, section, level and card, so a reload keeps your place.
+
+"Reset seen cards" on the start screen clears both.
+
 ## Controls
 
 - Swipe the card left or right (touch or mouse), or flick it: next card.
 - A short drag snaps back.
 - Next button or Right arrow: next card. Back button or Left arrow: previous card.
+- Go Deeper / Go Shallower: change level (1 Light, 2 Personal, 3 Deep). The card showing stays; the next card comes from the new level. The dots show the level.
+- Home: back to the start screen. Choosing the same section again picks up where you left off.
 - The source link in the footnote opens in a new tab.

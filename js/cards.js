@@ -22,13 +22,18 @@ const HIDDEN_DEPTH = MAX_CARDS_IN_PAGE;
 // Build a card stack inside containerElement.
 // getCardAt(position) returns {id, text, why, sourceTitle, sourceUrl} for that position.
 // onCardShown(position) runs whenever a new card settles on top.
-export function createCardStack({ containerElement, getCardAt, onCardShown }) {
+// forgetCardsAfter(position) runs just before the upcoming cards are rebuilt,
+// so the app can drop the cards it had lined up after that position.
+export function createCardStack({ containerElement, getCardAt, onCardShown, forgetCardsAfter }) {
   const stack = {
     containerElement,
     getCardAt,
     onCardShown,
+    forgetCardsAfter,
     currentPosition: 0,
     isAnimating: false,
+    needsUpcomingRefresh: false,
+    isDestroyed: false,
     cardElements: [], // index 0 is the top card
   };
 
@@ -39,6 +44,8 @@ export function createCardStack({ containerElement, getCardAt, onCardShown }) {
     showNext: (direction = 'left') => showNext(stack, direction),
     showPrevious: () => showPrevious(stack),
     canGoBack: () => stack.currentPosition > 0,
+    refreshUpcoming: () => refreshUpcoming(stack),
+    destroy: () => destroy(stack),
   };
 }
 
@@ -119,6 +126,9 @@ async function showNext(stack, direction) {
   stack.cardElements.forEach((cardElement, depth) => setDepth(cardElement, depth));
 
   await waitForTransition(leavingCard, readCssDurationMs('--duration-fly'));
+  if (stack.isDestroyed) {
+    return;
+  }
   leavingCard.remove();
   stack.currentPosition += 1;
   addCardAtBack(stack);
@@ -169,17 +179,53 @@ async function showPrevious(stack) {
   stack.cardElements.unshift(returningCard);
 
   await waitForTransition(returningCard, readCssDurationMs('--duration-settle'));
+  if (stack.isDestroyed) {
+    return;
+  }
   stack.currentPosition -= 1;
   finishMove(stack);
+}
+
+// ----------------------------------------------------------
+// Replacing upcoming cards and closing the stack
+// ----------------------------------------------------------
+
+// Rebuild the cards behind the top one (e.g. after a level change), so the
+// next card comes from the new level. Waits if a move is still animating.
+function refreshUpcoming(stack) {
+  if (stack.isAnimating) {
+    stack.needsUpcomingRefresh = true;
+    return;
+  }
+  stack.forgetCardsAfter(stack.currentPosition);
+  for (let depth = 1; depth < stack.cardElements.length; depth += 1) {
+    const oldCardElement = stack.cardElements[depth];
+    const newCardElement = createCardElement(stack, stack.getCardAt(stack.currentPosition + depth));
+    setDepth(newCardElement, depth);
+    oldCardElement.replaceWith(newCardElement);
+    stack.cardElements[depth] = newCardElement;
+  }
+}
+
+// Remove every card and stop any animation that is still finishing.
+function destroy(stack) {
+  stack.isDestroyed = true;
+  stack.cardElements = [];
+  stack.containerElement.replaceChildren();
 }
 
 // ----------------------------------------------------------
 // Shared helpers
 // ----------------------------------------------------------
 
-// Unlock input and tell the app which card is now on top.
+// Unlock input, apply any refresh that had to wait, and tell the app
+// which card is now on top.
 function finishMove(stack) {
   stack.isAnimating = false;
+  if (stack.needsUpcomingRefresh) {
+    stack.needsUpcomingRefresh = false;
+    refreshUpcoming(stack);
+  }
   debugLog('Card stack moved', {
     position: stack.currentPosition,
     cardsInPage: stack.containerElement.children.length,

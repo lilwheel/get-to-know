@@ -14,6 +14,8 @@
   --color-button-primary-background: #1f2a2a;
   --color-button-primary-text: #ffffff;
   --color-focus-ring: #1d5f5a;
+  --color-level-dot-empty: #c9d1d0;
+  --color-level-dot-filled: #1f2a2a;
   --color-error-background: #fdecec;
   --color-error-text: #8a1c1c;
 
@@ -27,9 +29,13 @@
   --font-size-body: 1rem;
   --font-size-question: clamp(1.375rem, 5.5vw, 2rem);
   --font-size-footnote: 0.8125rem;
+  --font-size-start-title: clamp(2.25rem, 9vw, 3.5rem);
+  --font-size-section-name: 1.5rem;
 
   --radius-medium: 12px;
   --radius-large: 24px;
+  --level-dot-size: 10px;
+  --section-button-width: min(100%, 24rem);
 
   /* Card size: fills a phone, stays a comfortable size on a tablet */
   --card-width: min(100%, 30rem);
@@ -95,15 +101,84 @@ button {
 }
 
 /* ==========================================================
-   Layout: header on top, card area filling the middle, controls below
+   Layout: one screen at a time, filling the viewport
    ========================================================== */
 .app {
   height: 100dvh;
+  padding: var(--space-medium);
+}
+
+.screen {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  padding: var(--space-medium);
   gap: var(--space-medium);
 }
+
+/* [hidden] must win over the display rules above */
+.screen[hidden] {
+  display: none;
+}
+
+/* ==========================================================
+   Start screen
+   ========================================================== */
+.start-screen {
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-large);
+  text-align: center;
+}
+
+.start-screen__title {
+  margin: 0 0 var(--space-small);
+  font-size: var(--font-size-start-title);
+  line-height: 1.1;
+}
+
+.start-screen__subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.section-choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-medium);
+  width: var(--section-button-width);
+}
+
+.section-button {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xsmall);
+  padding: var(--space-large) var(--space-medium);
+  border: 1px solid var(--color-button-border);
+  border-radius: var(--radius-large);
+  background: var(--color-card-background);
+  box-shadow: 0 4px 12px var(--color-card-shadow);
+}
+
+.section-button__name {
+  font-size: var(--font-size-section-name);
+  font-weight: 700;
+}
+
+.section-button__hint {
+  color: var(--color-text-muted);
+}
+
+.text-button {
+  border: none;
+  background: none;
+  color: var(--color-link);
+  text-decoration: underline;
+  padding: var(--space-small);
+}
+
+/* ==========================================================
+   Card screen: header, card area, level controls, Back/Next
+   ========================================================== */
 
 .app-header {
   display: flex;
@@ -114,6 +189,41 @@ button {
 .app-header__title {
   margin: 0;
   font-size: var(--font-size-app-title);
+}
+
+.level-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-small);
+}
+
+.level-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 5rem;
+}
+
+.level-indicator__dots {
+  display: flex;
+  gap: var(--space-small);
+}
+
+.level-dot {
+  width: var(--level-dot-size);
+  height: var(--level-dot-size);
+  border-radius: 50%;
+  background: var(--color-level-dot-empty);
+}
+
+.level-dot.is-filled {
+  background: var(--color-level-dot-filled);
+}
+
+.level-indicator__name {
+  font-size: var(--font-size-footnote);
+  color: var(--color-text-muted);
 }
 
 .card-area {
@@ -252,6 +362,11 @@ button {
   min-height: 48px;
   padding: var(--space-small) var(--space-medium);
   font-weight: 600;
+}
+
+.control-button--small {
+  min-width: 0;
+  font-size: var(--font-size-footnote);
 }
 
 .control-button--primary {

@@ -10,6 +10,25 @@ export const CONFIG = {
   questionsUrl: 'data/sample.json',
   sourcesUrl: 'data/sources.json',
 
+  // Sections and levels, with the names shown on screen.
+  sectionNames: {
+    icebreaker: 'Icebreaker',
+    dating: 'Dating',
+  },
+  levelNames: {
+    1: 'Light',
+    2: 'Personal',
+    3: 'Deep',
+  },
+  lowestLevel: 1,
+  deepestLevel: 3,
+
+  // localStorage keys for saved progress.
+  storageKeys: {
+    seenIds: 'getting-to-know.seen-ids',
+    place: 'getting-to-know.place',
+  },
+
   // Swiping: a drag past this share of the screen width counts as a swipe.
   swipeDistanceRatio: 0.3,
   // A release faster than this (pixels per millisecond) counts as a flick.
