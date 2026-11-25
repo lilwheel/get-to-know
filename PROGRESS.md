@@ -2,7 +2,7 @@
 
 New session? Read this first, then resume from the next unticked step.
 
-- [ ] Step 1 — Project setup
+- [x] Step 1 — Project setup (2026-11-25, commit 14d9598)
 - [ ] Step 2 — Data schema, sources and validator
 - [ ] Step 3 — Card UI and swiping
 - [ ] Step 4 — Sections, levels and shuffler
