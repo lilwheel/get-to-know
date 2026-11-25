@@ -51,7 +51,7 @@ Decisions:
 - [x] P2-4b — 18+ card frequency (Dating) (2026-11-25, commit e1b7af8; 30 swipes: L1 0, L2 6, L3 10 adult)
 - [x] P2-5 — Theme (2026-11-25, commit 0c2e5e0; friends + friends-party pass WCAG AA)
 - [ ] P2-6 — Card bank
-  - [ ] 6a — Friends Level 1
+  - [x] 6a — Friends Level 1 (2026-11-25, commit d22ba74, 200 cards: 120 questions, 80 dares)
   - [ ] 6b — Friends Level 2
   - [ ] 6c — Friends Level 3
   - [ ] 6d — Party Level 1
