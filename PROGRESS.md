@@ -74,4 +74,4 @@ Decisions (2026-11-25):
 - [x] P3-2 — New palette, fonts and ink style (2026-11-25, commit 64e8a6c)
 - [x] P3-3 — Section themes and toggle states (2026-11-25, commit 07ddab4)
 - [x] P3-4 — Manga details (2026-11-25, commit 2825824)
-- [ ] P3-5 — Final check and deploy
+- [x] P3-5 — Final check and deploy (2026-11-26, commit 63315de; live on GitHub Pages)
