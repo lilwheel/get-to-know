@@ -143,7 +143,7 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 
 | File | What it does | Main functions |
 | --- | --- | --- |
-| `index.html` | The single page: three theme background layers, the start screen, the card screen, the confirm dialog, the screen-reader announcer and the error message. Loads `css/styles.css` and `js/app.js`. | — |
+| `index.html` | The single page: one background layer per theme (five), the start screen, the card screen, the confirm dialog, the screen-reader announcer and the error message. Loads `css/styles.css` and `js/app.js`. | — |
 | `css/styles.css` | All styling. It starts with design tokens (palette, colour roles, sizes, timings), then the Icebreaker and Dating theme overrides, then the components in page order. | — |
 | `js/config.js` | The one `CONFIG` object: every tunable number and name in the JavaScript. See [Settings](#8-settings-you-can-change). | — |
 | `js/app.js` | Entry point and coordinator. Loads data, switches screens, deals cards into the stack, handles levels, the gated switches (18+ and Party mode), Reset, sound and keyboard, and saves your place. | `startApp`, `openSection`, `getCardAt`, `handleCardShown`, `changeLevel`, `handleToggleChange` |
@@ -160,7 +160,7 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 | `data/sample-friends.json` | **Temporary.** 16 sample Friends & Teammates cards: 10 normal (5 questions, 5 dares) and 6 Party mode (a question and a dare per level), used until the real Friends cards are written (Phase 2, Step P2-6). Then it is deleted and removed from `CONFIG.questionFileUrls`. | — |
 | `data/sources.json` | The 24 verified sources that card footnotes link to. | — |
 | `scripts/validate.py` | Offline checker for both data files. Run it after any data change. | — |
-| `scripts/check_contrast.py` | Offline WCAG AA contrast check of every colour pair in all three themes, read from `css/styles.css`. Run it after any colour change. | — |
+| `scripts/check_contrast.py` | Offline WCAG AA contrast check of every colour pair in all five themes (neutral, Icebreaker, Dating, Friends, Friends Party), read from `css/styles.css`. Run it after any colour change. | — |
 | `PROGRESS.md` | Build history: each step of the build plan, its date and commit. | — |
 | `.nojekyll` | Tells GitHub Pages to serve the files as they are. | — |
 | `.gitignore` | Keeps local-only files out of git: the private question review page (`REVIEW-PAGE.html`) and Python's `__pycache__`. | — |
@@ -192,7 +192,7 @@ Add `?debug=1` to the address, open the browser's developer tools (F12, or Cmd+O
 | Log message | When | What the details mean |
 | --- | --- | --- |
 | `Restoring place` | Startup | The saved place: `screen`, `section`, `level`, `currentCardId`. `null` means nothing was saved. |
-| `Theme applied` | Every screen change | `theme`: `neutral`, `icebreaker` or `dating`. |
+| `Theme applied` | Every screen change, and when Party mode is switched | `theme`: `neutral`, `icebreaker`, `dating`, `friends` or `friends-party`. |
 | `Card shown` | Every time a card settles on top | `section`, `level`, `cardId`, `party` (true for a Party mode card), and `cardsLeftInPool`: cards left to deal at this level before a reshuffle. |
 | `Card passed` | Pass pressed (Friends & Teammates) | `cardId` of the card that was passed. |
 | `Card stack moved` | After Next or Back finishes | `position` in this visit's history, and `cardsInPage`, which should never be more than 3. |
@@ -361,6 +361,8 @@ It exits with an error if anything is wrong, so you can use it before every comm
 | Neutral | Start screen | Warm paper background. Each section button previews its own theme. |
 | Icebreaker | Icebreaker cards | Mint and surf-green gradient, near-white mint cards, dark teal text, rounded letters where available. |
 | Dating | Dating cards | Maroon gradient, burgundy cards, warm cream text, serif questions. |
+| Friends | Friends & Teammates cards | Honey and soft-gold gradient, warm-white cards, dark brown text, amber buttons, rounded letters where available. |
+| Friends Party | Friends & Teammates with Party mode on | The same palette, bolder: a bright marigold gradient, golden cards, near-black brown text and buttons with marigold lettering. |
 
 Colours in `css/styles.css` come in two layers:
 
@@ -368,6 +370,8 @@ Colours in `css/styles.css` come in two layers:
 2. **Roles** (`--color-*`): what each colour is for, such as card background or link. `:root` sets the neutral roles, and `[data-theme="icebreaker"]` and `[data-theme="dating"]` override them.
 
 Components use only roles, never palette colours, so a theme is just a list of role overrides.
+
+Party mode switches the page to the `friends-party` theme while it's on (`themeWhenOn` in `CONFIG.toggles.party`), and back to `friends` when it's turned off.
 
 Switching section fades the content out, swaps the theme while nothing is visible, then fades it back in. Meanwhile one background layer per theme cross-fades. Only opacity animates, never colour, which keeps it smooth on phones.
 
@@ -444,7 +448,7 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 **Add a section**
 1. Add an entry to `CONFIG.sections` in `js/config.js`. Its key is the section id used in the data (for example `"family"`).
 2. Add the id and its id prefix to `SECTION_ID_PREFIX` in `scripts/validate.py`.
-3. Give it a theme in `css/styles.css` (a `[data-theme="family"]` block of colour roles), plus a background layer in `index.html`. Run `check_contrast.py`.
+3. Give it a theme: a `[data-theme="family"]` block of colour roles in `css/styles.css`, a background layer `<div class="theme-backdrop" data-theme="family">` in `index.html`, and a matching line in the `body[data-theme=…] .theme-backdrop[…]` list in the CSS. Add `"family"` to `THEMES` in `scripts/check_contrast.py` and run it.
 4. Add its cards and run `validate.py`.
 
 **Change the title or subtitle**

@@ -295,11 +295,21 @@ async function handleToggleChange() {
   }
 }
 
-// Store a switch's choice for this tab only (sessionStorage).
+// Store a switch's choice for this tab only (sessionStorage), and update
+// the page's theme in case this switch has a look of its own (Party mode).
 function setToggle(toggleName, isOn) {
   session.toggles[toggleName] = isOn;
   save(CONFIG.toggles[toggleName].storageKey, isOn, 'session');
+  applyTheme(currentThemeName());
   debugLog('Toggle changed', { toggle: toggleName, on: isOn });
+}
+
+// The theme for the open section: its own, or its switch's theme while
+// that switch is on (Party mode uses 'friends-party').
+function currentThemeName() {
+  const toggleName = CONFIG.sections[session.section].toggle;
+  const themeWhenOn = toggleName === null ? undefined : CONFIG.toggles[toggleName].themeWhenOn;
+  return themeWhenOn && isToggleOnHere(toggleName) ? themeWhenOn : session.section;
 }
 
 // Read every switch's choice saved earlier in this tab.
@@ -359,7 +369,7 @@ function openSection(section, level, resumeCardId) {
   elements.cardScreen.hidden = false;
   elements.sectionTitle.textContent = CONFIG.sections[section].name;
   updateToggleDisplay();
-  applyTheme(section);
+  applyTheme(currentThemeName());
   updateLevelDisplay();
   session.cardStack = createCardStack({
     containerElement: elements.cardStack,

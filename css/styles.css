@@ -37,6 +37,21 @@
   --palette-cream-200: #f0d9c2;
   --palette-gold-200: #f6d29c;
 
+  /* Palette: Friends & Teammates (honey, soft gold, marigold, dark browns) */
+  --palette-cream-white: #fffaf0;
+  --palette-honey-50: #fdf0d5;
+  --palette-honey-200: #f6d58e;
+  --palette-gold-100: #fff3c4;
+  --palette-gold-600: #a06a1c;
+  --palette-marigold-300: #ffd166;
+  --palette-marigold-500: #ffb020;
+  --palette-amber-800: #8a4a06;
+  --palette-brown-600: #8f5c14;
+  --palette-brown-700: #6a4720;
+  --palette-brown-800: #5c3608;
+  --palette-brown-900: #3a230d;
+  --palette-brown-950: #1f0f02;
+
   /* Palette: error messages (used by every theme) */
   --palette-error-rose-50: #fdecec;
   --palette-error-red-800: #8a1c1c;
@@ -197,6 +212,56 @@
   --font-family-question: Georgia, "Times New Roman", serif;
 }
 
+/* Friends & Teammates: honey and soft gold with dark brown text, warm and easygoing */
+[data-theme="friends"] {
+  --color-backdrop-start: var(--palette-honey-50);
+  --color-backdrop-end: var(--palette-honey-200);
+  --color-text: var(--palette-brown-900);
+  --color-text-muted: var(--palette-brown-700);
+  --color-card-background: var(--palette-cream-white);
+  --color-card-shadow: rgba(58, 35, 13, 0.18);
+  --color-link: var(--palette-amber-800);
+  --color-button-background: var(--palette-cream-white);
+  --color-button-text: var(--palette-brown-900);
+  --color-button-border: var(--palette-gold-600);
+  --color-button-primary-background: var(--palette-amber-800);
+  --color-button-primary-text: var(--palette-white);
+  --color-focus-ring: var(--palette-amber-800);
+  --color-level-dot-empty: var(--palette-gold-600);
+  --color-level-dot-filled: var(--palette-brown-900);
+  --color-switch-off: var(--palette-gold-600);
+  --color-switch-on: var(--palette-amber-800);
+  --color-switch-knob: var(--palette-white);
+  --color-dialog-backdrop: rgba(58, 35, 13, 0.45);
+  /* Rounded letters where the device has them, for a friendly feel */
+  --font-family-question: ui-rounded, "SF Pro Rounded", var(--font-family-base);
+}
+
+/* Friends & Teammates in Party mode: the same palette, bolder and brighter,
+   with marigold behind everything. Set by js/app.js while Party mode is on. */
+[data-theme="friends-party"] {
+  --color-backdrop-start: var(--palette-marigold-300);
+  --color-backdrop-end: var(--palette-marigold-500);
+  --color-text: var(--palette-brown-950);
+  --color-text-muted: var(--palette-brown-800);
+  --color-card-background: var(--palette-gold-100);
+  --color-card-shadow: rgba(31, 15, 2, 0.3);
+  --color-link: var(--palette-brown-800);
+  --color-button-background: var(--palette-gold-100);
+  --color-button-text: var(--palette-brown-950);
+  --color-button-border: var(--palette-brown-600);
+  --color-button-primary-background: var(--palette-brown-950);
+  --color-button-primary-text: var(--palette-marigold-300);
+  --color-focus-ring: var(--palette-brown-950);
+  --color-level-dot-empty: var(--palette-brown-600);
+  --color-level-dot-filled: var(--palette-brown-950);
+  --color-switch-off: var(--palette-brown-600);
+  --color-switch-on: var(--palette-brown-950);
+  --color-switch-knob: var(--palette-gold-100);
+  --color-dialog-backdrop: rgba(31, 15, 2, 0.5);
+  --font-family-question: ui-rounded, "SF Pro Rounded", var(--font-family-base);
+}
+
 /* ==========================================================
    Base: reset and page defaults
    ========================================================== */
@@ -262,7 +327,9 @@ button {
 
 body[data-theme="neutral"] .theme-backdrop[data-theme="neutral"],
 body[data-theme="icebreaker"] .theme-backdrop[data-theme="icebreaker"],
-body[data-theme="dating"] .theme-backdrop[data-theme="dating"] {
+body[data-theme="dating"] .theme-backdrop[data-theme="dating"],
+body[data-theme="friends"] .theme-backdrop[data-theme="friends"],
+body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   opacity: 1;
 }
 

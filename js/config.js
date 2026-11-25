@@ -58,6 +58,7 @@ export const CONFIG = {
   //   turnOffClearsVisit: true = turning it off reopens the section, so none of its
   //                       cards stay on screen or behind Back; false = normal cards
   //                       just resume from the next swipe
+  //   themeWhenOn:        (optional) a theme the page switches to while it's on
   toggles: {
     adult: {
       label: 'Include 18+ questions',
@@ -90,6 +91,8 @@ export const CONFIG = {
         confirmLabel: 'Confirm',
       },
       turnOffClearsVisit: false,
+      // While Party mode is on, the page uses this bolder theme (css/styles.css).
+      themeWhenOn: 'friends-party',
     },
   },
 

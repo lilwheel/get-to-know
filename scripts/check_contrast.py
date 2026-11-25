@@ -1,7 +1,7 @@
 """Check WCAG AA colour contrast for every theme.
 
 Reads the colours straight from css/styles.css (the palette and the
---color-* roles for the neutral, icebreaker and dating themes) and checks
+--color-* roles for every theme in THEMES) and checks
 each pair of colours that appear together on screen:
   - text: at least 4.5 to 1 (WCAG AA for normal-size text)
   - controls and graphics (borders, dots, switch, focus ring):
@@ -20,7 +20,7 @@ from pathlib import Path
 # Setup
 # ----------------------------------------------------------
 STYLESHEET_PATH = Path(__file__).resolve().parent.parent / "css" / "styles.css"
-THEMES = ("neutral", "icebreaker", "dating")
+THEMES = ("neutral", "icebreaker", "dating", "friends", "friends-party")
 TEXT_MINIMUM = 4.5
 GRAPHIC_MINIMUM = 3.0
 BACKGROUNDS_BEHIND_PAGE_ITEMS = ("backdrop-start", "backdrop-end")
