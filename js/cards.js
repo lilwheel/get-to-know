@@ -66,11 +66,16 @@ function renderInitialCards(stack) {
 // line on dares), an optional Pass button, and the footnote at the bottom.
 function createCardElement(stack, card) {
   const cardElement = document.createElement('article');
-  cardElement.className = card.type === 'dare' ? 'card card--dare' : 'card';
+  cardElement.className = 'card';
+  cardElement.classList.toggle('card--dare', card.type === 'dare');
+  cardElement.classList.toggle('card--adult', card.isAdult);
   cardElement.dataset.cardId = card.id;
 
   if (card.isParty) {
-    cardElement.append(createPartyBadge());
+    cardElement.append(createBadge(CONFIG.cardLabels.party, 'card__badge--party'));
+  }
+  if (card.isAdult) {
+    cardElement.append(createBadge(CONFIG.cardLabels.adult, 'card__badge--adult'));
   }
   cardElement.append(createBodyElement(card));
   if (card.canPass) {
@@ -108,11 +113,12 @@ function createBodyElement(card) {
   return bodyElement;
 }
 
-// Build the small "Party" badge shown in the corner of Party mode cards.
-function createPartyBadge() {
+// Build a small badge for the card's corner: "Party" (a starburst) on
+// Party mode cards, "18+" on adult cards. The modifier class sets its shape.
+function createBadge(text, modifierClass) {
   const badgeElement = document.createElement('span');
-  badgeElement.className = 'card__badge';
-  badgeElement.textContent = CONFIG.cardLabels.party;
+  badgeElement.className = `card__badge ${modifierClass}`;
+  badgeElement.textContent = text;
   return badgeElement;
 }
 

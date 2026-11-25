@@ -80,6 +80,12 @@
   --shadow-hard-small: 2px 2px 0;
   /* A pressed button moves this far towards its shadow */
   --press-distance: 2px;
+  /* 18+ cards: width of the accent ring inside the ink outline */
+  --accent-ring-width: 5px;
+  /* Starburst sticker (Party badge): size and a 12-point star outline */
+  --starburst-size: 88px;
+  --font-size-sticker: 0.6875rem;
+  --starburst-shape: polygon(50% 0%, 59% 17%, 75% 7%, 75% 25%, 93% 25%, 83% 41%, 100% 50%, 83% 59%, 93% 75%, 75% 75%, 75% 93%, 59% 83%, 50% 100%, 41% 83%, 25% 93%, 25% 75%, 7% 75%, 17% 59%, 0% 50%, 17% 41%, 7% 25%, 25% 25%, 25% 7%, 41% 17%);
 
   --space-xsmall: 4px;
   --space-small: 8px;
@@ -184,10 +190,50 @@
 /* ==========================================================
    Section themes. [data-theme] works on any element, so the start
    screen's section buttons and the background layers can show a
-   theme of their own. Each theme only reassigns --color-* roles.
-   Phase 3, Step P3-3 fills these in; until then every section uses
-   the neutral flower-field look above.
+   theme of their own. Each theme only reassigns --color-* roles;
+   cards stay --paper and all text stays --ink everywhere.
    ========================================================== */
+
+/* Icebreaker: pastel greens, like leaves, with periwinkle accents */
+[data-theme="icebreaker"] {
+  --color-page: var(--leaf-light);
+  --color-button-primary-background: var(--leaf);
+  --color-button-primary-pressed: var(--leaf-shade);
+  --color-accent: var(--periwinkle);
+  --color-switch-on: var(--periwinkle);
+  --color-dialog-backdrop: var(--leaf-light);
+}
+
+/* Dating: pastel peach-pink and coral, with rose accents (18+ badge and ring) */
+[data-theme="dating"] {
+  --color-page: var(--peach-pink);
+  --color-button-primary-background: var(--coral);
+  --color-button-primary-pressed: var(--coral-shade);
+  --color-accent: var(--rose);
+  --color-switch-on: var(--rose);
+  --color-dialog-backdrop: var(--peach-pink);
+}
+
+/* Friends & Teammates: pastel butter and marigold, with apricot accents */
+[data-theme="friends"] {
+  --color-page: var(--butter-light);
+  --color-button-primary-background: var(--butter);
+  --color-button-primary-pressed: var(--butter-shade);
+  --color-accent: var(--apricot);
+  --color-switch-on: var(--apricot);
+  --color-dialog-backdrop: var(--butter-light);
+}
+
+/* Friends & Teammates in Party mode: the page turns apricot and Party cards
+   carry a pollen starburst. Set by js/app.js while Party mode is on. */
+[data-theme="friends-party"] {
+  --color-page: var(--apricot);
+  --color-button-primary-background: var(--butter);
+  --color-button-primary-pressed: var(--butter-shade);
+  --color-accent: var(--pollen);
+  --color-switch-on: var(--pollen);
+  --color-dialog-backdrop: var(--apricot);
+}
 
 /* ==========================================================
    Base: reset and page defaults
@@ -432,14 +478,15 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   gap: var(--space-small);
 }
 
-/* Reached levels are filled; the rest are an ink outline only.
+/* Reached levels are filled with pollen; the rest are plain paper inside
+   the ink outline, so the two stay easy to tell apart on every page colour.
    The level name underneath also says which level is on. */
 .level-dot {
   width: var(--level-dot-size);
   height: var(--level-dot-size);
   border: var(--outline-width-thin) solid var(--color-outline);
   border-radius: 50%;
-  background: none;
+  background: var(--color-card-background);
 }
 
 .level-dot.is-filled {
@@ -580,7 +627,8 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   color: var(--color-text-muted);
 }
 
-/* Party mode badge: a small sticker in the card's top corner, outside the text flow */
+/* Badges: a small sticker in the card's top corner, outside the text flow.
+   18+ cards get a rounded sticker in the section accent (rose in Dating). */
 .card__badge {
   position: absolute;
   top: var(--space-medium);
@@ -595,6 +643,39 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   font-size: var(--font-size-footnote);
   letter-spacing: var(--letter-spacing-label);
   text-transform: uppercase;
+}
+
+/* Party mode badge: a starburst sticker. The badge itself is an ink star;
+   its ::before is a slightly smaller star in the accent colour, so the ink
+   shows round the edge as an outline (borders can't follow a star shape). */
+.card__badge--party {
+  display: grid;
+  place-items: center;
+  width: var(--starburst-size);
+  height: var(--starburst-size);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: var(--color-outline);
+  box-shadow: none;
+  clip-path: var(--starburst-shape);
+  isolation: isolate;
+  font-size: var(--font-size-sticker);
+  letter-spacing: 0;
+}
+
+.card__badge--party::before {
+  content: "";
+  position: absolute;
+  inset: var(--outline-width);
+  z-index: -1;
+  background: var(--color-accent);
+  clip-path: var(--starburst-shape);
+}
+
+/* 18+ cards: a ring in the accent colour just inside the ink outline */
+.card--adult {
+  box-shadow: inset 0 0 0 var(--accent-ring-width) var(--color-accent), var(--shadow-hard) var(--color-shadow);
 }
 
 /* Pass: sits between the card text and the footnote */

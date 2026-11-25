@@ -102,8 +102,9 @@ export const CONFIG = {
     // Every dare is done by the whole table (decided for Phase 2).
     dareWho: 'Whole table',
     pass: 'Pass',
-    // The small badge on Party mode cards.
+    // The small badges on Party mode cards and 18+ cards.
     party: 'Party',
+    adult: '18+',
   },
 
   levelNames: {

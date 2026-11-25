@@ -51,6 +51,7 @@ const EMPTY_CARD = {
   sourceUrl: '',
   canPass: false,
   isParty: false,
+  isAdult: false,
 };
 
 const session = {
@@ -117,14 +118,20 @@ function buildCardContent(question) {
     sourceUrl: source ? source.url : '',
     canPass: CONFIG.sections[question.section].hasPassButton,
     isParty: question.party === true,
+    isAdult: question.adult === true,
   };
 }
 
-// What screen readers hear for a card: Party cards and dares say so, and
-// dares say who does them, so the difference isn't only visual.
+// What screen readers hear for a card: Party, 18+ and dare cards say so,
+// and dares say who does them, so the difference isn't only visual.
 function describeForScreenReader(card) {
-  const { dare, dareWho, party } = CONFIG.cardLabels;
-  const prefix = card.isParty ? `${party}. ` : '';
+  const { dare, dareWho, party, adult } = CONFIG.cardLabels;
+  let prefix = '';
+  if (card.isParty) {
+    prefix = `${party}. `;
+  } else if (card.isAdult) {
+    prefix = `${adult}. `;
+  }
   if (card.type !== 'dare') {
     return `${prefix}${card.text}`;
   }
