@@ -6,6 +6,7 @@ Checks data/sources.json and data/questions.json and prints:
   - source_ids that are not in sources.json
   - exact duplicates (after lowercasing and removing punctuation)
   - near-duplicates (word-overlap similarity above 0.8)
+  - questions that open like a yes/no question ("Do you...", "Have you...")
 
 Exits with status 1 if any problem is found, 0 otherwise.
 
@@ -40,6 +41,11 @@ SOURCE_FIELDS = ("id", "title", "url", "framework")
 MAX_WHY_WORDS = 19                     # "one sentence under 20 words"
 NEAR_DUPLICATE_THRESHOLD = 0.8         # word-overlap (Jaccard) similarity
 QUESTION_ID_PATTERN = re.compile(r"^(ice|date)-([123])-(\d{4})$")
+# Questions must be open-ended, so these opening words are flagged.
+# "Would you rather" is allowed because it asks for a choice and a reason.
+YES_NO_OPENERS = {"am", "are", "is", "was", "were", "do", "does", "did", "have", "has",
+                  "had", "can", "could", "will", "would", "should", "shall", "may", "might"}
+ALLOWED_OPENER_PHRASES = ("would you rather",)
 
 
 # ----------------------------------------------------------
@@ -80,6 +86,15 @@ def word_overlap(words_a, words_b):
     if not words_a or not words_b:
         return 0.0
     return len(words_a & words_b) / len(words_a | words_b)
+
+
+def opens_like_yes_no(text):
+    """True if the question starts like 'Do you...' rather than 'What...' or 'How...'."""
+    lowered = text.strip().lower()
+    if lowered.startswith(ALLOWED_OPENER_PHRASES):
+        return False
+    first_word = lowered.split()[0].strip(string.punctuation)
+    return first_word in YES_NO_OPENERS
 
 
 def find_duplicate_values(values):
@@ -158,6 +173,9 @@ def check_question_rules(question, label, sources_by_id):
     why = question.get("why")
     if is_filled_string(why) and len(why.split()) > MAX_WHY_WORDS:
         problems.append(f"{label}: why has {len(why.split())} words (must be under 20)")
+    text = question.get("text")
+    if is_filled_string(text) and opens_like_yes_no(text):
+        problems.append(f"{label}: opens like a yes/no question; rephrase to be open-ended")
     source = sources_by_id.get(question.get("source_id"))
     if source is None:
         problems.append(f"{label}: source_id '{question.get('source_id')}' is not in sources.json")

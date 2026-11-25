@@ -9,4 +9,11 @@ New session? Read this first, then resume from the next unticked step.
 - [x] Step 5 — 18+ gate (2026-11-25, commit d478c35)
 - [x] Step 6 — Theming and polish (2026-11-25, commit d4a3f03)
 - [ ] Step 7 — Question bank (7a–7f, then 7g top-up)
+  - [ ] 7a — Icebreaker Level 1
+  - [ ] 7b — Icebreaker Level 2
+  - [ ] 7c — Icebreaker Level 3
+  - [ ] 7d — Dating Level 1
+  - [ ] 7e — Dating Level 2
+  - [ ] 7f — Dating Level 3
+  - [ ] 7g — Top up to ~2,000 and switch the app to the real bank
 - [ ] Step 8 — Final check and deploy
