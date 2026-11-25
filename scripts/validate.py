@@ -10,6 +10,7 @@ Checks data/sources.json and data/questions.json and prints:
 Exits with status 1 if any problem is found, 0 otherwise.
 
 Run from anywhere:  python3 scripts/validate.py
+Check a different questions file:  python3 scripts/validate.py data/sample.json
 """
 
 import json
@@ -47,7 +48,7 @@ QUESTION_ID_PATTERN = re.compile(r"^(ice|date)-([123])-(\d{4})$")
 
 def load_json_list(path):
     """Load a JSON file that must contain a list; exit with a clear message if not."""
-    relative_name = path.relative_to(PROJECT_ROOT)
+    relative_name = path.name
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError:
@@ -226,8 +227,10 @@ def print_counts(questions):
 
 def main():
     """Load both files, run every check, print a report and set the exit code."""
+    questions_path = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else QUESTIONS_PATH
     sources = load_json_list(SOURCES_PATH)
-    questions = load_json_list(QUESTIONS_PATH)
+    questions = load_json_list(questions_path)
+    print(f"Checking {questions_path.name}")
     sources_by_id = {s["id"]: s for s in sources if isinstance(s, dict) and "id" in s}
 
     print(f"Sources: {len(sources)}")

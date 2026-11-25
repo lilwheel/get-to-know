@@ -22,16 +22,20 @@ to see debug logs in the browser console.
 
 | File | What it does |
 | --- | --- |
-| `index.html` | The single page. Loads the stylesheet and `js/app.js` as a module, and holds the start screen and error message. |
-| `css/styles.css` | All styling. Colours, spacing and sizes are CSS variables at the top. |
-| `js/app.js` | Entry point. Loads `data/questions.json` and `data/sources.json` once, shows errors, and wires the other modules together. |
+| `index.html` | The single page. Loads the stylesheet and `js/app.js` as a module. Holds the header (title and sound toggle), the empty card stack, the error message and the Back/Next buttons. |
+| `css/styles.css` | All styling. Colours, sizes and animation timings are CSS variables at the top; reduced-motion settings shorten the timings. Card depth (0 = top) is styled with `data-depth`. |
+| `js/config.js` | The one `CONFIG` object: data file paths, swipe distance and flick speed, vibration length, click sound. |
+| `js/app.js` | Entry point. Loads the questions and `data/sources.json` once, joins each question to its source, builds the card stack and connects the buttons, arrow keys and sound toggle. |
+| `js/cards.js` | The card stack. Keeps at most 3 cards in the page, flies the top card off for "next" and slides the previous card back in for "back". Asks `app.js` which card belongs at each position. |
+| `js/swipe.js` | Dragging with touch or mouse. Moves the card on each animation frame; on release, reports a swipe (past 30% of the screen width or a fast flick) or snaps back. |
+| `js/feedback.js` | A short vibration (where the phone supports it) and an optional soft click, off by default, when the card changes. |
 | `js/shuffler.js` | (Step 4) Keeps a shuffled pool per section and level and deals cards without repeats. |
-| `js/swipe.js` | (Step 3) Drag, flick and keyboard handling for the card stack. |
 | `js/theme.js` | Switches the page theme by setting `data-theme` on `<body>`. |
 | `js/debug.js` | `debugLog()`: the only console output in the app, shown only with `?debug=1`. |
 | `data/questions.json` | The question bank (currently empty). Format below. |
+| `data/sample.json` | 10 temporary sample questions the app shows until Step 7 fills the real bank. Deleted in Step 7. |
 | `data/sources.json` | The 14 verified sources that questions link to. Format below. |
-| `scripts/validate.py` | Offline checker for both data files. Run `python3 scripts/validate.py`. |
+| `scripts/validate.py` | Offline checker for both data files. Run `python3 scripts/validate.py` (or pass another file, e.g. `data/sample.json`). |
 | `PROGRESS.md` | Build checklist: which steps are done, when, and in which commit. |
 | `.nojekyll` | Tells GitHub Pages to serve files as-is, without Jekyll processing. |
 
@@ -91,7 +95,17 @@ an error if it finds any problem.
 
 ## How the pieces fit together
 
-`index.html` loads `js/app.js`. `app.js` imports the other modules, fetches
-both data files, and sets up the screen. `theme.js` changes the look,
-`shuffler.js` picks the next question, and `swipe.js` turns gestures into
-"next" and "back". Every module logs through `debug.js`.
+`index.html` loads `js/app.js`. `app.js` reads its settings from `config.js`,
+fetches the data once, and hands the cards to `cards.js`. `cards.js` draws
+the stack and gives each card to `swipe.js`, which turns a drag into "next".
+The Back/Next buttons and arrow keys call the same `cards.js` functions.
+Each time a card settles, `app.js` triggers `feedback.js` (vibration and
+optional click). `theme.js` changes the look, and every module logs only
+through `debug.js`.
+
+## Controls
+
+- Swipe the card left or right (touch or mouse), or flick it: next card.
+- A short drag snaps back.
+- Next button or Right arrow: next card. Back button or Left arrow: previous card.
+- The source link in the footnote opens in a new tab.

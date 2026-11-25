@@ -1,0 +1,112 @@
+[
+  {
+    "id": "ice-1-0001",
+    "section": "icebreaker",
+    "level": 1,
+    "category": "Quirky habits",
+    "adult": false,
+    "text": "What's a small habit of yours that would surprise someone who just met you?",
+    "why": "Quirky habits are low-stakes and show personality quickly.",
+    "framework": "General",
+    "source_id": "general-wondermind-first-date"
+  },
+  {
+    "id": "ice-1-0002",
+    "section": "icebreaker",
+    "level": 1,
+    "category": "Would you rather",
+    "adult": false,
+    "text": "Would you rather have a theme song that plays whenever you walk into a room, or a narrator only you can hear? Why?",
+    "why": "Silly choices spark laughter and reveal how someone thinks.",
+    "framework": "General",
+    "source_id": "general-eharmony-first-date"
+  },
+  {
+    "id": "ice-2-0003",
+    "section": "icebreaker",
+    "level": 2,
+    "category": "Stories",
+    "adult": false,
+    "text": "What's a story your friends always ask you to tell again?",
+    "why": "Favourite stories reveal what someone values and how they see themselves.",
+    "framework": "General",
+    "source_id": "general-thoughtcatalog-first-date"
+  },
+  {
+    "id": "ice-2-0004",
+    "section": "icebreaker",
+    "level": 2,
+    "category": "Passions",
+    "adult": false,
+    "text": "What could you happily talk about for an hour with no preparation?",
+    "why": "Asking about passions invites energy and easy follow-up questions.",
+    "framework": "General",
+    "source_id": "general-onelove-first-date"
+  },
+  {
+    "id": "ice-3-0005",
+    "section": "icebreaker",
+    "level": 3,
+    "category": "Values",
+    "adult": false,
+    "text": "Walk me through an ordinary day that would leave you completely content.",
+    "why": "Gradually deeper self-disclosure builds closeness, as in Aron's 36 Questions.",
+    "framework": "Aron: 36 Questions",
+    "source_id": "aron-36-questions-amq"
+  },
+  {
+    "id": "ice-3-0006",
+    "section": "icebreaker",
+    "level": 3,
+    "category": "Formative moments",
+    "adult": false,
+    "text": "Which experience changed the way you see the world, and how?",
+    "why": "Sharing formative moments deepens trust through gradual self-disclosure.",
+    "framework": "Aron: 36 Questions",
+    "source_id": "aron-36-questions-rd"
+  },
+  {
+    "id": "date-1-0007",
+    "section": "dating",
+    "level": 1,
+    "category": "Daily life",
+    "adult": false,
+    "text": "What's been taking up the most space in your head this week, and why?",
+    "why": "Builds Love Maps by learning their current worries.",
+    "framework": "Gottman: Love Maps",
+    "source_id": "gottman-love-maps"
+  },
+  {
+    "id": "date-1-0008",
+    "section": "dating",
+    "level": 1,
+    "category": "Dreams",
+    "adult": false,
+    "text": "Which dream of yours has grown or changed since we met?",
+    "why": "Keeps Love Maps current by tracking each other's changing hopes.",
+    "framework": "Gottman: Love Maps",
+    "source_id": "gottman-love-map-exercise-pdf"
+  },
+  {
+    "id": "date-2-0009",
+    "section": "dating",
+    "level": 2,
+    "category": "Appreciation",
+    "adult": false,
+    "text": "What's something I did recently that made you feel cared for, even if it was small?",
+    "why": "Strengthens fondness and admiration by naming what you appreciate.",
+    "framework": "Gottman: Fondness and Admiration",
+    "source_id": "gottman-fondness-admiration"
+  },
+  {
+    "id": "date-3-0010",
+    "section": "dating",
+    "level": 3,
+    "category": "Shared meaning",
+    "adult": false,
+    "text": "What tradition would you like us to start together, and what would it mean to you?",
+    "why": "Builds shared meaning through rituals that belong to you both.",
+    "framework": "Gottman: Sound Relationship House",
+    "source_id": "gottman-sound-relationship-house-pdf"
+  }
+]
