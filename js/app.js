@@ -13,7 +13,7 @@ import { askToConfirm, isDialogOpen } from './dialog.js';
 import { playCardChangeFeedback, setSoundEnabled } from './feedback.js';
 import { createShuffler } from './shuffler.js';
 import { clearSaved, loadSaved, save } from './storage.js';
-import { applyTheme } from './theme.js';
+import { applyTheme, changeScreenWithFade } from './theme.js';
 
 // ----------------------------------------------------------
 // Setup: page elements and the current session
@@ -340,10 +340,10 @@ async function resetProgress() {
 // Connect every button and the arrow keys. Runs once at startup.
 function connectControls() {
   elements.sectionButtons.forEach((button) => {
-    button.addEventListener('click', () => chooseSection(button.dataset.section));
+    button.addEventListener('click', () => changeScreenWithFade(() => chooseSection(button.dataset.section)));
   });
   elements.resetButton.addEventListener('click', resetProgress);
-  elements.homeButton.addEventListener('click', showStartScreen);
+  elements.homeButton.addEventListener('click', () => changeScreenWithFade(showStartScreen));
   elements.shallowerButton.addEventListener('click', () => changeLevel(-1));
   elements.deeperButton.addEventListener('click', () => changeLevel(1));
   elements.nextButton.addEventListener('click', () => session.cardStack.showNext('left'));

@@ -9,6 +9,7 @@
 import { CONFIG } from './config.js';
 import { debugLog } from './debug.js';
 import { attachSwipe } from './swipe.js';
+import { readCssDurationMs } from './timing.js';
 
 const MAX_CARDS_IN_PAGE = 3;
 // A depth one past the last visible card: the card is there but transparent,
@@ -256,10 +257,4 @@ function waitForTransition(element, durationMs) {
     }
     element.addEventListener('transitionend', handleTransitionEnd);
   });
-}
-
-// Read an animation duration (written in ms) from a CSS variable.
-function readCssDurationMs(variableName) {
-  const value = getComputedStyle(document.documentElement).getPropertyValue(variableName);
-  return parseFloat(value) || 0;
 }

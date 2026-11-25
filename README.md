@@ -22,8 +22,8 @@ to see debug logs in the browser console.
 
 | File | What it does |
 | --- | --- |
-| `index.html` | The single page. Loads the stylesheet and `js/app.js` as a module. Holds two screens: the start screen (Icebreaker / Dating buttons, Reset) and the card screen (Home, sound toggle, 18+ switch for Dating, card stack, level controls, Back/Next), the confirmation dialog and the error message. |
-| `css/styles.css` | All styling. Colours, sizes and animation timings are CSS variables at the top; reduced-motion settings shorten the timings. Card depth (0 = top) is styled with `data-depth`. |
+| `index.html` | The single page. Loads the stylesheet and `js/app.js` as a module. Holds one background layer per theme and two screens: the start screen (Icebreaker / Dating buttons, Reset) and the card screen (Home, sound toggle, 18+ switch for Dating, card stack, level controls, Back/Next), the confirmation dialog and the error message. |
+| `css/styles.css` | All styling. At the top: the colour palette, the colour roles for the neutral theme, then the Icebreaker and Dating theme overrides (`[data-theme="…"]`), sizes and animation timings. Reduced-motion settings shorten the timings. Card depth (0 = top) is styled with `data-depth`. |
 | `js/config.js` | The one `CONFIG` object: data file paths, section and level names, which section allows 18+, storage keys, swipe distance and flick speed, vibration length, click sound. |
 | `js/app.js` | Entry point. Loads the data once, switches between the two screens, deals cards from the shuffler into the stack, handles level changes and the 18+ switch, saves your place and connects every control. |
 | `js/cards.js` | The card stack. Keeps at most 3 cards in the page, flies the top card off for "next" and slides the previous card back in for "back". Asks `app.js` which card belongs at each position, and can rebuild the cards behind the top one after a level change. |
@@ -32,11 +32,13 @@ to see debug logs in the browser console.
 | `js/shuffler.js` | One shuffled pool per section and level, with 18+ questions in separate pools that are only dealt in Dating when asked for. Deals without repeats, reshuffles a pool when it runs out (never showing the last card straight away), takes back cards that were lined up but not shown, and skips cards seen on earlier visits. |
 | `js/storage.js` | Safe read/write/clear for localStorage and sessionStorage, so the app still works if storage is blocked. |
 | `js/dialog.js` | One reusable in-page confirmation dialog (`askToConfirm`), used for the 18+ age check and for Reset. |
-| `js/theme.js` | Switches the page theme by setting `data-theme` on `<body>`. |
+| `js/theme.js` | Switches the theme (`data-theme` on `<body>`) and the phone toolbar colour. `changeScreenWithFade` fades the content out, swaps screen and theme, and fades back in. |
+| `js/timing.js` | Reads animation durations from CSS variables and waits for them; shared by `cards.js` and `theme.js`. |
 | `js/debug.js` | `debugLog()`: the only console output in the app, shown only with `?debug=1`. |
 | `data/questions.json` | The question bank (currently empty). Format below. |
 | `data/sample.json` | 10 temporary sample questions the app shows until Step 7 fills the real bank. Deleted in Step 7. |
 | `data/sources.json` | The 14 verified sources that questions link to. Format below. |
+| `scripts/check_contrast.py` | Offline WCAG AA check of every text and control colour pair in all three themes, read straight from `css/styles.css`. Run `python3 scripts/check_contrast.py`. |
 | `scripts/validate.py` | Offline checker for both data files. Run `python3 scripts/validate.py` (or pass another file, e.g. `data/sample.json`). |
 | `PROGRESS.md` | Build checklist: which steps are done, when, and in which commit. |
 | `.nojekyll` | Tells GitHub Pages to serve files as-is, without Jekyll processing. |
@@ -106,6 +108,22 @@ The Back/Next buttons and arrow keys call the same `cards.js` functions.
 Each time a card settles, `app.js` triggers `feedback.js` (vibration and
 optional click). `theme.js` changes the look, and every module logs only
 through `debug.js`.
+
+## Themes
+
+| Theme | Where | Look |
+| --- | --- | --- |
+| Neutral | Start screen | Warm paper background; each section button previews its own theme. |
+| Icebreaker | Icebreaker cards | Mint and surf-green gradient, near-white mint cards, dark teal text, rounded letters where available. |
+| Dating | Dating cards | Maroon gradient, burgundy cards, warm cream text, serif questions. |
+
+To change a colour, edit the palette or the `--color-*` roles at the top of
+`css/styles.css`, then run `python3 scripts/check_contrast.py` to confirm every
+pair still meets WCAG AA (4.5:1 for text, 3:1 for borders, dots and the switch).
+
+Changing section fades the content out, swaps the theme while nothing is
+visible, and fades back in, while the background layers cross-fade. Only
+opacity animates, never colour.
 
 ## Saved progress
 

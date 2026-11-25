@@ -1,27 +1,65 @@
 /* ==========================================================
    Design tokens: colours, spacing, sizes and timings.
    Every colour, size and duration used below comes from here.
+
+   Colours come in two layers:
+   1. Palette: the raw colours, named by what they look like.
+   2. Roles (--color-*): what each colour is for. The neutral theme
+      (start screen) sets them here; each section theme further down
+      overrides them. scripts/check_contrast.py reads both layers to
+      check WCAG AA contrast.
    ========================================================== */
 :root {
-  --color-background: #f7f7f5;
-  --color-text: #1f2a2a;
-  --color-text-muted: #4a5555;
-  --color-card-background: #ffffff;
-  --color-card-shadow: rgba(31, 42, 42, 0.14);
-  --color-link: #1d5f5a;
-  --color-button-background: #ffffff;
-  --color-button-border: #c9d1d0;
-  --color-button-primary-background: #1f2a2a;
-  --color-button-primary-text: #ffffff;
-  --color-focus-ring: #1d5f5a;
-  --color-level-dot-empty: #c9d1d0;
-  --color-level-dot-filled: #1f2a2a;
-  --color-switch-off: #8a9595;
-  --color-switch-on: #1d5f5a;
-  --color-switch-knob: #ffffff;
-  --color-dialog-backdrop: rgba(31, 42, 42, 0.5);
+  /* Palette: neutral (start screen) */
+  --palette-paper: #f7f5f0;
+  --palette-paper-deep: #e9e3d8;
+  --palette-ink: #2a2522;
+  --palette-ink-muted: #5c534c;
+  --palette-ink-line: #847970;
+  --palette-teal: #1d5f5a;
+  --palette-white: #ffffff;
+
+  /* Palette: Icebreaker (mint and surf green) */
+  --palette-mint-50: #f5fbf8;
+  --palette-mint-100: #e3f5ec;
+  --palette-surf-200: #c6e9dd;
+  --palette-surf-500: #4a8b7c;
+  --palette-surf-700: #1f6b5d;
+  --palette-surf-800: #335850;
+  --palette-surf-900: #123d36;
+
+  /* Palette: Dating (maroon, burgundy and warm cream) */
+  --palette-maroon-950: #2a0510;
+  --palette-maroon-900: #4b0d20;
+  --palette-burgundy-700: #7a1f36;
+  --palette-burgundy-400: #c46a80;
+  --palette-cream-50: #fdf3e3;
+  --palette-cream-200: #f0d9c2;
+  --palette-gold-200: #f6d29c;
+
+  /* Roles: neutral theme */
+  --color-backdrop-start: var(--palette-paper);
+  --color-backdrop-end: var(--palette-paper-deep);
+  --color-text: var(--palette-ink);
+  --color-text-muted: var(--palette-ink-muted);
+  --color-card-background: var(--palette-white);
+  --color-card-shadow: rgba(42, 37, 34, 0.14);
+  --color-link: var(--palette-teal);
+  --color-button-background: var(--palette-white);
+  --color-button-text: var(--palette-ink);
+  --color-button-border: var(--palette-ink-line);
+  --color-button-primary-background: var(--palette-ink);
+  --color-button-primary-text: var(--palette-white);
+  --color-focus-ring: var(--palette-teal);
+  --color-level-dot-empty: var(--palette-ink-line);
+  --color-level-dot-filled: var(--palette-ink);
+  --color-switch-off: var(--palette-ink-line);
+  --color-switch-on: var(--palette-teal);
+  --color-switch-knob: var(--palette-white);
+  --color-dialog-backdrop: rgba(42, 37, 34, 0.5);
   --color-error-background: #fdecec;
   --color-error-text: #8a1c1c;
+  --font-family-question: var(--font-family-base);
 
   --space-xsmall: 4px;
   --space-small: 8px;
@@ -45,6 +83,9 @@
   --switch-knob-gap: 3px;
   --dialog-width: min(calc(100vw - 32px), 24rem);
   --duration-switch: 150ms;
+  /* Section change: content fades out, theme swaps, content fades in */
+  --duration-theme-fade: 180ms;
+  --duration-backdrop: 400ms;
 
   /* Card size: fills a phone, stays a comfortable size on a tablet */
   --card-width: min(100%, 30rem);
@@ -71,7 +112,65 @@
     --duration-fly: 1ms;
     --duration-settle: 1ms;
     --duration-switch: 1ms;
+    --duration-theme-fade: 1ms;
+    --duration-backdrop: 1ms;
   }
+}
+
+/* ==========================================================
+   Section themes. [data-theme] works on any element, so the start
+   screen's section buttons and the background layers can show a
+   theme of their own.
+   ========================================================== */
+
+/* Icebreaker: light pastel greens, soft and playful */
+[data-theme="icebreaker"] {
+  --color-backdrop-start: var(--palette-mint-100);
+  --color-backdrop-end: var(--palette-surf-200);
+  --color-text: var(--palette-surf-900);
+  --color-text-muted: var(--palette-surf-800);
+  --color-card-background: var(--palette-mint-50);
+  --color-card-shadow: rgba(18, 61, 54, 0.16);
+  --color-link: var(--palette-surf-700);
+  --color-button-background: var(--palette-mint-50);
+  --color-button-text: var(--palette-surf-900);
+  --color-button-border: var(--palette-surf-500);
+  --color-button-primary-background: var(--palette-surf-700);
+  --color-button-primary-text: var(--palette-white);
+  --color-focus-ring: var(--palette-surf-700);
+  --color-level-dot-empty: var(--palette-surf-500);
+  --color-level-dot-filled: var(--palette-surf-900);
+  --color-switch-off: var(--palette-surf-500);
+  --color-switch-on: var(--palette-surf-700);
+  --color-switch-knob: var(--palette-white);
+  --color-dialog-backdrop: rgba(18, 61, 54, 0.45);
+  /* Rounded letters where the device has them (e.g. Apple devices) */
+  --font-family-question: ui-rounded, "SF Pro Rounded", var(--font-family-base);
+}
+
+/* Dating: burgundy and maroon with warm cream text, romantic */
+[data-theme="dating"] {
+  --color-backdrop-start: var(--palette-maroon-900);
+  --color-backdrop-end: var(--palette-maroon-950);
+  --color-text: var(--palette-cream-50);
+  --color-text-muted: var(--palette-cream-200);
+  --color-card-background: var(--palette-burgundy-700);
+  --color-card-shadow: rgba(0, 0, 0, 0.4);
+  --color-link: var(--palette-gold-200);
+  --color-button-background: var(--palette-burgundy-700);
+  --color-button-text: var(--palette-cream-50);
+  --color-button-border: var(--palette-burgundy-400);
+  --color-button-primary-background: var(--palette-cream-50);
+  --color-button-primary-text: var(--palette-maroon-900);
+  --color-focus-ring: var(--palette-gold-200);
+  --color-level-dot-empty: var(--palette-burgundy-400);
+  --color-level-dot-filled: var(--palette-cream-50);
+  --color-switch-off: var(--palette-burgundy-400);
+  --color-switch-on: var(--palette-gold-200);
+  --color-switch-knob: var(--palette-maroon-950);
+  --color-dialog-backdrop: rgba(20, 2, 8, 0.6);
+  /* A classic serif for a warmer, more romantic feel; no download needed */
+  --font-family-question: Georgia, "Times New Roman", serif;
 }
 
 /* ==========================================================
@@ -90,7 +189,7 @@ body {
 }
 
 body {
-  background: var(--color-background);
+  background: var(--palette-paper);
   color: var(--color-text);
   font-family: var(--font-family-base);
   font-size: var(--font-size-body);
@@ -105,6 +204,26 @@ button {
   cursor: pointer;
 }
 
+/* ==========================================================
+   Theme background layers: one per theme, stacked behind the page.
+   Only the active theme's layer is visible; switching themes
+   cross-fades them using opacity alone.
+   ========================================================== */
+.theme-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(160deg, var(--color-backdrop-start), var(--color-backdrop-end));
+  opacity: 0;
+  transition: opacity var(--duration-backdrop) ease;
+}
+
+body[data-theme="neutral"] .theme-backdrop[data-theme="neutral"],
+body[data-theme="icebreaker"] .theme-backdrop[data-theme="icebreaker"],
+body[data-theme="dating"] .theme-backdrop[data-theme="dating"] {
+  opacity: 1;
+}
+
 :focus-visible {
   outline: 3px solid var(--color-focus-ring);
   outline-offset: 2px;
@@ -116,6 +235,12 @@ button {
 .app {
   height: 100dvh;
   padding: var(--space-medium);
+  transition: opacity var(--duration-theme-fade) ease;
+}
+
+/* Hidden for a moment while the theme swaps */
+.app.is-fading {
+  opacity: 0;
 }
 
 .screen {
@@ -158,6 +283,7 @@ button {
   width: var(--section-button-width);
 }
 
+/* Each section button wears its own theme (see data-theme in index.html) */
 .section-button {
   display: flex;
   flex-direction: column;
@@ -165,8 +291,13 @@ button {
   padding: var(--space-large) var(--space-medium);
   border: 1px solid var(--color-button-border);
   border-radius: var(--radius-large);
-  background: var(--color-card-background);
+  background: linear-gradient(160deg, var(--color-card-background), var(--color-backdrop-end));
+  color: var(--color-text);
   box-shadow: 0 4px 12px var(--color-card-shadow);
+}
+
+.section-button__name {
+  font-family: var(--font-family-question);
 }
 
 .section-button__name {
@@ -327,6 +458,7 @@ button {
   align-items: center;
   justify-content: center;
   margin: 0;
+  font-family: var(--font-family-question);
   font-size: var(--font-size-question);
   font-weight: 600;
   line-height: 1.3;
@@ -365,6 +497,7 @@ button {
   border: 1px solid var(--color-button-border);
   border-radius: var(--radius-medium);
   background: var(--color-button-background);
+  color: var(--color-button-text);
 }
 
 .control-button {
