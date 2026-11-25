@@ -2,6 +2,16 @@
 
 New session? Read this first, then resume from the next unticked step.
 
+## Keystone session and links
+
+- Keystone Claude Code session (the main session for this project): https://claude.ai/code/session_01FVN9H83TR3msWmCh1Edhze
+- Live app preview (private artifact): https://claude.ai/artifact/CSiwSJaMrGSzxJuE2PwPme
+- Question bank review page, with flags and notes (private artifact): https://claude.ai/artifact/PmsGAGhqcdNDhRqj2JYrvB
+- GitHub repo for Step 8: https://github.com/lilwheel/get-to-know (not connected yet)
+- Before fixing questions, read the flags saved on the review page (collection `flags`, one document per question id).
+
+## Steps
+
 - [x] Step 1 — Project setup (2026-11-25, commit 14d9598)
 - [x] Step 2 — Data schema, sources and validator (2026-11-25, commit 1e5c57d)
 - [x] Step 3 — Card UI and swiping (2026-11-25, commit 9dbf2de)
