@@ -72,6 +72,6 @@ Decisions (2026-11-25):
 
 - [x] P3-1 — Audit and tokens (2026-11-25, commit a9b9fac)
 - [x] P3-2 — New palette, fonts and ink style (2026-11-25, commit 64e8a6c)
-- [ ] P3-3 — Section themes and toggle states
+- [x] P3-3 — Section themes and toggle states (2026-11-25, commit 07ddab4)
 - [ ] P3-4 — Manga details
 - [ ] P3-5 — Final check and deploy
