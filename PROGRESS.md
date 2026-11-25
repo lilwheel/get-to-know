@@ -8,7 +8,7 @@ New session? Read this first, then resume from the next unticked step.
 - [x] Step 4 — Sections, levels and shuffler (2026-11-25, commit a70cf61)
 - [x] Step 5 — 18+ gate (2026-11-25, commit d478c35)
 - [x] Step 6 — Theming and polish (2026-11-25, commit d4a3f03)
-- [ ] Step 7 — Question bank (7a–7f, then 7g top-up)
+- [x] Step 7 — Question bank (7a–7f, then 7g top-up)
   - [x] 7a — Icebreaker Level 1 (2026-11-25, commit feebaf7, 300 questions)
   - [x] 7b — Icebreaker Level 2 (2026-11-25, commit 67098ca, 300 questions)
   - [x] 7c — Icebreaker Level 3 (2026-11-25, commit b141513, 300 questions)

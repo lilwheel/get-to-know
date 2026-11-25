@@ -35,11 +35,10 @@ to see debug logs in the browser console.
 | `js/theme.js` | Switches the theme (`data-theme` on `<body>`) and the phone toolbar colour. `changeScreenWithFade` fades the content out, swaps screen and theme, and fades back in. |
 | `js/timing.js` | Reads animation durations from CSS variables and waits for them; shared by `cards.js` and `theme.js`. |
 | `js/debug.js` | `debugLog()`: the only console output in the app, shown only with `?debug=1`. |
-| `data/questions.json` | The question bank (currently empty). Format below. |
-| `data/sample.json` | 10 temporary sample questions the app shows until Step 7 fills the real bank. Deleted in Step 7. |
+| `data/questions.json` | The question bank: 2,000 original questions (about 720 KB). Format and counts below. |
 | `data/sources.json` | The 14 verified sources that questions link to. Format below. |
 | `scripts/check_contrast.py` | Offline WCAG AA check of every text and control colour pair in all three themes, read straight from `css/styles.css`. Run `python3 scripts/check_contrast.py`. |
-| `scripts/validate.py` | Offline checker for both data files. Run `python3 scripts/validate.py` (or pass another file, e.g. `data/sample.json`). |
+| `scripts/validate.py` | Offline checker for both data files. Run `python3 scripts/validate.py` (or pass another questions file to check it instead). |
 | `PROGRESS.md` | Build checklist: which steps are done, when, and in which commit. |
 | `.nojekyll` | Tells GitHub Pages to serve files as-is, without Jekyll processing. |
 
@@ -90,11 +89,30 @@ Every field is required. A complete example:
 | `framework` | Must equal the `framework` of the source it cites. |
 | `source_id` | Must match an `id` in `data/sources.json`. |
 
+### What's in the bank
+
+| Section | Level 1 | Level 2 | Level 3 |
+| --- | --- | --- | --- |
+| Icebreaker | 350 | 300 | 300 |
+| Dating | 350 | 350 (50 are 18+) | 350 (50 are 18+) |
+
+Total: 2,000. With 18+ switched off, every pool still has at least 300 cards.
+
+- **Icebreaker 1:** quirky habits, would-you-rather, favourites with a twist, hypotheticals, light opinions.
+- **Icebreaker 2:** stories, passions, how you spend your time, small life lessons, work, friends, adventures.
+- **Icebreaker 3:** values, hopes, formative moments, beliefs, identity, gratitude; still suitable for an early date.
+- **Dating 1:** Gottman Love Maps updates: daily life, current worries, dreams, people, backstory.
+- **Dating 2:** fondness and admiration, turning towards, gentle feedback, conflict and repair, stress support, romance; plus 18+ questions on desires, needs, boundaries and communication.
+- **Dating 3:** shared meaning, future plans, values, dreams within conflict, deep questions; plus 18+ questions on long-term intimacy.
+
+Every question has its own `why` line, and `source_id` points to the source that inspired its style or principle. The questions are original; none are copied from the sources.
+
 ### Checking the data
 
 Run `python3 scripts/validate.py`. It prints counts per section and level
 and flags missing or invalid fields, unknown source ids, wrong frameworks,
-exact duplicates and near-duplicates (over 80% word overlap). It exits with
+exact duplicates, near-duplicates (over 80% word overlap) and questions
+that open like a yes/no question ("Do you…", "Have you…"). It exits with
 an error if it finds any problem.
 
 ## How the pieces fit together

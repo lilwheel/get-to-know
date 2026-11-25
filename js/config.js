@@ -6,8 +6,8 @@
 // ==========================================================
 
 export const CONFIG = {
-  // Data files. sample.json is temporary; Step 7 switches to questions.json.
-  questionsUrl: 'data/sample.json',
+  // Data files, loaded once at startup.
+  questionsUrl: 'data/questions.json',
   sourcesUrl: 'data/sources.json',
 
   // Sections and levels, with the names shown on screen.
