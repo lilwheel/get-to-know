@@ -90,6 +90,7 @@
   --switch-knob-gap: 3px;
   --dialog-width: min(calc(100vw - var(--space-large)), 24rem);
   --error-max-width: 32rem;
+  --start-intro-max-width: 34rem;
   --level-indicator-min-width: 5rem;
   --control-button-min-width: 8rem;
   /* Minimum tap heights: main buttons, then smaller toggles and switches */
@@ -285,6 +286,12 @@ body[data-theme="dating"] .theme-backdrop[data-theme="dating"] {
   justify-content: center;
   gap: var(--space-large);
   text-align: center;
+}
+
+/* Keeps the title and subtitle to a readable line length on wide screens */
+.start-screen__intro {
+  width: 100%;
+  max-width: var(--start-intro-max-width);
 }
 
 .start-screen__title {
