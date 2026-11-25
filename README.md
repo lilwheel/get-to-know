@@ -135,7 +135,7 @@ app.js    handleCardShown()  marks it seen, saves progress, reads it to screen
 | `js/timing.js` | Reads animation durations from CSS variables and waits for them. | `readCssDurationMs`, `wait` |
 | `js/debug.js` | `debugLog()`, the **only** place that writes to the console, and only with `?debug=1`. | `debugLog` |
 | `data/questions.json` | The 2,000 questions. See [The question bank](#5-the-question-bank). | — |
-| `data/sources.json` | The 12 verified sources that card footnotes link to. | — |
+| `data/sources.json` | The 24 verified sources that card footnotes link to. | — |
 | `scripts/validate.py` | Offline checker for both data files. Run it after any data change. | — |
 | `scripts/check_contrast.py` | Offline WCAG AA contrast check of every colour pair in all three themes, read from `css/styles.css`. Run it after any colour change. | — |
 | `PROGRESS.md` | Build history: each step of the build plan, its date and commit. | — |
@@ -278,7 +278,7 @@ A dare (Friends & Teammates only):
 }
 ```
 
-The dare example shows the planned Friends format. Its `source_id` is added to `sources.json` in Phase 2, Step P2-2.
+The dare example shows the Friends format; Friends cards arrive in Phase 2, Step P2-6.
 
 | Field | Rule |
 | --- | --- |

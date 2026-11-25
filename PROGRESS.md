@@ -39,8 +39,9 @@ Decisions:
   questions per level (for example, 40% of 300 = 120 18+ questions), never by turning regular ones into 18+.
   Still to confirm before 6g: the exact percentage, and whether the 50 existing 18+ questions count towards it.
 
-Still open:
-- P2-4b: when the 18+ pool runs out, reshuffle it (keeps the rate) or fall back to normal cards?
+- P2-4b (2026-11-25): regular pools reshuffle when they run out, as before. The 18+ pool does not:
+  once every 18+ card at a level has been shown, that level deals regular cards only (no 18+ repeats)
+  until "Reset seen cards".
 
 - [x] P2-1 — 18+ count and data schema update (2026-11-25, commit 5e58241). Before: Dating L2 50/350 (14.3%), L3 50/350 (14.3%), L1 0.
 - [ ] P2-2 — Sources

@@ -70,5 +70,77 @@
     "title": "The Art of Sensual Communication",
     "url": "https://www.gottman.com/blog/the-art-of-sensual-communication/",
     "framework": "Gottman: Intimacy"
+  },
+  {
+    "id": "rework-team-effectiveness",
+    "title": "Understand team effectiveness (Google re:Work)",
+    "url": "https://rework.withgoogle.com/intl/en/guides/understand-team-effectiveness",
+    "framework": "Team: Psychological Safety"
+  },
+  {
+    "id": "psychsafety-project-aristotle",
+    "title": "Google's Project Aristotle",
+    "url": "https://psychsafety.com/googles-project-aristotle/",
+    "framework": "Team: Psychological Safety"
+  },
+  {
+    "id": "psychsafety-aristotle-guide",
+    "title": "Project Aristotle: Guide to Team Effectiveness",
+    "url": "https://psychsafety.com/project-aristotle-guide-to-team-effectiveness/",
+    "framework": "Team: Psychological Safety"
+  },
+  {
+    "id": "ggia-36-questions",
+    "title": "36 Questions for Increasing Closeness (Greater Good in Action)",
+    "url": "https://ggia.berkeley.edu/practice/36_questions_for_increasing_closeness",
+    "framework": "Fast Friends"
+  },
+  {
+    "id": "rascl-fast-friends",
+    "title": "Research Tools: Fast Friends procedure (Berkeley RASCL)",
+    "url": "https://rascl.studentorg.berkeley.edu/tools.html",
+    "framework": "Fast Friends"
+  },
+  {
+    "id": "greatergood-fast-friends",
+    "title": "36 Questions That Can Help Kids Make Friends (Greater Good)",
+    "url": "https://greatergood.berkeley.edu/article/item/36_questions_that_can_help_kids_make_friends",
+    "framework": "Fast Friends"
+  },
+  {
+    "id": "ggie-make-fast-friends",
+    "title": "Make Fast Friends (Greater Good in Education)",
+    "url": "https://ggie.berkeley.edu/practice/make-fast-friends/",
+    "framework": "Fast Friends"
+  },
+  {
+    "id": "cornell-group-games",
+    "title": "Group Games and Initiatives (Cornell Team and Leadership Center)",
+    "url": "https://scl.cornell.edu/sites/scl/files/downloads/basic_page/Group%20Teambuilding%20Games%20and%20Initiatives%20.pdf",
+    "framework": "Team Activity"
+  },
+  {
+    "id": "general-sessionlab-icebreakers",
+    "title": "60 engaging icebreakers (SessionLab)",
+    "url": "https://www.sessionlab.com/blog/icebreaker-games/",
+    "framework": "General"
+  },
+  {
+    "id": "general-atlassian-icebreakers",
+    "title": "7 icebreaker games to help your team build authentic connections (Atlassian)",
+    "url": "https://www.atlassian.com/blog/teamwork/icebreaker-games-authentic-connections",
+    "framework": "General"
+  },
+  {
+    "id": "general-asana-team-games",
+    "title": "45 Team building games to bring teams together at work (Asana)",
+    "url": "https://asana.com/resources/team-building-games",
+    "framework": "General"
+  },
+  {
+    "id": "general-teambuilding-icebreakers",
+    "title": "34 Icebreaker Games for Adults That Actually Work",
+    "url": "https://teambuilding.com/blog/icebreaker-games",
+    "framework": "General"
   }
 ]
