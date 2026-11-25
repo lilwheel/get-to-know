@@ -71,7 +71,7 @@ Decisions (2026-11-25):
 - Section colour changes keep the solid-layer opacity cross-fade (only transform and opacity animate), which looks like a 200 ms colour change.
 
 - [x] P3-1 — Audit and tokens (2026-11-25, commit a9b9fac)
-- [ ] P3-2 — New palette, fonts and ink style
+- [x] P3-2 — New palette, fonts and ink style (2026-11-25, commit 64e8a6c)
 - [ ] P3-3 — Section themes and toggle states
 - [ ] P3-4 — Manga details
 - [ ] P3-5 — Final check and deploy
