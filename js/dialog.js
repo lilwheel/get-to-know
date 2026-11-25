@@ -1,10 +1,11 @@
 // ==========================================================
 // Confirmation dialog
 // One reusable "are you sure?" dialog, built on the <dialog> element
-// in index.html. Used for the 18+ age check and for Reset.
+// in index.html. Used for the 18+ age check, the Party mode rules and Reset.
 // ==========================================================
 
 const dialogElement = document.getElementById('confirm-dialog');
+const headingElement = document.getElementById('confirm-dialog-heading');
 const messageElement = document.getElementById('confirm-dialog-message');
 const confirmButton = document.getElementById('confirm-dialog-confirm');
 const cancelButton = document.getElementById('confirm-dialog-cancel');
@@ -13,10 +14,13 @@ const cancelButton = document.getElementById('confirm-dialog-cancel');
 const CONFIRM_VALUE = 'confirm';
 
 // Show the dialog and resolve true for Confirm, or false for Cancel,
-// the Escape key, or anything else that closes it. The Cancel button
-// always says "Cancel" (set in index.html).
-export function askToConfirm({ message, confirmLabel = 'Confirm' }) {
-  messageElement.textContent = message;
+// the Escape key, or anything else that closes it.
+// - heading (optional): a title above the message; the message is then
+//   shown as normal-size body text, one line per "\n" (used for rules).
+// - message: the question or the rules. Without a heading it is the title.
+// - confirmLabel: the Confirm button's text. Cancel always says "Cancel".
+export function askToConfirm({ heading = '', message, confirmLabel = 'Confirm' }) {
+  showText(heading, message);
   confirmButton.textContent = confirmLabel;
   dialogElement.returnValue = '';
   dialogElement.showModal();
@@ -28,6 +32,17 @@ export function askToConfirm({ message, confirmLabel = 'Confirm' }) {
       resolve(dialogElement.returnValue === CONFIRM_VALUE);
     }, { once: true });
   });
+}
+
+// Fill in the heading and message, and point screen readers at whichever
+// one is the dialog's title.
+function showText(heading, message) {
+  const hasHeading = heading !== '';
+  headingElement.textContent = heading;
+  headingElement.hidden = !hasHeading;
+  messageElement.textContent = message;
+  dialogElement.classList.toggle('confirm-dialog--with-heading', hasHeading);
+  dialogElement.setAttribute('aria-labelledby', hasHeading ? headingElement.id : messageElement.id);
 }
 
 // True while the dialog is on screen, so other keyboard shortcuts can pause.

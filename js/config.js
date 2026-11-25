@@ -1,9 +1,16 @@
 // ==========================================================
 // App settings
-// The one CONFIG object. Every tunable number in the JavaScript
-// lives here. Animation durations and easings live in CSS variables
+// The one CONFIG object (plus a small helper that reads it). Every
+// tunable number and section setting in the JavaScript lives here. Animation durations and easings live in CSS variables
 // (css/styles.css) so prefers-reduced-motion can change them in one place.
 // ==========================================================
+
+// True if a section shows the named toggle ('adult' or 'party'). Used by the
+// shuffler and the app, so a toggle can never affect another section.
+export function sectionHasToggle(section, toggleName) {
+  const sectionSettings = CONFIG.sections[section];
+  return sectionSettings !== undefined && sectionSettings.toggle === toggleName;
+}
 
 export const CONFIG = {
   // Data files, loaded once at startup. Every card file is merged into one bank.
@@ -17,22 +24,67 @@ export const CONFIG = {
   //   name:           shown on the start button and the card screen header
   //   hint:           the line under the name on the start button
   //   hasPassButton:  show a Pass button on every card (no penalty for using it)
+  //   toggle:         the gated switch this section shows ('adult', 'party' or null);
+  //                   see `toggles` below. A toggle only ever works in its own section.
   // To add a section: add it here, add its cards, and give it a theme in css/styles.css.
   sections: {
     icebreaker: {
       name: 'Icebreaker',
       hint: 'First dates and new connections',
       hasPassButton: false,
+      toggle: null,
     },
     dating: {
       name: 'Dating',
       hint: 'Couples a few months in',
       hasPassButton: false,
+      toggle: 'adult',
     },
     friends: {
       name: 'Friends & Teammates',
       hint: 'Questions and dares for the whole table',
       hasPassButton: true,
+      toggle: 'party',
+    },
+  },
+
+  // Gated switches: off by default, and turning one on needs Confirm in a dialog.
+  // The choice lives in sessionStorage, so it resets when the tab closes.
+  //   label:              the text beside the switch
+  //   cardFlag:           the card field that marks this toggle's cards ("adult" or "party")
+  //   storageKey:         where the choice is kept (sessionStorage)
+  //   confirm:            what the dialog shows: an optional heading, the message
+  //                       (each line on its own line), and the button text
+  //   turnOffClearsVisit: true = turning it off reopens the section, so none of its
+  //                       cards stay on screen or behind Back; false = normal cards
+  //                       just resume from the next swipe
+  toggles: {
+    adult: {
+      label: 'Include 18+ questions',
+      cardFlag: 'adult',
+      storageKey: 'getting-to-know.include-adult',
+      confirm: {
+        heading: '',
+        message: 'Both of you confirm you are 18 or older.',
+        confirmLabel: 'Confirm',
+      },
+      turnOffClearsVisit: true,
+    },
+    party: {
+      label: 'Party mode',
+      cardFlag: 'party',
+      storageKey: 'getting-to-know.party-mode',
+      confirm: {
+        heading: 'Party mode',
+        message: [
+          'Everyone playing is of legal drinking age where you are.',
+          'Any sip can be water or a soft drink.',
+          'Pass anytime, no penalty.',
+          'Look after each other.',
+        ].join('\n'),
+        confirmLabel: 'Confirm',
+      },
+      turnOffClearsVisit: false,
     },
   },
 
@@ -42,6 +94,8 @@ export const CONFIG = {
     // Every dare is done by the whole table (decided for Phase 2).
     dareWho: 'Whole table',
     pass: 'Pass',
+    // The small badge on Party mode cards.
+    party: 'Party',
   },
 
   levelNames: {
@@ -52,15 +106,11 @@ export const CONFIG = {
   lowestLevel: 1,
   deepestLevel: 3,
 
-  // The only section that can ever show 18+ questions.
-  adultSection: 'dating',
-
-  // Storage keys for saved progress and settings.
+  // Storage keys for saved progress (localStorage). The toggles' keys are
+  // with each toggle above.
   storageKeys: {
     seenIds: 'getting-to-know.seen-ids',
     place: 'getting-to-know.place',
-    // Kept in sessionStorage, so it resets when the tab is closed.
-    includeAdult: 'getting-to-know.include-adult',
   },
 
   // Most cards in the page at once: the top card and two behind it.

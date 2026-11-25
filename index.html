@@ -37,12 +37,14 @@
         <button id="sound-toggle" class="toggle-button" type="button">Sound off</button>
       </header>
 
-      <!-- Dating only: the 18+ switch. Turning it on asks both people to confirm their age. -->
-      <div id="adult-setting" class="setting-row" hidden>
+      <!-- The section's gated switch (18+ in Dating, Party mode in Friends & Teammates).
+           js/app.js sets its label from CONFIG.toggles and hides it in sections without one.
+           Turning it on asks for Confirm first. -->
+      <div id="toggle-setting" class="setting-row" hidden>
         <label class="switch">
-          <input id="adult-toggle" class="switch__input" type="checkbox" role="switch">
+          <input id="toggle-input" class="switch__input" type="checkbox" role="switch">
           <span class="switch__track" aria-hidden="true"></span>
-          <span class="switch__label">Include 18+ questions</span>
+          <span id="toggle-label" class="switch__label"></span>
         </label>
       </div>
 
@@ -74,9 +76,11 @@
       </nav>
     </section>
 
-    <!-- Confirmation dialog used by js/dialog.js (18+ check and Reset) -->
+    <!-- Confirmation dialog used by js/dialog.js (18+ check, Party mode rules, Reset).
+         The heading is only shown when a dialog has one (Party mode rules). -->
     <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-dialog-message">
       <form method="dialog" class="confirm-dialog__form">
+        <h2 id="confirm-dialog-heading" class="confirm-dialog__heading" hidden></h2>
         <p id="confirm-dialog-message" class="confirm-dialog__message"></p>
         <div class="confirm-dialog__buttons">
           <button id="confirm-dialog-cancel" class="control-button" type="submit" value="cancel">Cancel</button>

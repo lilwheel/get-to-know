@@ -1,14 +1,17 @@
 // ==========================================================
 // Shuffler
-// Keeps one shuffled pool of questions per section and level, with
-// 18+ questions in a pool of their own so they can be left out.
+// Keeps one shuffled pool of cards per section, level and kind:
+//   general - normal cards
+//   adult   - 18+ cards, added alongside general ones when the 18+ switch is on
+//   party   - Party mode cards, dealt instead of general ones when Party mode is on
 // Cards are dealt without repeats; when the pools in use run out they
 // are reshuffled, and the card just shown is kept from coming straight
 // back. Cards already seen (saved from an earlier visit) start outside
-// their pool. 18+ cards are only ever dealt in CONFIG.adultSection.
+// their pool. Each kind only works in the section whose toggle it belongs
+// to (see sectionHasToggle in config.js).
 // ==========================================================
 
-import { CONFIG } from './config.js';
+import { sectionHasToggle } from './config.js';
 import { debugLog } from './debug.js';
 
 // ----------------------------------------------------------
@@ -16,6 +19,7 @@ import { debugLog } from './debug.js';
 // ----------------------------------------------------------
 
 // Build a shuffler over all questions. seenIds lists cards already shown.
+// Dealing takes `options`: { includeAdult, partyMode }, both true or false.
 export function createShuffler(questions, seenIds = []) {
   const state = {
     questionsByPool: groupByPool(questions),
@@ -29,13 +33,13 @@ export function createShuffler(questions, seenIds = []) {
   fillAllPools(state);
 
   return {
-    dealNext: (section, level, includeAdult) => dealNext(state, section, level, includeAdult),
+    dealNext: (section, level, options) => dealNext(state, section, level, options),
     putBack: (question) => putBack(state, question),
     markShown: (question) => markShown(state, question),
     takeOut: (question) => takeOut(state, question),
     findById: (id) => state.questionsById.get(id) || null,
     getSeenIds: () => [...state.seenIds],
-    cardsLeft: (section, level, includeAdult) => cardsLeft(state, section, level, includeAdult),
+    cardsLeft: (section, level, options) => cardsLeft(state, section, level, options),
     reset: () => resetAll(state),
   };
 }
@@ -44,14 +48,20 @@ export function createShuffler(questions, seenIds = []) {
 // Building pools
 // ----------------------------------------------------------
 
-// The name of a pool, e.g. "dating-2-general" or "dating-2-adult".
-function poolKey(section, level, isAdult) {
-  return `${section}-${level}-${isAdult ? 'adult' : 'general'}`;
+// The name of a pool, e.g. "dating-2-general", "dating-2-adult" or "friends-1-party".
+function poolKey(section, level, kind) {
+  return `${section}-${level}-${kind}`;
 }
 
 // The name of the pool a question belongs to.
 function poolKeyOf(question) {
-  return poolKey(question.section, question.level, question.adult === true);
+  let kind = 'general';
+  if (question.adult === true) {
+    kind = 'adult';
+  } else if (question.party === true) {
+    kind = 'party';
+  }
+  return poolKey(question.section, question.level, kind);
 }
 
 // Index every question by its pool once, so dealing never scans the whole bank.
@@ -91,8 +101,8 @@ function shuffle(list) {
 
 // Take the next card for a section and level, reshuffling first if every
 // pool in use is empty. Returns null only if there are no questions at all.
-function dealNext(state, section, level, includeAdult) {
-  const keys = poolKeysFor(state, section, level, includeAdult);
+function dealNext(state, section, level, options) {
+  const keys = poolKeysFor(state, section, level, options);
   if (keys.length === 0) {
     return null;
   }
@@ -104,19 +114,28 @@ function dealNext(state, section, level, includeAdult) {
   return question;
 }
 
-// The non-empty pools to deal from. 18+ pools are included only when
-// asked for and only in the adult section, so Icebreaker never gets them.
-function poolKeysFor(state, section, level, includeAdult) {
-  const keys = [poolKey(section, level, false)];
-  if (includeAdult === true && section === CONFIG.adultSection) {
-    keys.push(poolKey(section, level, true));
+// The non-empty pools to deal from at a section and level.
+// - Party mode (only in the party section) swaps the general pool for the
+//   party pool; if that level has no party cards, general cards are used.
+// - The 18+ switch (only in the adult section) adds the adult pool.
+// Checking the section here means no other section can ever get these cards.
+function poolKeysFor(state, section, level, options) {
+  const hasCards = (key) => (state.questionsByPool.get(key) || []).length > 0;
+  let mainKey = poolKey(section, level, 'general');
+  const partyKey = poolKey(section, level, 'party');
+  if (options.partyMode === true && sectionHasToggle(section, 'party') && hasCards(partyKey)) {
+    mainKey = partyKey;
   }
-  return keys.filter((key) => (state.questionsByPool.get(key) || []).length > 0);
+  const keys = [mainKey];
+  if (options.includeAdult === true && sectionHasToggle(section, 'adult')) {
+    keys.push(poolKey(section, level, 'adult'));
+  }
+  return keys.filter(hasCards);
 }
 
 // How many cards are left to deal for a section and level (used in debug logs).
-function cardsLeft(state, section, level, includeAdult) {
-  const keys = poolKeysFor(state, section, level, includeAdult);
+function cardsLeft(state, section, level, options) {
+  const keys = poolKeysFor(state, section, level, options);
   return countRemaining(state, keys);
 }
 

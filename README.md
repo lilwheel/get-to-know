@@ -6,7 +6,7 @@ Swipeable question cards for getting to know each other. There are three section
 
 - **Icebreaker:** first dates and people who have just met.
 - **Dating:** couples a few months in. Includes optional 18+ questions.
-- **Friends & Teammates:** a group around a table. Questions plus dares (quick activities for the whole table), with a Pass button on every card. Being built in Phase 2; it uses 10 sample cards for now.
+- **Friends & Teammates:** a group around a table. Questions plus dares (quick activities for the whole table), with a Pass button on every card, and an optional Party mode. Being built in Phase 2; it uses 16 sample cards for now.
 
 The app is a static site: plain HTML, CSS and JavaScript. It has no backend, no build step, no accounts and no tracking.
 
@@ -56,7 +56,7 @@ Nothing needs installing apart from Python 3, which is used only for the local s
 | Screen | What's on it |
 | --- | --- |
 | Start screen | Title, one button per section (built from `CONFIG.sections`), and "Reset seen cards". |
-| Card screen | Home and Sound buttons, the 18+ switch (Dating only), the card stack, Go Shallower / Go Deeper with three level dots, and Back / Next. |
+| Card screen | Home and Sound buttons, the section's gated switch (18+ in Dating, Party mode in Friends & Teammates), the card stack, Go Shallower / Go Deeper with three level dots, and Back / Next. |
 
 Only one screen shows at a time. A third element, the error message, replaces both if the data can't load.
 
@@ -110,12 +110,22 @@ app.js    handleCardShown()  marks it seen, saves progress, reads it to screen
 - The card on screen stays. The two cards behind it are swapped for cards from the new level (`refreshUpcoming`), so the change applies from the next card.
 - If a card is mid-animation, the swap waits until the animation finishes.
 
-### The 18+ switch
+### Gated switches: 18+ (Dating) and Party mode (Friends & Teammates)
 
-- It only appears in Dating. Turning it on opens the dialog "Both of you confirm you are 18 or older." Only Confirm turns it on.
-- 18+ questions sit in their own pools. The shuffler only adds those pools when the switch is on **and** the section is Dating (`CONFIG.adultSection`). Icebreaker can never get them, even through a bug in `app.js`.
-- Turning the switch off reopens the section, so no 18+ card stays on screen, waits behind the top card, or can be reached with Back.
-- The choice is kept in sessionStorage, so it resets when the tab is closed.
+Both switches are the same shared code, set up in `CONFIG.toggles`. Each section names its switch in `CONFIG.sections` (`toggle: 'adult'`, `'party'` or `null`).
+
+- Off by default. Turning one on opens a dialog, and only **Confirm** turns it on. Cancel or Escape leaves it off. Turning one off never asks.
+  - 18+: "Both of you confirm you are 18 or older."
+  - Party mode: a short rules screen. Everyone playing is of legal drinking age where you are; any sip can be water or a soft drink; pass anytime, no penalty; look after each other.
+- Each choice is kept in sessionStorage, so it resets when the tab is closed.
+- **A switch only ever works in its own section.** The shuffler checks the section itself (`sectionHasToggle` in `js/config.js`), so Party mode can't reach Icebreaker or Dating and 18+ can't reach Icebreaker or Friends, even through a bug in `app.js`.
+- **18+:**
+  - 18+ cards sit in their own pools, which are *added* to the normal cards at the same level.
+  - Turning it off reopens the section, so no 18+ card stays on screen, waits behind the top card, or can be reached with Back.
+- **Party mode:**
+  - Party cards (`"party": true`) sit in their own pools, which *replace* the normal cards at the same level. If a level has no Party cards, normal cards are used.
+  - Party cards show a small **PARTY** badge in the corner, and screen readers hear "Party." first.
+  - Turning it on or off keeps the card on screen; the change applies from the next card.
 
 ### No repeats
 
@@ -132,18 +142,18 @@ app.js    handleCardShown()  marks it seen, saves progress, reads it to screen
 | `index.html` | The single page: three theme background layers, the start screen, the card screen, the confirm dialog, the screen-reader announcer and the error message. Loads `css/styles.css` and `js/app.js`. | — |
 | `css/styles.css` | All styling. It starts with design tokens (palette, colour roles, sizes, timings), then the Icebreaker and Dating theme overrides, then the components in page order. | — |
 | `js/config.js` | The one `CONFIG` object: every tunable number and name in the JavaScript. See [Settings](#8-settings-you-can-change). | — |
-| `js/app.js` | Entry point and coordinator. Loads data, switches screens, deals cards into the stack, handles levels, the 18+ switch, Reset, sound and keyboard, and saves your place. | `startApp`, `openSection`, `getCardAt`, `handleCardShown`, `changeLevel`, `handleAdultToggleChange` |
+| `js/app.js` | Entry point and coordinator. Loads data, switches screens, deals cards into the stack, handles levels, the gated switches (18+ and Party mode), Reset, sound and keyboard, and saves your place. | `startApp`, `openSection`, `getCardAt`, `handleCardShown`, `changeLevel`, `handleToggleChange` |
 | `js/cards.js` | The card stack on screen. Builds card elements, keeps at most 3 in the page, flies the top card off for Next, slides one back in for Back, and rebuilds the upcoming cards after a level change. | `createCardStack`, `showNext`, `showPrevious`, `refreshUpcoming` |
 | `js/swipe.js` | Dragging a card with touch or mouse (pointer events). Follows the pointer on each animation frame. On release it decides swipe or snap back: past 30% of the screen width, or a fast flick in the same direction. | `attachSwipe`, `getSwipeDirection` |
 | `js/shuffler.js` | The pools of questions and the dealing rules: no repeats, reshuffle when empty, 18+ only in Dating, returning cards that were lined up but never shown. | `createShuffler`, `dealNext`, `putBack`, `markShown`, `takeOut` |
 | `js/theme.js` | Sets `data-theme` on `<body>`, colours the phone's browser bar, and fades between screens. | `applyTheme`, `changeScreenWithFade` |
-| `js/dialog.js` | The reusable "are you sure?" dialog, used for the 18+ check and Reset. | `askToConfirm`, `isDialogOpen` |
+| `js/dialog.js` | The reusable "are you sure?" dialog, used for the 18+ check, the Party mode rules and Reset. An optional heading turns the message into body text, one line per rule. | `askToConfirm`, `isDialogOpen` |
 | `js/feedback.js` | A short vibration (where supported) and an optional soft click when the card changes. | `playCardChangeFeedback`, `setSoundEnabled` |
 | `js/storage.js` | Safe read, write and clear for localStorage and sessionStorage. If storage is blocked, the app carries on without saving. | `loadSaved`, `save`, `clearSaved` |
 | `js/timing.js` | Reads animation durations from CSS variables and waits for them. | `readCssDurationMs`, `wait` |
 | `js/debug.js` | `debugLog()`, the **only** place that writes to the console, and only with `?debug=1`. | `debugLog` |
 | `data/questions.json` | The 2,000 questions. See [The question bank](#5-the-question-bank). | — |
-| `data/sample-friends.json` | **Temporary.** 10 sample Friends & Teammates cards (5 questions, 5 dares) used until the real Friends cards are written (Phase 2, Step P2-6). Then it is deleted and removed from `CONFIG.questionFileUrls`. | — |
+| `data/sample-friends.json` | **Temporary.** 16 sample Friends & Teammates cards: 10 normal (5 questions, 5 dares) and 6 Party mode (a question and a dare per level), used until the real Friends cards are written (Phase 2, Step P2-6). Then it is deleted and removed from `CONFIG.questionFileUrls`. | — |
 | `data/sources.json` | The 24 verified sources that card footnotes link to. | — |
 | `scripts/validate.py` | Offline checker for both data files. Run it after any data change. | — |
 | `scripts/check_contrast.py` | Offline WCAG AA contrast check of every colour pair in all three themes, read from `css/styles.css`. Run it after any colour change. | — |
@@ -179,12 +189,12 @@ Add `?debug=1` to the address, open the browser's developer tools (F12, or Cmd+O
 | --- | --- | --- |
 | `Restoring place` | Startup | The saved place: `screen`, `section`, `level`, `currentCardId`. `null` means nothing was saved. |
 | `Theme applied` | Every screen change | `theme`: `neutral`, `icebreaker` or `dating`. |
-| `Card shown` | Every time a card settles on top | `section`, `level`, `cardId`, and `cardsLeftInPool`: cards left to deal at this level before a reshuffle. |
+| `Card shown` | Every time a card settles on top | `section`, `level`, `cardId`, `party` (true for a Party mode card), and `cardsLeftInPool`: cards left to deal at this level before a reshuffle. |
 | `Card passed` | Pass pressed (Friends & Teammates) | `cardId` of the card that was passed. |
 | `Card stack moved` | After Next or Back finishes | `position` in this visit's history, and `cardsInPage`, which should never be more than 3. |
 | `Level changed` | Go Deeper / Go Shallower | The new `level`. |
 | `Pool reshuffled` | A pool ran out | `pool` (for example `dating-2-general` or `dating-2-adult`) and how many `cards` it now holds. |
-| `18+ questions` | The switch changed | `included`: true or false. |
+| `Toggle changed` | A gated switch changed | `toggle` (`adult` or `party`) and `on` (true or false). |
 | `Sound setting changed` | Sound button | `soundOn`. |
 | `Progress reset` | After Reset is confirmed | — |
 | `Could not read / save / clear saved progress` | Storage is blocked or full | The storage `key`. The app keeps working, but won't remember your place. |
@@ -215,7 +225,7 @@ In developer tools, go to **Application** (Chrome) or **Storage** (Firefox), the
 
 | Problem area | Start here |
 | --- | --- |
-| Which card comes next, repeats, 18+ filtering | `js/shuffler.js`: `dealNext`, `poolKeysFor`, `reshufflePool` |
+| Which card comes next, repeats, 18+ and Party mode | `js/shuffler.js`: `dealNext`, `poolKeysFor`, `reshufflePool`; `js/app.js`: `dealOptions`, `isToggleOnHere` |
 | What Back shows, or where a reload resumes | `js/app.js`: `getCardAt`, `forgetCardsAfter`, `openSection`, `findResumableQuestion` |
 | Card animations, cards stacking up, Back/Next timing | `js/cards.js`: `showNext`, `showPrevious`, `waitForTransition` |
 | Drag and flick behaviour | `js/swipe.js`: `handlePointerUp`, `getSwipeDirection` |
@@ -326,6 +336,7 @@ python3 scripts/validate.py
 It prints a counts table (total, 18+, party and dares for each section and level), then flags:
 - missing or wrong-type fields, and badly formed ids
 - 18+ cards outside Dating levels 2 and 3, and party cards outside Friends
+- Party mode safety: party cards that mention drinking other than "take a sip" (drink, chug, shot, "finish your" and similar)
 - questions that open like a yes/no question, and dares that end with "?"
 - "why" lines of 20 words or more
 - unknown `source_id`s, and a `framework` that doesn't match its source
@@ -373,6 +384,7 @@ Everything stays in the browser on the device. Nothing is sent anywhere.
 | `getting-to-know.seen-ids` | localStorage | A list of card ids already shown | "Reset seen cards" |
 | `getting-to-know.place` | localStorage | `{screen, section, level, currentCardId}`: where you were | "Reset seen cards" |
 | `getting-to-know.include-adult` | sessionStorage | `true` if the 18+ switch is on | Closing the tab |
+| `getting-to-know.party-mode` | sessionStorage | `true` if Party mode is on | Closing the tab |
 
 The keys keep the original "getting-to-know" prefix. Renaming them would make returning visitors lose their place.
 
@@ -387,12 +399,12 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 | Setting | Default | Meaning |
 | --- | --- | --- |
 | `questionFileUrls`, `sourcesUrl` | `data/…json` | Where the data files are. Every card file in the list is merged into one bank. |
-| `sections` | Icebreaker, Dating, Friends & Teammates | One entry per section, in start-screen order: `name`, `hint` (the line under the name) and `hasPassButton`. Adding a section starts here. |
-| `cardLabels` | Dare, Whole table, Pass | Words shown on cards. |
+| `sections` | Icebreaker, Dating, Friends & Teammates | One entry per section, in start-screen order: `name`, `hint` (the line under the name), `hasPassButton` and `toggle`. Adding a section starts here. |
+| `cardLabels` | Dare, Whole table, Pass, Party | Words shown on cards. |
 | `levelNames` | Light, Personal, Deep | Level names shown under the dots. |
 | `lowestLevel`, `deepestLevel` | 1, 3 | Level limits. |
-| `adultSection` | `dating` | The only section that can ever show 18+ questions. |
-| `storageKeys` | see [Saved data](#7-saved-data) | Names of the saved values. |
+| `toggles` | adult, party | The gated switches: label, which card field they gate (`cardFlag`), sessionStorage key, the confirm dialog's heading, message and button, and whether turning off reopens the section. |
+| `storageKeys` | see [Saved data](#7-saved-data) | Names of the saved progress values (localStorage). |
 | `maxCardsInPage` | 3 | Cards in the page at once. The CSS styles one `data-depth` per card, so change both together. |
 | `swipeDistanceRatio` | 0.3 | A drag past this share of the screen width counts as a swipe. |
 | `flickVelocityPxPerMs` | 0.5 | A release faster than this counts as a flick, even if it's short. |

@@ -9,6 +9,7 @@ Checks data/sources.json and data/questions.json and prints:
   - questions that open like a yes/no question ("Do you...", "Have you...")
   - dares that end with a question mark (probably a question filed as a dare)
   - party cards outside Friends, and 18+ cards outside Dating levels 2 and 3
+  - party cards that mention drinking other than "take a sip" (Party mode safety)
 
 Exits with status 1 if any problem is found, 0 otherwise.
 
@@ -53,6 +54,10 @@ QUESTION_ID_PATTERN = re.compile(r"^(" + "|".join(SECTION_ID_PREFIX.values()) + 
 YES_NO_OPENERS = {"am", "are", "is", "was", "were", "do", "does", "did", "have", "has",
                   "had", "can", "could", "will", "would", "should", "shall", "may", "might"}
 ALLOWED_OPENER_PHRASES = ("would you rather",)
+# Party mode safety: cards say "take a sip", never these. Matched as whole words,
+# so "soft drink" in the rules screen is fine but a card saying "drink" is flagged.
+PARTY_BANNED_WORDS = ("drink", "drinks", "drinking", "chug", "chugging", "shot", "shots",
+                      "down it", "finish your", "bottoms up")
 
 
 # ----------------------------------------------------------
@@ -204,7 +209,19 @@ def check_text_rules(question, label):
         problems.append(f"{label}: opens like a yes/no question; rephrase to be open-ended")
     if question.get("type") == "dare" and text.rstrip().endswith("?"):
         problems.append(f"{label}: dare ends with '?'; is it really a question?")
+    if question.get("party") is True:
+        problems += check_party_wording(text, label)
     return problems
+
+
+def check_party_wording(text, label):
+    """Party mode safety: flag drinking words other than 'take a sip'."""
+    lowered = text.lower()
+    found = [word for word in PARTY_BANNED_WORDS
+             if re.search(r"\b" + re.escape(word) + r"\b", lowered)]
+    if found:
+        return [f"{label}: party card uses {', '.join(found)}; say 'take a sip' instead"]
+    return []
 
 
 def check_question_rules(question, label, sources_by_id):

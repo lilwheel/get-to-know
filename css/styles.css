@@ -551,6 +551,21 @@ body[data-theme="dating"] .theme-backdrop[data-theme="dating"] {
   color: var(--color-text-muted);
 }
 
+/* Party mode badge: a small tag in the card's top corner, outside the text flow */
+.card__badge {
+  position: absolute;
+  top: var(--space-medium);
+  right: var(--space-medium);
+  padding: var(--space-xsmall) var(--space-small);
+  border-radius: var(--radius-medium);
+  background: var(--color-button-primary-background);
+  color: var(--color-button-primary-text);
+  font-size: var(--font-size-footnote);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+}
+
 /* Pass: sits between the card text and the footnote */
 .card__pass {
   align-self: center;
@@ -701,6 +716,21 @@ body[data-theme="dating"] .theme-backdrop[data-theme="dating"] {
   font-size: var(--font-size-section-name);
   font-weight: 600;
   line-height: var(--line-height-heading);
+}
+
+/* A dialog with a heading (the Party mode rules): the heading is the title,
+   and the message becomes body text with one rule per line */
+.confirm-dialog__heading {
+  margin: 0 0 var(--space-medium);
+  font-size: var(--font-size-section-name);
+  line-height: var(--line-height-heading);
+}
+
+.confirm-dialog--with-heading .confirm-dialog__message {
+  font-size: var(--font-size-body);
+  font-weight: 400;
+  line-height: var(--line-height-body);
+  white-space: pre-line;
 }
 
 .confirm-dialog__buttons {

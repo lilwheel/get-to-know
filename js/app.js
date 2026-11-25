@@ -2,11 +2,11 @@
 // App entry point
 // Loads the data once, then runs the two screens: the start screen
 // (pick a section) and the card screen (the stack, level controls,
-// Back/Next, and the 18+ switch in Dating). Remembers your place
-// between visits.
+// Back/Next, and the section's gated switch: 18+ in Dating, Party mode
+// in Friends & Teammates). Remembers your place between visits.
 // ==========================================================
 
-import { CONFIG } from './config.js';
+import { CONFIG, sectionHasToggle } from './config.js';
 import { createCardStack } from './cards.js';
 import { debugLog } from './debug.js';
 import { askToConfirm, isDialogOpen } from './dialog.js';
@@ -26,8 +26,9 @@ const elements = {
   homeButton: document.getElementById('home-button'),
   sectionTitle: document.getElementById('section-title'),
   soundToggle: document.getElementById('sound-toggle'),
-  adultSetting: document.getElementById('adult-setting'),
-  adultToggle: document.getElementById('adult-toggle'),
+  toggleSetting: document.getElementById('toggle-setting'),
+  toggleInput: document.getElementById('toggle-input'),
+  toggleLabel: document.getElementById('toggle-label'),
   cardStack: document.getElementById('card-stack'),
   cardAnnouncer: document.getElementById('card-announcer'),
   shallowerButton: document.getElementById('shallower-button'),
@@ -49,6 +50,7 @@ const EMPTY_CARD = {
   sourceTitle: '',
   sourceUrl: '',
   canPass: false,
+  isParty: false,
 };
 
 const session = {
@@ -56,7 +58,9 @@ const session = {
   sourcesById: new Map(),
   section: null,
   level: CONFIG.lowestLevel,
-  includeAdult: false,  // the 18+ switch, confirmed this tab; only used in CONFIG.adultSection
+  // Gated switches confirmed in this tab, by name ('adult', 'party').
+  // Each one only counts in its own section; see isToggleOnHere().
+  toggles: { adult: false, party: false },
   history: [],          // every card dealt this visit, in order; null = no question
   currentPosition: 0,   // which entry of history is on top
   cardStack: null,
@@ -112,17 +116,19 @@ function buildCardContent(question) {
     sourceTitle: source ? source.title : '',
     sourceUrl: source ? source.url : '',
     canPass: CONFIG.sections[question.section].hasPassButton,
+    isParty: question.party === true,
   };
 }
 
-// What screen readers hear for a card: dares are announced as dares,
-// with who does them, so the difference isn't only visual.
+// What screen readers hear for a card: Party cards and dares say so, and
+// dares say who does them, so the difference isn't only visual.
 function describeForScreenReader(card) {
+  const { dare, dareWho, party } = CONFIG.cardLabels;
+  const prefix = card.isParty ? `${party}. ` : '';
   if (card.type !== 'dare') {
-    return card.text;
+    return `${prefix}${card.text}`;
   }
-  const { dare, dareWho } = CONFIG.cardLabels;
-  return `${dare}: ${card.text} ${dareWho}.`;
+  return `${prefix}${dare}: ${card.text} ${dareWho}.`;
 }
 
 // ----------------------------------------------------------
@@ -166,7 +172,7 @@ function loadPlace() {
 // dealt from the shuffler at the current level.
 function getCardAt(position) {
   while (session.history.length <= position) {
-    const question = session.shuffler.dealNext(session.section, session.level, isAdultIncludedHere());
+    const question = session.shuffler.dealNext(session.section, session.level, dealOptions());
     session.history.push(question);
   }
   return buildCardContent(session.history[position]);
@@ -202,7 +208,8 @@ function handleCardShown(position) {
     section: session.section,
     level: question ? question.level : session.level,
     cardId: question ? question.id : EMPTY_CARD.id,
-    cardsLeftInPool: session.shuffler.cardsLeft(session.section, session.level, isAdultIncludedHere()),
+    party: question ? question.party === true : false,
+    cardsLeftInPool: session.shuffler.cardsLeft(session.section, session.level, dealOptions()),
   });
 }
 
@@ -243,45 +250,80 @@ function updateLevelDisplay() {
 }
 
 // ----------------------------------------------------------
-// 18+ questions
+// Gated switches (18+ in Dating, Party mode in Friends & Teammates)
 // ----------------------------------------------------------
 
-// True only when the switch is on (and confirmed) and this section allows 18+.
-function isAdultIncludedHere() {
-  return session.includeAdult && session.section === CONFIG.adultSection;
+// True only when the named switch is on (and confirmed) and the open
+// section is the one that switch belongs to.
+function isToggleOnHere(toggleName) {
+  return session.toggles[toggleName] && sectionHasToggle(session.section, toggleName);
 }
 
-// The switch was flipped. Turning on needs both people to confirm their
-// age first; until they do, the switch stays off.
-async function handleAdultToggleChange() {
-  if (!elements.adultToggle.checked) {
-    setIncludeAdult(false);
-    restartVisitWithoutAdultCards();
+// What the shuffler needs to know about the switches when dealing.
+function dealOptions() {
+  return { includeAdult: isToggleOnHere('adult'), partyMode: isToggleOnHere('party') };
+}
+
+// True if a card may be shown right now: 18+ and Party cards need their switch on.
+function isCardAllowedNow(question) {
+  return Object.keys(CONFIG.toggles).every((toggleName) => {
+    const isGatedCard = question[CONFIG.toggles[toggleName].cardFlag] === true;
+    return !isGatedCard || isToggleOnHere(toggleName);
+  });
+}
+
+// The section's switch was flipped. Turning on needs Confirm in the dialog
+// first; until then the switch stays off. Turning off never asks.
+async function handleToggleChange() {
+  const toggleName = CONFIG.sections[session.section].toggle;
+  const toggle = CONFIG.toggles[toggleName];
+  if (!elements.toggleInput.checked) {
+    setToggle(toggleName, false);
+    if (toggle.turnOffClearsVisit) {
+      restartVisitWithout(toggle.cardFlag);
+    } else {
+      session.cardStack.refreshUpcoming();
+    }
     return;
   }
-  elements.adultToggle.checked = false;
-  const confirmed = await askToConfirm({
-    message: 'Both of you confirm you are 18 or older.',
-  });
+  elements.toggleInput.checked = false;
+  const confirmed = await askToConfirm(toggle.confirm);
   if (confirmed) {
-    elements.adultToggle.checked = true;
-    setIncludeAdult(true);
+    elements.toggleInput.checked = true;
+    setToggle(toggleName, true);
     session.cardStack.refreshUpcoming();
   }
 }
 
-// Store the 18+ choice for this tab only (sessionStorage).
-function setIncludeAdult(include) {
-  session.includeAdult = include;
-  save(CONFIG.storageKeys.includeAdult, include, 'session');
-  debugLog('18+ questions', { included: include });
+// Store a switch's choice for this tab only (sessionStorage).
+function setToggle(toggleName, isOn) {
+  session.toggles[toggleName] = isOn;
+  save(CONFIG.toggles[toggleName].storageKey, isOn, 'session');
+  debugLog('Toggle changed', { toggle: toggleName, on: isOn });
 }
 
-// Reopen the section so no 18+ card is showing, lined up, or reachable
-// with Back. Keeps the current card if it isn't 18+.
-function restartVisitWithoutAdultCards() {
+// Read every switch's choice saved earlier in this tab.
+function loadToggles() {
+  for (const toggleName of Object.keys(CONFIG.toggles)) {
+    session.toggles[toggleName] = loadSaved(CONFIG.toggles[toggleName].storageKey, false, 'session') === true;
+  }
+}
+
+// Show the open section's switch (if it has one), with its label and state.
+function updateToggleDisplay() {
+  const toggleName = CONFIG.sections[session.section].toggle;
+  elements.toggleSetting.hidden = toggleName === null;
+  if (toggleName !== null) {
+    elements.toggleLabel.textContent = CONFIG.toggles[toggleName].label;
+    elements.toggleInput.checked = isToggleOnHere(toggleName);
+  }
+}
+
+// Reopen the section so no card with this flag (e.g. 18+) is showing, lined
+// up, or reachable with Back. Keeps the current card if it doesn't have the flag.
+function restartVisitWithout(cardFlag) {
   const currentQuestion = session.history[session.currentPosition];
-  const keepCardId = currentQuestion && !currentQuestion.adult ? currentQuestion.id : null;
+  const keepCardId = currentQuestion && currentQuestion[cardFlag] !== true ? currentQuestion.id : null;
   openSection(session.section, session.level, keepCardId);
 }
 
@@ -316,8 +358,7 @@ function openSection(section, level, resumeCardId) {
   elements.startScreen.hidden = true;
   elements.cardScreen.hidden = false;
   elements.sectionTitle.textContent = CONFIG.sections[section].name;
-  elements.adultSetting.hidden = section !== CONFIG.adultSection;
-  elements.adultToggle.checked = isAdultIncludedHere();
+  updateToggleDisplay();
   applyTheme(section);
   updateLevelDisplay();
   session.cardStack = createCardStack({
@@ -329,13 +370,13 @@ function openSection(section, level, resumeCardId) {
 }
 
 // The saved card to put back on top, if it belongs to the open section
-// and is allowed right now (an 18+ card needs the switch on).
+// and is allowed right now (an 18+ or Party card needs its switch on).
 function findResumableQuestion(cardId) {
   const question = cardId ? session.shuffler.findById(cardId) : null;
   if (question === null || question.section !== session.section) {
     return null;
   }
-  return question.adult && !isAdultIncludedHere() ? null : question;
+  return isCardAllowedNow(question) ? question : null;
 }
 
 // Remove the current card stack, returning any unshown cards to their pools.
@@ -414,7 +455,7 @@ function connectControls() {
   elements.nextButton.addEventListener('click', () => session.cardStack.showNext('left'));
   elements.backButton.addEventListener('click', () => session.cardStack.showPrevious());
   elements.soundToggle.addEventListener('click', toggleSound);
-  elements.adultToggle.addEventListener('change', handleAdultToggleChange);
+  elements.toggleInput.addEventListener('change', handleToggleChange);
   document.addEventListener('keydown', handleArrowKeys);
 }
 
@@ -477,7 +518,7 @@ async function startApp() {
     return;
   }
   session.sourcesById = new Map(sources.map((source) => [source.id, source]));
-  session.includeAdult = loadSaved(CONFIG.storageKeys.includeAdult, false, 'session') === true;
+  loadToggles();
   session.shuffler = createShuffler(questions, loadSaved(CONFIG.storageKeys.seenIds, []));
   connectControls();
   restorePlace();

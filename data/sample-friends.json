@@ -128,5 +128,83 @@
     "why": "A shared task plus personal sharing increases closeness.",
     "framework": "Fast Friends",
     "source_id": "greatergood-fast-friends"
+  },
+  {
+    "id": "fri-1-0011",
+    "section": "friends",
+    "level": 1,
+    "category": "Funny confessions",
+    "adult": false,
+    "type": "question",
+    "party": true,
+    "text": "What's the silliest thing you were convinced of as a kid? Share it, or take a sip.",
+    "why": "Funny confessions get the whole table laughing together.",
+    "framework": "General",
+    "source_id": "general-sessionlab-icebreakers"
+  },
+  {
+    "id": "fri-1-0012",
+    "section": "friends",
+    "level": 1,
+    "category": "Tongue-twisters",
+    "adult": false,
+    "type": "dare",
+    "party": true,
+    "text": "Everyone says \"red lorry, yellow lorry\" three times fast. Anyone who slips takes a sip.",
+    "why": "A shared silly challenge lowers everyone's guard at once.",
+    "framework": "Team Activity",
+    "source_id": "cornell-group-games"
+  },
+  {
+    "id": "fri-2-0013",
+    "section": "friends",
+    "level": 2,
+    "category": "Hot takes",
+    "adult": false,
+    "type": "question",
+    "party": true,
+    "text": "What's your most harmless hot take, the one you'd happily defend all night?",
+    "why": "Friendly debates show personality without anyone getting hurt.",
+    "framework": "General",
+    "source_id": "general-atlassian-icebreakers"
+  },
+  {
+    "id": "fri-2-0014",
+    "section": "friends",
+    "level": 2,
+    "category": "Never have I ever",
+    "adult": false,
+    "type": "dare",
+    "party": true,
+    "text": "Never have I ever, work-friendly edition: each person says one thing they've never done. Anyone who has done it takes a sip.",
+    "why": "Surprising experiences spark follow-up stories and common ground.",
+    "framework": "General",
+    "source_id": "general-teambuilding-icebreakers"
+  },
+  {
+    "id": "fri-3-0015",
+    "section": "friends",
+    "level": 3,
+    "category": "Bold honesty",
+    "adult": false,
+    "type": "question",
+    "party": true,
+    "text": "What's a bold goal you've never said out loud, and what would help you go for it?",
+    "why": "Saying a goal out loud invites the group's support.",
+    "framework": "Team: Psychological Safety",
+    "source_id": "psychsafety-aristotle-guide"
+  },
+  {
+    "id": "fri-3-0016",
+    "section": "friends",
+    "level": 3,
+    "category": "Big performances",
+    "adult": false,
+    "type": "dare",
+    "party": true,
+    "text": "Recreate a famous movie scene together in 60 seconds, with no props. Everyone gets a role.",
+    "why": "A shared performance builds trust through laughing together.",
+    "framework": "Team Activity",
+    "source_id": "cornell-group-games"
   }
 ]

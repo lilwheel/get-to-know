@@ -69,6 +69,9 @@ function createCardElement(stack, card) {
   cardElement.className = card.type === 'dare' ? 'card card--dare' : 'card';
   cardElement.dataset.cardId = card.id;
 
+  if (card.isParty) {
+    cardElement.append(createPartyBadge());
+  }
   cardElement.append(createBodyElement(card));
   if (card.canPass) {
     cardElement.append(createPassButton(stack, card));
@@ -103,6 +106,14 @@ function createBodyElement(card) {
   whoElement.textContent = CONFIG.cardLabels.dareWho;
   bodyElement.append(labelElement, textElement, whoElement);
   return bodyElement;
+}
+
+// Build the small "Party" badge shown in the corner of Party mode cards.
+function createPartyBadge() {
+  const badgeElement = document.createElement('span');
+  badgeElement.className = 'card__badge';
+  badgeElement.textContent = CONFIG.cardLabels.party;
+  return badgeElement;
 }
 
 // Build the Pass button: skips this card with no penalty, exactly like Next.
