@@ -58,11 +58,11 @@ Decisions:
   - [x] 6e — Party Level 2 (2026-11-25, commit b1531d3, 200 cards: 120 questions, 80 dares)
   - [x] 6f — Party Level 3 (2026-11-25, commit 355f203, 200 cards: 120 questions, 80 dares)
   - [x] 6g — Dating 18+ top-up (2026-11-26, commit b74a577; L2 and L3: 120 18+ each, 40% of 300 regular)
-- [ ] P2-7 — Final check and deploy
+- [x] P2-7 — Final check and deploy (2026-11-26, review fixes 8c653d1)
 
 ## Phase 3: Flower Field Theme (look only)
 
-Plan: `PHASE3_PLAN.md`, next to `BUILD_PLAN.md` in the folder above this project. Phase 2 step 6g and P2-7 wait until Phase 3 is done.
+Plan: `PHASE3_PLAN.md`, next to `BUILD_PLAN.md` in the folder above this project. Phase 2 (6g and P2-7) was finished after Phase 3.
 
 Decisions (2026-11-25):
 - Fonts are self-hosted (Latin subsets of Zen Maru Gothic 500/700 and Mochiy Pop One in `fonts/`), not loaded from Google, so no visitor data goes to a third party.
