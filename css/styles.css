@@ -36,6 +36,9 @@
   --butter-light: #FBE4A0;
   --apricot: #F2A262;
   --pollen: #E8AD29;
+  /* A deeper apricot for Party mode with 18+ wording: as dark as it can be
+     while ink text on it still meets AA (4.63 to 1) */
+  --tangerine: #E8963F;
 
   /* Pressed shades: the same hue a little darker, for buttons being
      pushed. Each is as dark as it can be while ink text still meets AA. */
@@ -269,15 +272,15 @@
   --color-dialog-backdrop: var(--rose);
 }
 
-/* Party mode with 18+ wording on: the page turns coral, and Party cards keep
-   their pollen starburst. Set by js/app.js while both are on. */
+/* Party mode with 18+ wording on: the page deepens from apricot to tangerine,
+   and Party cards keep their pollen starburst. Set by js/app.js while both are on. */
 [data-theme="friends-party-adult"] {
-  --color-page: var(--coral);
+  --color-page: var(--tangerine);
   --color-button-primary-background: var(--butter);
   --color-button-primary-pressed: var(--butter-shade);
   --color-accent: var(--pollen);
   --color-switch-on: var(--pollen);
-  --color-dialog-backdrop: var(--coral);
+  --color-dialog-backdrop: var(--tangerine);
 }
 
 /* ==========================================================
