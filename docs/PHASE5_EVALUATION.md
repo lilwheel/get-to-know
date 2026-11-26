@@ -2,6 +2,30 @@
 
 Written 2026-11-26 against commit `8ccb0e5` (release `2026-11-26.4`). No code was changed in this step. Later steps refer to this file instead of re-reading the whole project.
 
+## Decisions (2026-11-26, from the P5-0 answers)
+
+These replace the matching recommendations further down.
+
+1. **Classic wording:**
+   - Changes the drinking and drops "harmless". "Take a sip" becomes "drink".
+   - "harmless", "the harmless kind", "harmlessly" and "harmless only" are removed. Each sentence still has to read well and stay legal and low-risk.
+   - In-card "…or passes" is removed too; the Pass button stays on every card.
+   - Affected cards: 54 sip cards and 19 "harmless" cards (69 in all).
+2. **Wording approach is now a second field, `text_classic` (approach A), on those 69 cards.** Removing "harmless" means rewording sentences, not swapping one word, so placeholders would get clumsy. This adds about 8 KB.
+3. **Rules screen in Classic:** "Any drink can be water or a soft drink." Passing and looking after each other stay.
+4. **The Classic switch:**
+   - It is an 18+ toggle framed like Dating's: label "Include 18+ wording" and a confirm screen ("Everyone playing confirms they are 18 or older").
+   - It sits next to Party mode. It can only be changed while Party mode is on; otherwise it shows as unavailable (dashed, like disabled buttons).
+   - Turning Party mode off turns it off too. It is stored in sessionStorage like the other toggles.
+5. **Every toggle changes the background colour.** Checked on the live site:
+   - Party mode works: butter `#FBE4A0` changes to apricot `#F2A262` and back.
+   - **Dating 18+ doesn't change anything** (`#F8C4B4` before and after).
+   - New themes are needed: `dating-adult` (Dating with 18+ on) and `friends-party-adult` (Party mode with 18+ wording on), both checked by `check_contrast.py`.
+   - Built in P5-4, the toggles step.
+6. **Image footnote:** the "Did you know?" fact and the study name as plain text ("Aron et al., 1997"), no links.
+7. **Save button:** an icon-only floppy disk in the same ink-outline art as the flower (drawn once in `index.html`, ink stroke, solid fill, hard shadow on the button), labelled "Save card" for screen readers.
+8. **Order of work:** as proposed in section 6 (P5-5 and P5-6 merged).
+
 ## Working summary (file map)
 
 | File | What Phase 5 touches |
