@@ -94,5 +94,5 @@ Plan: `PHASE5_PLAN.md`. Evaluation and working notes: `docs/PHASE5_EVALUATION.md
 - [x] P5-3 — Drink wording: data (2026-11-26, commit d88e677; 69 cards with Classic wording)
 - [x] P5-4 — Drink wording: setting (2026-11-26, commit 258084a; "Include 18+ wording", plus 18+ backgrounds)
 - [x] P5-5 — Share button and card image (2026-11-26, commit af17b90; merged with P5-6 as approved)
-- [x] P5-6 — Saving on every device (2026-11-26, commit af17b90; real iPhone and Android checks still to do)
+- [x] P5-6 — Saving on every device (2026-11-26, commit af17b90; confirmed by the owner on iPhone (Photos) and Android (gallery))
 - [ ] P5-7 — Final check and deploy
