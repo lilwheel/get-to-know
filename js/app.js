@@ -6,11 +6,13 @@
 // in Friends & Teammates). Remembers your place between visits.
 // ==========================================================
 
+import { canvasToPngBlob, cardImageFontsReady, drawCardImage, loadCardImageFonts } from './card-image.js';
 import { CONFIG, sectionHasToggle } from './config.js';
 import { createCardStack } from './cards.js';
 import { debugLog } from './debug.js';
 import { askToConfirm, isDialogOpen } from './dialog.js';
 import { playCardChangeFeedback } from './feedback.js';
+import { saveImage } from './save.js';
 import { createShuffler } from './shuffler.js';
 import { clearSaved, loadSaved, save } from './storage.js';
 import { applyTheme, changeScreenWithFade } from './theme.js';
@@ -37,6 +39,8 @@ const elements = {
   levelName: document.getElementById('level-name'),
   backButton: document.getElementById('back-button'),
   nextButton: document.getElementById('next-button'),
+  saveButton: document.getElementById('save-button'),
+  toast: document.getElementById('toast'),
   errorMessage: document.getElementById('error-message'),
 };
 
@@ -217,6 +221,8 @@ function handleCardShown(position) {
   savePlace('cards');
   elements.cardAnnouncer.textContent = describeForScreenReader(buildCardContent(question));
   elements.backButton.disabled = position === 0;
+  // The "no questions here" card has nothing worth saving
+  elements.saveButton.disabled = question === null;
   if (!session.isFirstCardOfVisit) {
     playCardChangeFeedback();
   }
@@ -548,6 +554,7 @@ function connectControls() {
   elements.shallowerButton.addEventListener('click', () => changeLevel(-1));
   elements.deeperButton.addEventListener('click', () => changeLevel(1));
   elements.nextButton.addEventListener('click', () => session.cardStack.showNext('left'));
+  elements.saveButton.addEventListener('click', saveCurrentCard);
   elements.backButton.addEventListener('click', () => session.cardStack.showPrevious());
   new ResizeObserver(fitCardToolbar).observe(elements.cardToolbar);
   document.addEventListener('keydown', handleArrowKeys);
@@ -566,6 +573,59 @@ function handleArrowKeys(event) {
   } else if (event.key === 'ArrowLeft') {
     session.cardStack.showPrevious();
   }
+}
+
+// ----------------------------------------------------------
+// Save: a picture of the card on top
+// ----------------------------------------------------------
+
+let isSaving = false;
+
+// Make a picture of the card on top, exactly as it reads now (Gentle or
+// Classic wording), and save it to the device. Extra presses while saving
+// are ignored. Swiping carries on as normal.
+async function saveCurrentCard() {
+  const question = session.history[session.currentPosition];
+  if (isSaving || question === null || question === undefined) {
+    return;
+  }
+  isSaving = true;
+  try {
+    // The fonts are almost always loaded already; waiting only if they aren't
+    // keeps the picture from ever using a plain fallback font.
+    if (!cardImageFontsReady()) {
+      await loadCardImageFonts();
+    }
+    // Use the words on screen: a wording change only applies from the next
+    // card, so the card on top may still show the other wording.
+    const shownText = elements.cardStack.querySelector('.card[data-depth="0"] .card__question');
+    const card = {
+      ...buildCardContent(question),
+      ...(shownText ? { text: shownText.textContent } : {}),
+      level: question.level,
+      levelName: CONFIG.levelNames[question.level],
+    };
+    const blob = canvasToPngBlob(drawCardImage(card));
+    const fileName = `${CONFIG.cardImage.fileNamePrefix}-${question.section}-L${question.level}.png`;
+    const result = await saveImage(blob, fileName);
+    debugLog('Card saved', { cardId: question.id, fileName, result });
+    if (result === 'downloaded') {
+      showToast(CONFIG.saveLabels.saved);
+    }
+  } finally {
+    isSaving = false;
+  }
+}
+
+// Show a short message (e.g. "Card saved") for a moment.
+let toastTimer = null;
+function showToast(message) {
+  elements.toast.textContent = message;
+  elements.toast.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    elements.toast.hidden = true;
+  }, CONFIG.toastMs);
 }
 
 // ----------------------------------------------------------

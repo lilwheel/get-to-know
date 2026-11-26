@@ -11,29 +11,31 @@
   <!-- Release version: the "?v=" tag on the stylesheet and every script.
        GitHub Pages lets browsers keep files for up to 10 minutes; a new tag
        makes them fetch fresh copies straight away. When you release changes,
-       replace every "v=2026-11-26.10" on this page with a new value (the date). -->
-  <link rel="stylesheet" href="css/styles.css?v=2026-11-26.10">
+       replace every "v=2026-11-26.13" on this page with a new value (the date). -->
+  <link rel="stylesheet" href="css/styles.css?v=2026-11-26.13">
   <!-- The import map gives each JavaScript module the same version tag, so the
        modules' own imports (e.g. "./config.js") also load fresh copies.
        Every file in js/ must be listed here. -->
   <script type="importmap">
     {
       "imports": {
-        "./js/app.js": "./js/app.js?v=2026-11-26.10",
-        "./js/cards.js": "./js/cards.js?v=2026-11-26.10",
-        "./js/config.js": "./js/config.js?v=2026-11-26.10",
-        "./js/debug.js": "./js/debug.js?v=2026-11-26.10",
-        "./js/dialog.js": "./js/dialog.js?v=2026-11-26.10",
-        "./js/feedback.js": "./js/feedback.js?v=2026-11-26.10",
-        "./js/shuffler.js": "./js/shuffler.js?v=2026-11-26.10",
-        "./js/storage.js": "./js/storage.js?v=2026-11-26.10",
-        "./js/swipe.js": "./js/swipe.js?v=2026-11-26.10",
-        "./js/theme.js": "./js/theme.js?v=2026-11-26.10",
-        "./js/timing.js": "./js/timing.js?v=2026-11-26.10"
+        "./js/app.js": "./js/app.js?v=2026-11-26.13",
+        "./js/card-image.js": "./js/card-image.js?v=2026-11-26.13",
+        "./js/cards.js": "./js/cards.js?v=2026-11-26.13",
+        "./js/config.js": "./js/config.js?v=2026-11-26.13",
+        "./js/debug.js": "./js/debug.js?v=2026-11-26.13",
+        "./js/dialog.js": "./js/dialog.js?v=2026-11-26.13",
+        "./js/feedback.js": "./js/feedback.js?v=2026-11-26.13",
+        "./js/save.js": "./js/save.js?v=2026-11-26.13",
+        "./js/shuffler.js": "./js/shuffler.js?v=2026-11-26.13",
+        "./js/storage.js": "./js/storage.js?v=2026-11-26.13",
+        "./js/swipe.js": "./js/swipe.js?v=2026-11-26.13",
+        "./js/theme.js": "./js/theme.js?v=2026-11-26.13",
+        "./js/timing.js": "./js/timing.js?v=2026-11-26.13"
       }
     }
   </script>
-  <script type="module" src="js/app.js?v=2026-11-26.10"></script>
+  <script type="module" src="js/app.js?v=2026-11-26.13"></script>
 </head>
 <body data-theme="neutral">
   <!-- One background layer per theme; css/styles.css fades between them -->
@@ -110,11 +112,17 @@
       <!-- Invisible: js/app.js puts each new question here so screen readers read it out -->
       <p id="card-announcer" class="visually-hidden" aria-live="polite"></p>
 
-      <!-- Back and Next: same as the arrow keys -->
+      <!-- Back, Save and Next. Back and Next are the same as the arrow keys;
+           Save makes a picture of the card on top (js/card-image.js, js/save.js). -->
       <nav class="card-controls" aria-label="Card navigation">
         <button id="back-button" class="control-button" type="button">&larr; Back</button>
+        <button id="save-button" class="control-button control-button--icon" type="button" aria-label="Save card" title="Save card">
+          <svg class="save-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#floppy"></use></svg>
+        </button>
         <button id="next-button" class="control-button control-button--primary" type="button">Next &rarr;</button>
       </nav>
+      <!-- A short message after saving ("Card saved"); read out by screen readers -->
+      <p id="toast" class="toast" role="status" hidden></p>
     </section>
 
     <!-- Confirmation dialog used by js/dialog.js (18+ check, Party mode rules, Reset).
@@ -130,6 +138,18 @@
       </form>
     </dialog>
 
+    <!-- Saving fallback (js/save.js): the card picture full-screen, for
+         browsers that can't save it directly -->
+    <dialog id="save-preview" class="confirm-dialog save-preview" aria-labelledby="save-preview-message">
+      <form method="dialog">
+        <img id="save-preview-image" class="save-preview__image" alt="">
+        <p id="save-preview-message" class="save-preview__message"></p>
+        <div class="confirm-dialog__buttons">
+          <button class="control-button control-button--primary" type="submit" value="close">Close</button>
+        </div>
+      </form>
+    </dialog>
+
     <!-- Plain-language error message, hidden unless something fails to load -->
     <p id="error-message" class="error-message" role="alert" hidden></p>
   </main>
@@ -140,6 +160,15 @@
     <symbol id="flower" viewBox="0 0 24 24">
       <path d="M9.53 8.60A3.9 3.9 0 1 1 14.47 8.60A3.9 3.9 0 1 1 15.99 13.30A3.9 3.9 0 1 1 12.00 16.20A3.9 3.9 0 1 1 8.01 13.30A3.9 3.9 0 1 1 9.53 8.60Z"></path>
       <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"></circle>
+    </symbol>
+    <!-- The Save button's floppy disk, in the same ink style: an accent body
+         with a cut corner, a metal shutter with its slot, and a paper label.
+         css/styles.css .save-icon sets the colours. -->
+    <symbol id="floppy" viewBox="0 0 24 24">
+      <path class="save-icon__body" d="M4.5 3H17L21 7V19.5A1.5 1.5 0 0 1 19.5 21H4.5A1.5 1.5 0 0 1 3 19.5V4.5A1.5 1.5 0 0 1 4.5 3Z"></path>
+      <rect class="save-icon__shutter" x="7" y="3" width="9" height="5.5"></rect>
+      <rect class="save-icon__slot" x="12.5" y="4.25" width="2" height="3"></rect>
+      <rect class="save-icon__label" x="6" y="12.5" width="12" height="8.5" rx="1"></rect>
     </symbol>
   </svg>
 </body>

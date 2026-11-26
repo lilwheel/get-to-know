@@ -121,6 +121,11 @@
   /* Level indicator: three small five-petal flowers */
   --flower-size: 20px;
   --flower-stroke-width: 2px;
+  /* Save button icon, the "Card saved" message and the saving fallback */
+  --save-icon-size: 28px;
+  --toast-bottom: 88px;
+  --save-preview-max-width: 28rem;
+  --save-preview-image-max-height: 65dvh;
   --section-button-width: min(100%, 24rem);
   --switch-width: 48px;
   --switch-width-compact: 40px;
@@ -131,6 +136,8 @@
   --start-intro-max-width: 34rem;
   --level-indicator-min-width: 5rem;
   --control-button-min-width: 8rem;
+  /* Back and Next never take more than this share of a narrow screen each */
+  --card-control-max-share: 30vw;
   /* Minimum tap heights: main buttons, then smaller toggles and switches */
   --tap-target-large: 48px;
   --tap-target-small: 44px;
@@ -962,6 +969,81 @@ body[data-theme="friends-party-adult"] .theme-backdrop[data-theme="friends-party
 
 .control-button--primary {
   background: var(--color-button-primary-background);
+}
+
+/* Back and Next leave room for Save between them on narrow phones */
+.card-controls .control-button {
+  min-width: min(var(--control-button-min-width), var(--card-control-max-share));
+}
+
+/* Save: a square button holding only the floppy disk icon */
+.card-controls .control-button--icon {
+  min-width: var(--tap-target-large);
+  padding: var(--space-small);
+  display: inline-grid;
+  place-items: center;
+}
+
+/* The floppy disk, drawn like the level flowers: solid fills in the theme's
+   colours inside an ink outline */
+.save-icon {
+  display: block;
+  width: var(--save-icon-size);
+  height: var(--save-icon-size);
+  stroke: var(--color-outline);
+  stroke-width: var(--flower-stroke-width);
+  stroke-linejoin: round;
+}
+
+.save-icon__body {
+  fill: var(--color-accent);
+}
+
+.save-icon__shutter,
+.save-icon__label {
+  fill: var(--color-card-background);
+}
+
+.save-icon__slot {
+  fill: var(--color-outline);
+  stroke: none;
+}
+
+/* "Card saved": a small inked panel just above the bottom buttons */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: var(--toast-bottom);
+  transform: translateX(-50%);
+  z-index: 2;
+  margin: 0;
+  padding: var(--space-small) var(--space-medium);
+  border: var(--outline-width) solid var(--color-outline);
+  border-radius: var(--radius-medium);
+  background: var(--color-card-background);
+  box-shadow: var(--shadow-hard) var(--color-shadow);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+
+/* The saving fallback: the picture as large as the screen allows */
+.save-preview {
+  width: min(calc(100vw - var(--space-large)), var(--save-preview-max-width));
+}
+
+.save-preview__image {
+  display: block;
+  width: 100%;
+  max-height: var(--save-preview-image-max-height);
+  object-fit: contain;
+  /* Long-press must reach the image so iPhone and Android offer "Save" */
+  -webkit-touch-callout: default;
+  user-select: auto;
+}
+
+.save-preview__message {
+  margin: var(--space-medium) 0;
+  font-weight: var(--font-weight-bold);
 }
 
 .control-button--primary:not(:disabled):active {

@@ -45,7 +45,8 @@ function showText(heading, message) {
   dialogElement.setAttribute('aria-labelledby', hasHeading ? headingElement.id : messageElement.id);
 }
 
-// True while the dialog is on screen, so other keyboard shortcuts can pause.
+// True while any dialog (this one or the saving fallback) is on screen, so
+// other keyboard shortcuts can pause.
 export function isDialogOpen() {
-  return dialogElement.open;
+  return document.querySelector('dialog[open]') !== null;
 }

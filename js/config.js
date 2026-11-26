@@ -147,6 +147,31 @@ export const CONFIG = {
     cardSource: 'Card idea',
   },
 
+  // Save: the picture of the card (js/card-image.js) and how it's saved (js/save.js).
+  cardImage: {
+    // Portrait, in pixels. Sharp on any phone screen.
+    width: 1080,
+    height: 1350,
+    // Image pixels per on-screen CSS pixel, for outlines, shadows and stickers,
+    // so they look as bold in the picture as on the card.
+    scale: 2,
+    // The small credit at the bottom of the picture, in ink.
+    credit: 'Getting to Know',
+    // File name: getting-to-know-icebreaker-L2.png
+    fileNamePrefix: 'getting-to-know',
+    // The card text starts at this size and shrinks a step at a time until
+    // everything fits on the card, so nothing is ever cut off.
+    questionFontMaxPx: 64,
+    questionFontMinPx: 32,
+    questionFontStepPx: 2,
+  },
+  saveLabels: {
+    saved: 'Card saved',
+    pressAndHold: 'Press and hold the image to save it',
+  },
+  // How long "Card saved" stays on screen.
+  toastMs: 2000,
+
   levelNames: {
     1: 'Light',
     2: 'Personal',

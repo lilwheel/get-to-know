@@ -44,6 +44,7 @@ python3 -m http.server 8000
 - Open <http://localhost:8000> on this computer.
 - To test on a phone on the same Wi-Fi, open `http://<this computer's IP address>:8000` on the phone. Windows may ask you to allow Python through the firewall the first time.
 - Add `?debug=1` to the address to see debug logs in the browser console, for example <http://localhost:8000/?debug=1>. See [Debugging guide](#4-debugging-guide).
+- Add `?save=preview` to try the Save fallback (the picture full-screen with "Press and hold the image to save it") on any device.
 
 Nothing needs installing apart from Python 3, which is used only for the local server and the three checking scripts.
 
@@ -56,7 +57,7 @@ Nothing needs installing apart from Python 3, which is used only for the local s
 | Screen | What's on it |
 | --- | --- |
 | Start screen | Title, one button per section (built from `CONFIG.sections`), and "Reset seen cards". |
-| Card screen | The Home button and section name; a toolbar just above the card with the section's gated switch on the left (18+ in Dating, Party mode in Friends & Teammates) and Go Shallower / three level flowers / Go Deeper on the right; the card stack; and Back / Next at the bottom. |
+| Card screen | The Home button and section name; a toolbar just above the card with the section's gated switches on the left (18+ in Dating; Party mode and 18+ wording in Friends & Teammates) and Go Shallower / three level flowers / Go Deeper on the right; the card stack; and Back / Save (the floppy disk) / Next at the bottom. |
 
 Only one screen shows at a time. A third element, the error message, replaces both if the data can't load.
 
@@ -160,6 +161,8 @@ All three switches are the same shared code, set up in `CONFIG.toggles`. Each se
 | `js/feedback.js` | A short vibration (where supported) when the card changes. | `playCardChangeFeedback` |
 | `js/storage.js` | Safe read, write and clear for localStorage and sessionStorage. If storage is blocked, the app carries on without saving. | `loadSaved`, `save`, `clearSaved` |
 | `js/timing.js` | Reads animation durations from CSS variables and waits for them. | `readCssDurationMs`, `wait` |
+| `js/card-image.js` | Draws the card on top as a 1080 × 1350 picture with the Canvas API (no library): the theme's colours, the fonts, ink outline and hard shadow, stickers, the "Did you know?" fact with the study's name (no links), the level flowers and the "Getting to Know" credit. The card text shrinks until it fits, so nothing is cut off. | `drawCardImage`, `canvasToPngBlob`, `cardImageFontsReady` |
+| `js/save.js` | Saves the picture on the device, never uploading it: the share sheet on iPhone and iPad ("Save Image" puts it in Photos), a normal download everywhere else, and a full-screen "Press and hold the image to save it" fallback. | `saveImage` |
 | `js/debug.js` | `debugLog()`, the **only** place that writes to the console, and only with `?debug=1`. | `debugLog` |
 | `data/questions.json` | The 3,340 cards for all three sections. See [The question bank](#5-the-question-bank). | — |
 | `fonts/` | Self-hosted web fonts, Latin characters only: Zen Maru Gothic 500 and 700 (body and questions) and Mochiy Pop One (headings and labels), about 41 KB in all, with their licences (`OFL-*.txt`, SIL Open Font License). Nothing is loaded from Google, so no visitor data reaches a third party. | — |
@@ -182,6 +185,8 @@ index.html ──loads──► app.js
                         ├── theme.js ──► timing.js  (colours and the fade)
                         ├── dialog.js     (confirmations)
                         ├── feedback.js   (vibration)
+                        ├── card-image.js (the picture for Save)
+                        ├── save.js       (putting it on the device)
                         ├── storage.js    (saving)
                         └── debug.js      (logging; used by every module)
 ```
@@ -202,6 +207,8 @@ Add `?debug=1` to the address, open the browser's developer tools (F12, or Cmd+O
 | `Theme applied` | Every screen change, and whenever a switch changes | `theme`: `neutral`, `icebreaker`, `dating`, `dating-adult`, `friends`, `friends-party` or `friends-party-adult`. |
 | `Card shown` | Every time a card settles on top | `section`, `level`, `cardId`, `party` (true for a Party mode card), and `cardsLeftInPool`: cards left to deal at this level before a reshuffle. |
 | `Card passed` | Pass pressed (Friends & Teammates) | `cardId` of the card that was passed. |
+| `Card saved` | Save pressed | `cardId`, `fileName` and `result`: `downloaded`, `shared`, `cancelled` (share sheet closed) or `preview` (the fallback). |
+| `Share sheet closed or refused` | iPhone/iPad share sheet didn't save | `error`: `AbortError` means it was closed; anything else shows the fallback. |
 | `Card stack moved` | After Next or Back finishes | `position` in this visit's history, and `cardsInPage`, which should never be more than 3. |
 | `Level changed` | Go Deeper / Go Shallower | The new `level`. |
 | `Pool reshuffled` | A pool ran out | `pool` (for example `dating-2-general` or `dating-2-adult`) and how many `cards` it now holds. |
@@ -513,6 +520,8 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 | `dragRotationDegreesPerPixel` | 0.05 | How much a card tilts while dragged. |
 | `transitionSafetyMarginMs` | 50 | Extra wait in case the browser never reports an animation's end. |
 | `vibrationMs` | 12 | Length of the vibration. |
+| `cardImage` | 1080 × 1350, scale 2, credit "Getting to Know" | The Save picture: size, image pixels per CSS pixel (for outlines and stickers), the credit, the file name start (`getting-to-know-friends-L2.png`) and the card text's largest and smallest size. |
+| `saveLabels`, `toastMs` | "Card saved", "Press and hold the image to save it", 2000 | The words after saving and in the fallback, and how long "Card saved" shows. |
 
 **`css/styles.css`** (the top `:root` block) holds every colour, size and timing, including animation durations such as `--duration-fly` and `--duration-settle`. Durations live in CSS so the reduced-motion rule can shorten them all in one place, and `js/timing.js` reads them from there.
 
@@ -555,7 +564,7 @@ Edit the `<h1>` and the `start-screen__subtitle` paragraph in `index.html`. Also
 The site is served by GitHub Pages from the `main` branch, root folder.
 
 1. Run `python3 scripts/validate.py`, `python3 scripts/check_style.py` and `python3 scripts/check_contrast.py`.
-2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.10`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
+2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.13`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
 3. Commit and push to `main`.
 4. Wait 1–2 minutes, then refresh <https://lilwheel.github.io/get-to-know/>.
 
