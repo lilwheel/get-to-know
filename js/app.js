@@ -25,9 +25,11 @@ const elements = {
   resetButton: document.getElementById('reset-button'),
   homeButton: document.getElementById('home-button'),
   sectionTitle: document.getElementById('section-title'),
+  cardToolbar: document.querySelector('.card-toolbar'),
   toggleSetting: document.getElementById('toggle-setting'),
   toggleInput: document.getElementById('toggle-input'),
   toggleLabel: document.getElementById('toggle-label'),
+  toggleLabelShort: document.getElementById('toggle-label-short'),
   cardStack: document.getElementById('card-stack'),
   cardAnnouncer: document.getElementById('card-announcer'),
   shallowerButton: document.getElementById('shallower-button'),
@@ -345,8 +347,20 @@ function updateToggleDisplay() {
   elements.toggleSetting.hidden = toggleName === null;
   if (toggleName !== null) {
     elements.toggleLabel.textContent = CONFIG.toggles[toggleName].label;
+    elements.toggleLabelShort.textContent = CONFIG.toggles[toggleName].shortLabel;
     elements.toggleInput.checked = isToggleOnHere(toggleName);
   }
+  fitCardToolbar();
+}
+
+// Show the toolbar above the card with full words if the switches and the
+// level fit on one line, or as chips (short labels, − and +) if they don't.
+// Runs when the labels change and whenever the toolbar changes width.
+function fitCardToolbar() {
+  const toolbar = elements.cardToolbar;
+  toolbar.classList.remove('is-compact');
+  const doesNotFit = toolbar.scrollWidth > toolbar.clientWidth;
+  toolbar.classList.toggle('is-compact', doesNotFit);
 }
 
 // Reopen the section so no card with this flag (e.g. 18+) is showing, lined
@@ -485,6 +499,7 @@ function connectControls() {
   elements.nextButton.addEventListener('click', () => session.cardStack.showNext('left'));
   elements.backButton.addEventListener('click', () => session.cardStack.showPrevious());
   elements.toggleInput.addEventListener('change', handleToggleChange);
+  new ResizeObserver(fitCardToolbar).observe(elements.cardToolbar);
   document.addEventListener('keydown', handleArrowKeys);
 }
 

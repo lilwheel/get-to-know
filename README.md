@@ -56,7 +56,7 @@ Nothing needs installing apart from Python 3, which is used only for the local s
 | Screen | What's on it |
 | --- | --- |
 | Start screen | Title, one button per section (built from `CONFIG.sections`), and "Reset seen cards". |
-| Card screen | The Home button, the section's gated switch (18+ in Dating, Party mode in Friends & Teammates), the card stack, Go Shallower / Go Deeper with three level dots, and Back / Next. |
+| Card screen | The Home button and section name; a toolbar just above the card with the section's gated switch on the left (18+ in Dating, Party mode in Friends & Teammates) and Go Shallower / three level flowers / Go Deeper on the right; the card stack; and Back / Next at the bottom. |
 
 Only one screen shows at a time. A third element, the error message, replaces both if the data can't load.
 
@@ -411,6 +411,7 @@ A pastel flower field drawn in a comics/manga style (Phase 3; the plan, `PHASE3_
 - **Hard shadows:** a 4 px offset shadow with no blur, like a printed comic. A pressed button moves 2 px towards its shadow and turns its darker shade.
 - **Manga details:** cards are panels with 14 px corners, the footnote is a cream caption box, DARE and PARTY are starburst stickers, and the level indicator is three small flowers. The next card gives one short "pop" when the top card leaves (off for reduced motion).
 - **Short cards:** each card is a CSS size container (`container: card / size`). When a card is under 480 px tall (small phones such as a 375 × 667 screen), the stickers, text, gaps and footnote tighten so nothing spills out. On Party questions the text starts below the PARTY sticker. Checked with the longest card and fact pairs at 375 × 667, 375 × 812 and 820 × 1180.
+- **Card toolbar:** the row above the card is exactly as wide as the card. If the switch and the level controls don't fit on one line with full words, `fitCardToolbar()` in `js/app.js` adds `.is-compact`: the switch shows its `shortLabel` ("18+", "Party") and the level buttons show − and +, while screen readers still hear the full words. The card's height shrinks to the space left (`flex: 0 1 var(--card-max-height)`), so projector-like screens (1280 × 720, 1024 × 600) keep the whole card and its controls on screen. Every button is at least 44 px tall.
 - **Fonts:** Zen Maru Gothic (500 and 700) for questions and body text, Mochiy Pop One for headings, section buttons and stickers. Both are self-hosted in `fonts/`.
 - **Text is always `--ink`**, never a pastel on a pastel.
 
@@ -494,7 +495,7 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 | `cardLabels` | Dare, Whole table, Pass, Party, 18+ | Words shown on cards. |
 | `levelNames` | Light, Personal, Deep | Level names shown under the dots. |
 | `lowestLevel`, `deepestLevel` | 1, 3 | Level limits. |
-| `toggles` | adult, party | The gated switches: label, which card field they gate (`cardFlag`), sessionStorage key, the confirm dialog's heading, message and button, whether turning off reopens the section, and (Party mode) `themeWhenOn`, the theme used while it's on. |
+| `toggles` | adult, party | The gated switches: label, short label for the compact toolbar (`shortLabel`), which card field they gate (`cardFlag`), sessionStorage key, the confirm dialog's heading, message and button, whether turning off reopens the section, and (Party mode) `themeWhenOn`, the theme used while it's on. |
 | `toggles.adult.oneInEveryByLevel` | `{ 2: 5, 3: 3 }` | The fixed 18+ rate per level: 1 in every 5 cards at Level 2, 1 in every 3 at Level 3. Levels not listed get no 18+ cards. |
 | `storageKeys` | see [Saved data](#7-saved-data) | Names of the saved progress values (localStorage). |
 | `maxCardsInPage` | 3 | Cards in the page at once. The CSS styles one `data-depth` per card, so change both together. |
@@ -546,7 +547,7 @@ Edit the `<h1>` and the `start-screen__subtitle` paragraph in `index.html`. Also
 The site is served by GitHub Pages from the `main` branch, root folder.
 
 1. Run `python3 scripts/validate.py`, `python3 scripts/check_style.py` and `python3 scripts/check_contrast.py`.
-2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.5`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
+2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.7`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
 3. Commit and push to `main`.
 4. Wait 1–2 minutes, then refresh <https://lilwheel.github.io/get-to-know/>.
 

@@ -132,7 +132,7 @@
   --control-button-min-width: 8rem;
   /* Minimum tap heights: main buttons, then smaller toggles and switches */
   --tap-target-large: 48px;
-  --tap-target-small: 40px;
+  --tap-target-small: 44px;
   --focus-outline-offset: 3px;
   --duration-switch: 150ms;
   --duration-press: 80ms;
@@ -146,7 +146,8 @@
 
   /* Card size: fills a phone, stays a comfortable size on a tablet */
   --card-width: min(100%, 30rem);
-  --card-height: min(100%, 38rem);
+  /* The card's tallest size; on shorter screens it shrinks to the space left */
+  --card-max-height: 38rem;
   --card-padding: clamp(20px, 6vw, 40px);
   /* How far each card behind the top one sits lower and smaller */
   --stack-offset: 12px;
@@ -487,8 +488,9 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 .level-controls {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: var(--space-small);
+  /* Stays in the right corner even in sections with no switch */
+  margin-left: auto;
 }
 
 .level-indicator {
@@ -535,6 +537,62 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--space-small);
+}
+
+/* ==========================================================
+   Card toolbar: the row just above the card, as wide as the card.
+   Switches on the left, the level on the right. When both don't fit on
+   one line with full words, js/app.js adds .is-compact and they shrink to
+   chips: the switch shows its short label ("18+", "Party") and the level
+   buttons show − and + (screen readers still hear the full words).
+   ========================================================== */
+.card-toolbar {
+  flex: none;
+  width: var(--card-width);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-small);
+}
+
+/* Neither group shrinks or wraps, so js/app.js can tell when they don't fit */
+.toggle-group,
+.level-controls {
+  flex: none;
+  white-space: nowrap;
+}
+
+.toggle-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-medium);
+}
+
+.chip-icon,
+.chip-short {
+  display: none;
+}
+
+/* Compact: the full words stay readable by screen readers but aren't shown */
+.card-toolbar.is-compact .chip-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.card-toolbar.is-compact .chip-icon,
+.card-toolbar.is-compact .chip-short {
+  display: inline;
+}
+
+.card-toolbar.is-compact .level-button {
+  min-width: var(--tap-target-large);
+  padding-inline: var(--space-small);
+  font-size: var(--font-size-body);
 }
 
 /* ==========================================================
@@ -543,7 +601,9 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 .card-stack {
   position: relative;
   width: var(--card-width);
-  height: var(--card-height);
+  /* Grows to its tallest size, and shrinks to fit shorter screens */
+  flex: 0 1 var(--card-max-height);
+  min-height: 0;
 }
 
 .card {
@@ -882,11 +942,6 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
    The gated switch (18+ or Party mode): built on a real checkbox,
    so it works with keyboards and screen readers
    ========================================================== */
-.setting-row {
-  display: flex;
-  justify-content: center;
-}
-
 .switch {
   position: relative;
   display: inline-flex;

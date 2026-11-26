@@ -52,6 +52,7 @@ export const CONFIG = {
   // Gated switches: off by default, and turning one on needs Confirm in a dialog.
   // The choice lives in sessionStorage, so it resets when the tab closes.
   //   label:              the text beside the switch
+  //   shortLabel:         the switch's text on narrow cards, where it shrinks to a chip
   //   cardFlag:           the card field that marks this toggle's cards ("adult" or "party")
   //   storageKey:         where the choice is kept (sessionStorage)
   //   confirm:            what the dialog shows: an optional heading, the message
@@ -63,6 +64,7 @@ export const CONFIG = {
   toggles: {
     adult: {
       label: 'Include 18+ questions',
+      shortLabel: '18+',
       cardFlag: 'adult',
       storageKey: 'getting-to-know.include-adult',
       confirm: {
@@ -78,6 +80,7 @@ export const CONFIG = {
     },
     party: {
       label: 'Party mode',
+      shortLabel: 'Party',
       cardFlag: 'party',
       storageKey: 'getting-to-know.party-mode',
       confirm: {
