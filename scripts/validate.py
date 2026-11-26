@@ -64,7 +64,7 @@ YES_NO_OPENERS = {"am", "are", "is", "was", "were", "do", "does", "did", "have",
                   "had", "can", "could", "will", "would", "should", "shall", "may", "might"}
 ALLOWED_OPENER_PHRASES = ("would you rather",)
 # Party mode safety: cards say "take a sip", never these. Matched as whole words
-# in party cards only (the Party rules screen, which says "soft drink", is in
+# in party cards only (the Party rules screen, which mentions drinking, is in
 # js/config.js and isn't checked here).
 PARTY_BANNED_WORDS = ("drink", "drinks", "drinking", "drunk", "chug", "chugging", "shot", "shots",
                       "down it", "finish your", "bottoms up", "alcohol", "beer", "wine",

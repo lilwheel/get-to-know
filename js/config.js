@@ -116,8 +116,8 @@ export const CONFIG = {
         heading: '18+ wording',
         message: [
           'Everyone playing confirms they are 18 or older.',
-          'Any drink can be water or a soft drink.',
-          'Pass anytime, no penalty.',
+          "Any drink can be non-alcoholic. Let's not force anyone to drink alcohol.",
+          "No need to force anyone to answer questions/dares they're not comfortable with.",
           'Look after each other.',
         ].join('\n'),
         confirmLabel: 'Confirm',

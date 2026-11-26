@@ -118,7 +118,7 @@ All three switches are the same shared code, set up in `CONFIG.toggles`. Each se
 - Off by default. Turning one on opens a dialog, and only **Confirm** turns it on. Cancel or Escape leaves it off. Turning one off never asks.
   - 18+: "Both of you confirm you are 18 or older."
   - Party mode: a short rules screen. Everyone playing is of legal drinking age; any sip can be non-alcoholic, and no one is forced to drink alcohol; no one has to answer questions or do dares they're not comfortable with; look after each other.
-  - 18+ wording: a rules screen too. Everyone playing confirms they are 18 or older; any drink can be water or a soft drink; pass anytime, no penalty; look after each other.
+  - 18+ wording: a rules screen too. Everyone playing confirms they are 18 or older; any drink can be non-alcoholic, and no one is forced to drink alcohol; no one has to answer questions or do dares they're not comfortable with; look after each other.
 - **Every switch changes the background while it's on** (`themeWhenOn`): 18+ turns Dating rose (`dating-adult`), Party mode turns Friends apricot (`friends-party`), and 18+ wording on top of Party mode deepens it to tangerine (`friends-party-adult`). With several on, the last one in the section's list wins.
 - **18+ wording** (`adultWording`) shows Party cards' Classic wording (`text_classic`: "drink" instead of "take a sip", no "harmless", no in-card "or passes"). It has no cards of its own (`cardFlag: null`).
   - It `requires` Party mode: until Party mode is on it is shown dashed and can't be changed (its tooltip says "Turn on Party mode first"), and turning Party mode off turns it off too.
@@ -567,7 +567,7 @@ Edit the `<h1>` and the `start-screen__subtitle` paragraph in `index.html`. Also
 The site is served by GitHub Pages from the `main` branch, root folder.
 
 1. Run `python3 scripts/validate.py`, `python3 scripts/check_style.py` and `python3 scripts/check_contrast.py`.
-2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.17`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
+2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.18`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
 3. Commit and push to `main`.
 4. Wait 1–2 minutes, then refresh <https://lilwheel.github.io/get-to-know/>.
 
