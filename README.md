@@ -110,13 +110,18 @@ app.js    handleCardShown()  marks it seen, saves progress, reads it to screen
 - The card on screen stays. The two cards behind it are swapped for cards from the new level (`refreshUpcoming`), so the change applies from the next card.
 - If a card is mid-animation, the swap waits until the animation finishes.
 
-### Gated switches: 18+ (Dating) and Party mode (Friends & Teammates)
+### Gated switches: 18+ (Dating), Party mode and 18+ wording (Friends & Teammates)
 
-Both switches are the same shared code, set up in `CONFIG.toggles`. Each section names its switch in `CONFIG.sections` (`toggle: 'adult'`, `'party'` or `null`).
+All three switches are the same shared code, set up in `CONFIG.toggles`. Each section lists its switches in `CONFIG.sections` (`toggles: ['adult']`, `['party', 'adultWording']` or `[]`), and `js/app.js` builds one switch per entry from the `#switch-template` in `index.html`.
 
 - Off by default. Turning one on opens a dialog, and only **Confirm** turns it on. Cancel or Escape leaves it off. Turning one off never asks.
   - 18+: "Both of you confirm you are 18 or older."
   - Party mode: a short rules screen. Everyone playing is of legal drinking age where you are; any sip can be water or a soft drink; pass anytime, no penalty; look after each other.
+  - 18+ wording: a rules screen too. Everyone playing confirms they are 18 or older; any drink can be water or a soft drink; pass anytime, no penalty; look after each other.
+- **Every switch changes the background while it's on** (`themeWhenOn`): 18+ turns Dating rose (`dating-adult`), Party mode turns Friends apricot (`friends-party`), and 18+ wording on top of Party mode turns it coral (`friends-party-adult`). With several on, the last one in the section's list wins.
+- **18+ wording** (`adultWording`) shows Party cards' Classic wording (`text_classic`: "drink" instead of "take a sip", no "harmless", no in-card "or passes"). It has no cards of its own (`cardFlag: null`).
+  - It `requires` Party mode: until Party mode is on it is shown dashed and can't be changed (its tooltip says "Turn on Party mode first"), and turning Party mode off turns it off too.
+  - Like the other switches, a change applies from the next card. Gentle wording is the default in every new tab.
 - Each choice is kept in sessionStorage, so it resets when the tab is closed.
 - **A switch only ever works in its own section.** The shuffler checks the section itself (`sectionHasToggle` in `js/config.js`), so Party mode can't reach Icebreaker or Dating and 18+ can't reach Icebreaker or Friends, even through a bug in `app.js`.
 - **18+:**
@@ -162,7 +167,7 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 | `data/facts.json` | The 63 checked research findings shown as "Did you know?" in card footnotes, each with its study link. See [Fact format](#fact-format-datafactsjson). | — |
 | `scripts/validate.py` | Offline checker for the three data files (cards, sources and facts). Run it after any data change. | — |
 | `scripts/check_style.py` | Offline check of the look's rules: no gradients, blurs, CSS filters, blurred shadows or see-through colours, and no colour values outside the Theme tokens block in `css/styles.css`. Run it after any style change. | — |
-| `scripts/check_contrast.py` | Offline WCAG AA contrast check of every colour pair in all five themes (neutral, Icebreaker, Dating, Friends, Friends Party), read from `css/styles.css`. Run it after any colour change. | — |
+| `scripts/check_contrast.py` | Offline WCAG AA contrast check of every colour pair in all seven themes (neutral, Icebreaker, Dating, Dating 18+, Friends, Friends Party, Friends Party 18+), read from `css/styles.css`. Run it after any colour change. | — |
 | `PROGRESS.md` | Build history: each step of the build plan, its date and commit. | — |
 | `.nojekyll` | Tells GitHub Pages to serve the files as they are. | — |
 | `.gitignore` | Keeps local-only files out of git: the private question review page (`REVIEW-PAGE.html`) and Python's `__pycache__`. | — |
@@ -194,13 +199,13 @@ Add `?debug=1` to the address, open the browser's developer tools (F12, or Cmd+O
 | Log message | When | What the details mean |
 | --- | --- | --- |
 | `Restoring place` | Startup | The saved place: `screen`, `section`, `level`, `currentCardId`. `null` means nothing was saved. |
-| `Theme applied` | Every screen change, and whenever either switch changes (only Party mode changes the theme) | `theme`: `neutral`, `icebreaker`, `dating`, `friends` or `friends-party`. |
+| `Theme applied` | Every screen change, and whenever a switch changes | `theme`: `neutral`, `icebreaker`, `dating`, `dating-adult`, `friends`, `friends-party` or `friends-party-adult`. |
 | `Card shown` | Every time a card settles on top | `section`, `level`, `cardId`, `party` (true for a Party mode card), and `cardsLeftInPool`: cards left to deal at this level before a reshuffle. |
 | `Card passed` | Pass pressed (Friends & Teammates) | `cardId` of the card that was passed. |
 | `Card stack moved` | After Next or Back finishes | `position` in this visit's history, and `cardsInPage`, which should never be more than 3. |
 | `Level changed` | Go Deeper / Go Shallower | The new `level`. |
 | `Pool reshuffled` | A pool ran out | `pool` (for example `dating-2-general` or `dating-2-adult`) and how many `cards` it now holds. |
-| `Toggle changed` | A gated switch changed | `toggle` (`adult` or `party`) and `on` (true or false). |
+| `Toggle changed` | A gated switch changed | `toggle` (`adult`, `party` or `adultWording`) and `on` (true or false). |
 | `18+ rate` | Every card dealt in Dating levels 2–3 while 18+ is on | Running totals for that level: `adult` and `regular` cards dealt. They include the two cards waiting behind the top card, so they run two ahead of what you've seen. |
 | `Progress reset` | After Reset is confirmed | — |
 | `Could not read / save / clear saved progress` | Storage is blocked or full | The storage `key`. The app keeps working, but won't remember your place. |
@@ -454,7 +459,7 @@ Every colour, outline, shadow, radius and timing lives in one **Theme tokens** b
 | Friends | `--butter-light` | `--butter` | `--apricot` |
 | Friends, Party mode | `--apricot` | `--butter` | `--pollen`: a starburst PARTY sticker |
 
-Party mode switches the page to the `friends-party` theme while it's on (`themeWhenOn` in `CONFIG.toggles.party`). Switching section fades the content out, swaps the theme while nothing is visible, then fades it back in, while the solid page colour cross-fades over 200 ms. Only opacity and transform ever animate.
+Each switch has a theme of its own while it's on (`themeWhenOn` in `CONFIG.toggles`): `dating-adult` (rose), `friends-party` (apricot) and `friends-party-adult` (coral). Switching section fades the content out, swaps the theme while nothing is visible, then fades it back in, while the solid page colour cross-fades over 200 ms. Only opacity and transform ever animate.
 
 ### Checks after any style change
 
@@ -464,7 +469,7 @@ python3 scripts/check_contrast.py
 ```
 
 - `check_style.py` fails on any gradient, blur, filter, blurred shadow, see-through colour, or colour value outside the tokens block. It also checks the release version tags in `index.html` (see [Deploying](#10-deploying)).
-- `check_contrast.py` checks every text and control pair in all five themes against WCAG AA: 4.5:1 for text, 3:1 for outlines, the switch knob and the focus ring.
+- `check_contrast.py` checks every text and control pair in all seven themes against WCAG AA: 4.5:1 for text, 3:1 for outlines, the switch knob and the focus ring.
 
 ---
 
@@ -478,6 +483,7 @@ Everything stays in the browser on the device. Nothing is sent anywhere.
 | `getting-to-know.place` | localStorage | `{screen, section, level, currentCardId}`: where you were | "Reset seen cards" |
 | `getting-to-know.include-adult` | sessionStorage | `true` if the 18+ switch is on | Closing the tab |
 | `getting-to-know.party-mode` | sessionStorage | `true` if Party mode is on | Closing the tab |
+| `getting-to-know.adult-wording` | sessionStorage | `true` if 18+ wording is on (only while Party mode is on) | Closing the tab, or turning Party mode off |
 
 The keys keep the original "getting-to-know" prefix. Renaming them would make returning visitors lose their place.
 
@@ -492,12 +498,12 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 | Setting | Default | Meaning |
 | --- | --- | --- |
 | `questionFileUrls`, `sourcesUrl` | `data/…json` | Where the data files are. Every card file in the list is merged into one bank. |
-| `sections` | Icebreaker, Dating, Friends & Teammates | One entry per section, in start-screen order: `name`, `hint` (the line under the name), `hasPassButton` and `toggle`. Adding a section starts here. |
+| `sections` | Icebreaker, Dating, Friends & Teammates | One entry per section, in start-screen order: `name`, `hint` (the line under the name), `hasPassButton` and `toggles` (its switches, left to right). Adding a section starts here. |
 | `longCardTextCharacters` | 110 | Card text longer than this is set a little smaller (`.card__question--long`) so it fits with the footnote. |
 | `cardLabels` | Dare, Whole table, Pass, Party, 18+ | Words shown on cards. |
 | `levelNames` | Light, Personal, Deep | Level names shown under the dots. |
 | `lowestLevel`, `deepestLevel` | 1, 3 | Level limits. |
-| `toggles` | adult, party | The gated switches: label, short label for the compact toolbar (`shortLabel`), which card field they gate (`cardFlag`), sessionStorage key, the confirm dialog's heading, message and button, whether turning off reopens the section, and (Party mode) `themeWhenOn`, the theme used while it's on. |
+| `toggles` | adult, party, adultWording | The gated switches: label, short label for the compact toolbar (`shortLabel`), which card field they gate (`cardFlag`), sessionStorage key, the confirm dialog's heading, message and button, whether turning off reopens the section, `themeWhenOn` (the theme used while it's on) and, for 18+ wording, `requires: 'party'`. |
 | `toggles.adult.oneInEveryByLevel` | `{ 2: 5, 3: 3 }` | The fixed 18+ rate per level: 1 in every 5 cards at Level 2, 1 in every 3 at Level 3. Levels not listed get no 18+ cards. |
 | `storageKeys` | see [Saved data](#7-saved-data) | Names of the saved progress values (localStorage). |
 | `maxCardsInPage` | 3 | Cards in the page at once. The CSS styles one `data-depth` per card, so change both together. |
@@ -549,7 +555,7 @@ Edit the `<h1>` and the `start-screen__subtitle` paragraph in `index.html`. Also
 The site is served by GitHub Pages from the `main` branch, root folder.
 
 1. Run `python3 scripts/validate.py`, `python3 scripts/check_style.py` and `python3 scripts/check_contrast.py`.
-2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.7`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
+2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.10`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
 3. Commit and push to `main`.
 4. Wait 1–2 minutes, then refresh <https://lilwheel.github.io/get-to-know/>.
 

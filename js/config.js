@@ -5,11 +5,11 @@
 // (css/styles.css) so prefers-reduced-motion can change them in one place.
 // ==========================================================
 
-// True if a section shows the named toggle ('adult' or 'party'). Used by the
-// shuffler and the app, so a toggle can never affect another section.
+// True if a section shows the named toggle ('adult', 'party' or 'adultWording').
+// Used by the shuffler and the app, so a toggle can never affect another section.
 export function sectionHasToggle(section, toggleName) {
   const sectionSettings = CONFIG.sections[section];
-  return sectionSettings !== undefined && sectionSettings.toggle === toggleName;
+  return sectionSettings !== undefined && sectionSettings.toggles.includes(toggleName);
 }
 
 export const CONFIG = {
@@ -25,27 +25,28 @@ export const CONFIG = {
   //   name:           shown on the start button and the card screen header
   //   hint:           the line under the name on the start button
   //   hasPassButton:  show a Pass button on every card (no penalty for using it)
-  //   toggle:         the gated switch this section shows ('adult', 'party' or null);
-  //                   see `toggles` below. A toggle only ever works in its own section.
+  //   toggles:        the gated switches this section shows, left to right, from
+  //                   `toggles` below (empty for none). A toggle only ever works in
+  //                   its own section.
   // To add a section: add it here, add its cards, and give it a theme in css/styles.css.
   sections: {
     icebreaker: {
       name: 'Icebreaker',
       hint: 'First dates and new connections',
       hasPassButton: false,
-      toggle: null,
+      toggles: [],
     },
     dating: {
       name: 'Dating',
       hint: 'Couples a few months in',
       hasPassButton: false,
-      toggle: 'adult',
+      toggles: ['adult'],
     },
     friends: {
       name: 'Friends & Teammates',
       hint: 'Questions and dares for the whole table',
       hasPassButton: true,
-      toggle: 'party',
+      toggles: ['party', 'adultWording'],
     },
   },
 
@@ -53,14 +54,18 @@ export const CONFIG = {
   // The choice lives in sessionStorage, so it resets when the tab closes.
   //   label:              the text beside the switch
   //   shortLabel:         the switch's text on narrow cards, where it shrinks to a chip
-  //   cardFlag:           the card field that marks this toggle's cards ("adult" or "party")
+  //   cardFlag:           the card field that marks this toggle's cards ("adult" or
+  //                       "party"), or null for a switch that only changes wording
   //   storageKey:         where the choice is kept (sessionStorage)
   //   confirm:            what the dialog shows: an optional heading, the message
   //                       (each line on its own line), and the button text
   //   turnOffClearsVisit: true = turning it off reopens the section, so none of its
   //                       cards stay on screen or behind Back; false = normal cards
   //                       just resume from the next swipe
-  //   themeWhenOn:        (optional) a theme the page switches to while it's on
+  //   themeWhenOn:        (optional) a theme the page switches to while it's on. With
+  //                       several switches on, the last one in the section's list wins.
+  //   requires:           (optional) another switch that must be on before this one
+  //                       can be changed; turning that one off turns this one off too
   toggles: {
     adult: {
       label: 'Include 18+ questions',
@@ -72,6 +77,8 @@ export const CONFIG = {
         confirmLabel: 'Confirm',
       },
       turnOffClearsVisit: true,
+      // While 18+ is on, the page uses this deeper theme (css/styles.css).
+      themeWhenOn: 'dating-adult',
       // How often 18+ cards come up while the switch is on: at level 2, one in
       // every 5 cards; at level 3, one in every 3. Levels not listed get none.
       // Cards are dealt in blocks of that size with exactly one 18+ card in a
@@ -96,6 +103,28 @@ export const CONFIG = {
       turnOffClearsVisit: false,
       // While Party mode is on, the page uses this bolder theme (css/styles.css).
       themeWhenOn: 'friends-party',
+    },
+    // Classic wording for Party cards: "drink" instead of "take a sip", without
+    // "harmless" or "or passes" (the card's text_classic in data/questions.json).
+    // The rules don't change, so its confirm screen repeats them.
+    adultWording: {
+      label: 'Include 18+ wording',
+      shortLabel: '18+',
+      cardFlag: null,
+      storageKey: 'getting-to-know.adult-wording',
+      confirm: {
+        heading: '18+ wording',
+        message: [
+          'Everyone playing confirms they are 18 or older.',
+          'Any drink can be water or a soft drink.',
+          'Pass anytime, no penalty.',
+          'Look after each other.',
+        ].join('\n'),
+        confirmLabel: 'Confirm',
+      },
+      turnOffClearsVisit: false,
+      requires: 'party',
+      themeWhenOn: 'friends-party-adult',
     },
   },
 

@@ -20,7 +20,8 @@ from pathlib import Path
 # Setup
 # ----------------------------------------------------------
 STYLESHEET_PATH = Path(__file__).resolve().parent.parent / "css" / "styles.css"
-THEMES = ("neutral", "icebreaker", "dating", "friends", "friends-party")
+THEMES = ("neutral", "icebreaker", "dating", "friends", "friends-party", "dating-adult",
+          "friends-party-adult")
 TEXT_MINIMUM = 4.5
 GRAPHIC_MINIMUM = 3.0
 # Everything that sits on the page itself (headings, buttons, switch, dots)

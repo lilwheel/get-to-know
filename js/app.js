@@ -27,9 +27,7 @@ const elements = {
   sectionTitle: document.getElementById('section-title'),
   cardToolbar: document.querySelector('.card-toolbar'),
   toggleSetting: document.getElementById('toggle-setting'),
-  toggleInput: document.getElementById('toggle-input'),
-  toggleLabel: document.getElementById('toggle-label'),
-  toggleLabelShort: document.getElementById('toggle-label-short'),
+  switchTemplate: document.getElementById('switch-template'),
   cardStack: document.getElementById('card-stack'),
   cardAnnouncer: document.getElementById('card-announcer'),
   shallowerButton: document.getElementById('shallower-button'),
@@ -65,7 +63,7 @@ const session = {
   level: CONFIG.lowestLevel,
   // Gated switches confirmed in this tab, by name ('adult', 'party').
   // Each one only counts in its own section; see isToggleOnHere().
-  toggles: { adult: false, party: false },
+  toggles: { adult: false, party: false, adultWording: false },
   history: [],          // every card dealt this visit, in order; null = no question
   currentPosition: 0,   // which entry of history is on top
   cardStack: null,
@@ -117,10 +115,12 @@ function buildCardContent(question) {
   }
   const fact = session.factsById.get(question.fact_id);
   const source = session.sourcesById.get(question.source_id);
+  // Party cards with Classic wording show it while "Include 18+ wording" is on.
+  const useClassicWording = isToggleOnHere('adultWording') && typeof question.text_classic === 'string';
   return {
     id: question.id,
     type: question.type,
-    text: question.text,
+    text: useClassicWording ? question.text_classic : question.text,
     factText: fact ? fact.text : '',
     factCitation: fact ? fact.citation : '',
     factUrl: fact ? fact.url : '',
@@ -267,12 +267,12 @@ function updateLevelDisplay() {
 }
 
 // ----------------------------------------------------------
-// Gated switches (18+ in Dating, Party mode in Friends & Teammates)
+// Gated switches (18+ in Dating; Party mode and 18+ wording in Friends & Teammates)
 // ----------------------------------------------------------
 
-// The name of the open section's gated switch ('adult', 'party' or null).
-function currentToggleName() {
-  return CONFIG.sections[session.section].toggle;
+// The open section's gated switches, left to right (empty if it has none).
+function currentToggleNames() {
+  return CONFIG.sections[session.section].toggles;
 }
 
 // True only when the named switch is on (and confirmed) and the open
@@ -286,21 +286,33 @@ function dealOptions() {
   return { includeAdult: isToggleOnHere('adult'), partyMode: isToggleOnHere('party') };
 }
 
+// True if a switch can be changed right now. A switch that requires another
+// (18+ wording requires Party mode) can only be changed while that one is on.
+function canChangeToggle(toggleName) {
+  const requiredToggle = CONFIG.toggles[toggleName].requires;
+  return requiredToggle === undefined || isToggleOnHere(requiredToggle);
+}
+
 // True if a card may be shown right now: 18+ and Party cards need their switch on.
+// (18+ wording has no cards of its own; it only changes Party cards' wording.)
 function isCardAllowedNow(question) {
   return Object.keys(CONFIG.toggles).every((toggleName) => {
-    const isGatedCard = question[CONFIG.toggles[toggleName].cardFlag] === true;
+    const { cardFlag } = CONFIG.toggles[toggleName];
+    const isGatedCard = cardFlag !== null && question[cardFlag] === true;
     return !isGatedCard || isToggleOnHere(toggleName);
   });
 }
 
-// The section's switch was flipped. Turning on needs Confirm in the dialog
-// first; until then the switch stays off. Turning off never asks.
-async function handleToggleChange() {
-  const toggleName = currentToggleName();
+// A switch was flipped. Turning on needs Confirm in the dialog first; until
+// then the switch stays off. Turning off never asks. Either way, the change
+// applies from the next card.
+async function handleToggleChange(event) {
+  const input = event.target;
+  const toggleName = input.dataset.toggle;
   const toggle = CONFIG.toggles[toggleName];
-  if (!elements.toggleInput.checked) {
-    setToggle(toggleName, false);
+  if (!input.checked) {
+    turnOffToggle(toggleName);
+    updateToggleStates();
     if (toggle.turnOffClearsVisit) {
       restartVisitWithout(toggle.cardFlag);
     } else {
@@ -308,12 +320,23 @@ async function handleToggleChange() {
     }
     return;
   }
-  elements.toggleInput.checked = false;
+  input.checked = false;
   const confirmed = await askToConfirm(toggle.confirm);
   if (confirmed) {
-    elements.toggleInput.checked = true;
     setToggle(toggleName, true);
+    updateToggleStates();
     session.cardStack.refreshUpcoming();
+  }
+}
+
+// Turn a switch off, along with any switch that requires it
+// (turning Party mode off also turns 18+ wording off).
+function turnOffToggle(toggleName) {
+  setToggle(toggleName, false);
+  for (const [otherName, other] of Object.entries(CONFIG.toggles)) {
+    if (other.requires === toggleName && session.toggles[otherName]) {
+      setToggle(otherName, false);
+    }
   }
 }
 
@@ -326,31 +349,59 @@ function setToggle(toggleName, isOn) {
   debugLog('Toggle changed', { toggle: toggleName, on: isOn });
 }
 
-// The theme for the open section: its own, or its switch's theme while
-// that switch is on (Party mode uses 'friends-party').
+// The theme for the open section: its own, or the theme of the last switch
+// in its list that is on and has one (Party mode 'friends-party', then
+// 18+ wording 'friends-party-adult'; Dating's 18+ 'dating-adult').
 function currentThemeName() {
-  const toggleName = currentToggleName();
-  const themeWhenOn = toggleName === null ? undefined : CONFIG.toggles[toggleName].themeWhenOn;
-  return themeWhenOn && isToggleOnHere(toggleName) ? themeWhenOn : session.section;
+  const switchThemes = currentToggleNames()
+    .filter((toggleName) => isToggleOnHere(toggleName) && CONFIG.toggles[toggleName].themeWhenOn)
+    .map((toggleName) => CONFIG.toggles[toggleName].themeWhenOn);
+  return switchThemes.length > 0 ? switchThemes[switchThemes.length - 1] : session.section;
 }
 
-// Read every switch's choice saved earlier in this tab.
+// Read every switch's choice saved earlier in this tab. A switch whose
+// required switch is off stays off.
 function loadToggles() {
   for (const toggleName of Object.keys(CONFIG.toggles)) {
     session.toggles[toggleName] = loadSaved(CONFIG.toggles[toggleName].storageKey, false, 'session') === true;
   }
+  for (const [toggleName, toggle] of Object.entries(CONFIG.toggles)) {
+    if (toggle.requires !== undefined && !session.toggles[toggle.requires]) {
+      session.toggles[toggleName] = false;
+    }
+  }
 }
 
-// Show the open section's switch (if it has one), with its label and state.
+// Show the open section's switches (none in Icebreaker), with labels and states.
 function updateToggleDisplay() {
-  const toggleName = currentToggleName();
-  elements.toggleSetting.hidden = toggleName === null;
-  if (toggleName !== null) {
-    elements.toggleLabel.textContent = CONFIG.toggles[toggleName].label;
-    elements.toggleLabelShort.textContent = CONFIG.toggles[toggleName].shortLabel;
-    elements.toggleInput.checked = isToggleOnHere(toggleName);
-  }
+  const toggleNames = currentToggleNames();
+  elements.toggleSetting.hidden = toggleNames.length === 0;
+  elements.toggleSetting.replaceChildren(...toggleNames.map(createSwitch));
+  updateToggleStates();
   fitCardToolbar();
+}
+
+// Build one switch from the template in index.html.
+function createSwitch(toggleName) {
+  const switchElement = elements.switchTemplate.content.firstElementChild.cloneNode(true);
+  const input = switchElement.querySelector('.switch__input');
+  input.dataset.toggle = toggleName;
+  input.addEventListener('change', handleToggleChange);
+  switchElement.querySelector('.switch__label').textContent = CONFIG.toggles[toggleName].label;
+  switchElement.querySelector('.switch__label-short').textContent = CONFIG.toggles[toggleName].shortLabel;
+  return switchElement;
+}
+
+// Set each switch to on or off, and make a switch that can't be changed yet
+// unavailable, with a tooltip saying which switch to turn on first.
+function updateToggleStates() {
+  for (const input of elements.toggleSetting.querySelectorAll('.switch__input')) {
+    const toggleName = input.dataset.toggle;
+    input.checked = isToggleOnHere(toggleName);
+    input.disabled = !canChangeToggle(toggleName);
+    const requiredToggle = CONFIG.toggles[toggleName].requires;
+    input.closest('.switch').title = input.disabled ? `Turn on ${CONFIG.toggles[requiredToggle].label} first` : '';
+  }
 }
 
 // Show the toolbar above the card with full words if the switches and the
@@ -498,7 +549,6 @@ function connectControls() {
   elements.deeperButton.addEventListener('click', () => changeLevel(1));
   elements.nextButton.addEventListener('click', () => session.cardStack.showNext('left'));
   elements.backButton.addEventListener('click', () => session.cardStack.showPrevious());
-  elements.toggleInput.addEventListener('change', handleToggleChange);
   new ResizeObserver(fitCardToolbar).observe(elements.cardToolbar);
   document.addEventListener('keydown', handleArrowKeys);
 }

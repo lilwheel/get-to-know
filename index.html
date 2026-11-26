@@ -11,29 +11,29 @@
   <!-- Release version: the "?v=" tag on the stylesheet and every script.
        GitHub Pages lets browsers keep files for up to 10 minutes; a new tag
        makes them fetch fresh copies straight away. When you release changes,
-       replace every "v=2026-11-26.7" on this page with a new value (the date). -->
-  <link rel="stylesheet" href="css/styles.css?v=2026-11-26.7">
+       replace every "v=2026-11-26.10" on this page with a new value (the date). -->
+  <link rel="stylesheet" href="css/styles.css?v=2026-11-26.10">
   <!-- The import map gives each JavaScript module the same version tag, so the
        modules' own imports (e.g. "./config.js") also load fresh copies.
        Every file in js/ must be listed here. -->
   <script type="importmap">
     {
       "imports": {
-        "./js/app.js": "./js/app.js?v=2026-11-26.7",
-        "./js/cards.js": "./js/cards.js?v=2026-11-26.7",
-        "./js/config.js": "./js/config.js?v=2026-11-26.7",
-        "./js/debug.js": "./js/debug.js?v=2026-11-26.7",
-        "./js/dialog.js": "./js/dialog.js?v=2026-11-26.7",
-        "./js/feedback.js": "./js/feedback.js?v=2026-11-26.7",
-        "./js/shuffler.js": "./js/shuffler.js?v=2026-11-26.7",
-        "./js/storage.js": "./js/storage.js?v=2026-11-26.7",
-        "./js/swipe.js": "./js/swipe.js?v=2026-11-26.7",
-        "./js/theme.js": "./js/theme.js?v=2026-11-26.7",
-        "./js/timing.js": "./js/timing.js?v=2026-11-26.7"
+        "./js/app.js": "./js/app.js?v=2026-11-26.10",
+        "./js/cards.js": "./js/cards.js?v=2026-11-26.10",
+        "./js/config.js": "./js/config.js?v=2026-11-26.10",
+        "./js/debug.js": "./js/debug.js?v=2026-11-26.10",
+        "./js/dialog.js": "./js/dialog.js?v=2026-11-26.10",
+        "./js/feedback.js": "./js/feedback.js?v=2026-11-26.10",
+        "./js/shuffler.js": "./js/shuffler.js?v=2026-11-26.10",
+        "./js/storage.js": "./js/storage.js?v=2026-11-26.10",
+        "./js/swipe.js": "./js/swipe.js?v=2026-11-26.10",
+        "./js/theme.js": "./js/theme.js?v=2026-11-26.10",
+        "./js/timing.js": "./js/timing.js?v=2026-11-26.10"
       }
     }
   </script>
-  <script type="module" src="js/app.js?v=2026-11-26.7"></script>
+  <script type="module" src="js/app.js?v=2026-11-26.10"></script>
 </head>
 <body data-theme="neutral">
   <!-- One background layer per theme; css/styles.css fades between them -->
@@ -42,6 +42,8 @@
   <div class="theme-backdrop" data-theme="dating" aria-hidden="true"></div>
   <div class="theme-backdrop" data-theme="friends" aria-hidden="true"></div>
   <div class="theme-backdrop" data-theme="friends-party" aria-hidden="true"></div>
+  <div class="theme-backdrop" data-theme="dating-adult" aria-hidden="true"></div>
+  <div class="theme-backdrop" data-theme="friends-party-adult" aria-hidden="true"></div>
 
   <main id="app" class="app">
     <!-- Start screen: pick a section -->
@@ -67,17 +69,19 @@
              the level on the right. On narrow cards both shrink to chips
              (css/styles.css "Card toolbar"). -->
         <div class="card-toolbar">
-          <!-- The section's gated switch (18+ in Dating, Party mode in Friends & Teammates).
-               js/app.js sets its labels from CONFIG.toggles and hides it in sections without one.
-               Turning it on asks for Confirm first. -->
-          <div id="toggle-setting" class="toggle-group" hidden>
+          <!-- The section's gated switches (18+ in Dating; Party mode and 18+ wording
+               in Friends & Teammates). js/app.js adds one per entry in the section's
+               CONFIG toggles list, from the template below. Turning one on asks for
+               Confirm first. -->
+          <div id="toggle-setting" class="toggle-group" hidden></div>
+          <template id="switch-template">
             <label class="switch">
-              <input id="toggle-input" class="switch__input" type="checkbox" role="switch">
+              <input class="switch__input" type="checkbox" role="switch">
               <span class="switch__track" aria-hidden="true"></span>
-              <span id="toggle-label" class="chip-text"></span>
-              <span id="toggle-label-short" class="chip-short" aria-hidden="true"></span>
+              <span class="switch__label chip-text"></span>
+              <span class="switch__label-short chip-short" aria-hidden="true"></span>
             </label>
-          </div>
+          </template>
 
           <!-- Level: changes take effect on the next card -->
           <div class="level-controls">

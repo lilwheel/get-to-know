@@ -123,6 +123,7 @@
   --flower-stroke-width: 2px;
   --section-button-width: min(100%, 24rem);
   --switch-width: 48px;
+  --switch-width-compact: 40px;
   --switch-height: 28px;
   --switch-knob-gap: 3px;
   --dialog-width: min(calc(100vw - var(--space-large)), 24rem);
@@ -253,6 +254,27 @@
   --color-dialog-backdrop: var(--apricot);
 }
 
+/* Dating with 18+ on: the page deepens to rose. Set by js/app.js while it's on. */
+[data-theme="dating-adult"] {
+  --color-page: var(--rose);
+  --color-button-primary-background: var(--coral);
+  --color-button-primary-pressed: var(--coral-shade);
+  --color-accent: var(--rose);
+  --color-switch-on: var(--coral);
+  --color-dialog-backdrop: var(--rose);
+}
+
+/* Party mode with 18+ wording on: the page turns coral, and Party cards keep
+   their pollen starburst. Set by js/app.js while both are on. */
+[data-theme="friends-party-adult"] {
+  --color-page: var(--coral);
+  --color-button-primary-background: var(--butter);
+  --color-button-primary-pressed: var(--butter-shade);
+  --color-accent: var(--pollen);
+  --color-switch-on: var(--pollen);
+  --color-dialog-backdrop: var(--coral);
+}
+
 /* ==========================================================
    Base: reset and page defaults
    ========================================================== */
@@ -329,7 +351,9 @@ body[data-theme="neutral"] .theme-backdrop[data-theme="neutral"],
 body[data-theme="icebreaker"] .theme-backdrop[data-theme="icebreaker"],
 body[data-theme="dating"] .theme-backdrop[data-theme="dating"],
 body[data-theme="friends"] .theme-backdrop[data-theme="friends"],
-body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
+body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"],
+body[data-theme="dating-adult"] .theme-backdrop[data-theme="dating-adult"],
+body[data-theme="friends-party-adult"] .theme-backdrop[data-theme="friends-party-adult"] {
   opacity: 1;
 }
 
@@ -590,9 +614,29 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 }
 
 .card-toolbar.is-compact .level-button {
-  min-width: var(--tap-target-large);
-  padding-inline: var(--space-small);
+  min-width: var(--tap-target-small);
+  padding-inline: var(--space-xsmall);
   font-size: var(--font-size-body);
+}
+
+/* Compact spacing and slightly shorter switch tracks, so two switches and
+   the level fit on a 360 px phone */
+.card-toolbar.is-compact {
+  --switch-width: var(--switch-width-compact);
+}
+
+.card-toolbar.is-compact,
+.card-toolbar.is-compact .level-controls,
+.card-toolbar.is-compact .switch {
+  gap: var(--space-xsmall);
+}
+
+.card-toolbar.is-compact .toggle-group {
+  gap: var(--space-small);
+}
+
+.card-toolbar.is-compact .level-indicator {
+  min-width: 0;
 }
 
 /* ==========================================================
@@ -990,6 +1034,18 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 
 .switch__input:checked + .switch__track {
   background: var(--color-switch-on);
+}
+
+/* A switch that can't be changed yet (18+ wording before Party mode is on):
+   flat with a dashed outline, like disabled buttons */
+.switch:has(.switch__input:disabled),
+.switch__input:disabled {
+  cursor: default;
+}
+
+.switch__input:disabled + .switch__track {
+  border-style: dashed;
+  box-shadow: none;
 }
 
 .switch__input:checked + .switch__track::after {
