@@ -89,7 +89,7 @@ Paused — not started (wording toggle moved to Phase 5). Card ratings are not b
 Plan: `PHASE5_PLAN.md`. Evaluation and working notes: `docs/PHASE5_EVALUATION.md`.
 
 - [x] P5-0 — Quick evaluation (2026-11-26, no code changes)
-- [ ] P5-1 — Remove sound
+- [x] P5-1 — Remove sound (2026-11-26, commit 2eb7aec)
 - [ ] P5-2 — Layout fix for small and short screens
 - [ ] P5-3 — Drink wording: data
 - [ ] P5-4 — Drink wording: setting
