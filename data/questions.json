@@ -33808,6 +33808,7 @@
     "type": "question",
     "party": true,
     "text": "What's the most ridiculous thing you've ever searched online? Share it, or take a sip.",
+    "text_classic": "What's the most ridiculous thing you've ever searched online? Share it, or drink.",
     "fact_id": "laughter-pain-threshold",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -33912,6 +33913,7 @@
     "type": "question",
     "party": true,
     "text": "What's your go-to dance move when nobody's watching? Describe it, or take a sip.",
+    "text_classic": "What's your go-to dance move when nobody's watching? Describe it, or drink.",
     "fact_id": "silent-disco",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -34003,6 +34005,7 @@
     "type": "question",
     "party": true,
     "text": "What's the worst pun you know? Say it, or take a sip.",
+    "text_classic": "What's the worst pun you know? Say it, or drink.",
     "fact_id": "laughter-pain-threshold",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -34146,6 +34149,7 @@
     "type": "question",
     "party": true,
     "text": "What's your worst cooking disaster? Tell it, or take a sip.",
+    "text_classic": "What's your worst cooking disaster? Tell it, or drink.",
     "fact_id": "beautiful-mess",
     "framework": "General",
     "source_id": "general-asana-team-games"
@@ -34198,6 +34202,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone says \"she sells seashells by the seashore\" three times fast. Anyone who slips takes a sip.",
+    "text_classic": "Everyone says \"she sells seashells by the seashore\" three times fast. Anyone who slips drinks.",
     "fact_id": "laughter-pain-threshold",
     "framework": "Team Activity",
     "source_id": "cornell-group-games"
@@ -34250,6 +34255,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone says the alphabet backwards as far as they can. Anyone who slips before reaching M takes a sip or passes.",
+    "text_classic": "Everyone says the alphabet backwards as far as they can. Anyone who slips before reaching M drinks.",
     "fact_id": "improv-uncertainty",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -34263,6 +34269,7 @@
     "type": "dare",
     "party": true,
     "text": "Whoever has the oldest thing in their pocket or bag tells its story, or takes a sip.",
+    "text_classic": "Whoever has the oldest thing in their pocket or bag tells its story, or drinks.",
     "fact_id": "laughter-opens-up",
     "framework": "General",
     "source_id": "general-asana-team-games"
@@ -34276,6 +34283,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone speaks only in questions until the next card. The first person to forget takes one sip, and the round ends.",
+    "text_classic": "Everyone speaks only in questions until the next card. The first person to forget drinks, and the round ends.",
     "fact_id": "laughter-pain-threshold",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -34328,6 +34336,7 @@
     "type": "dare",
     "party": true,
     "text": "Play fizz buzz: count around the table, saying \"fizz\" for every multiple of three. Anyone who slips takes a sip.",
+    "text_classic": "Play fizz buzz: count around the table, saying \"fizz\" for every multiple of three. Anyone who slips drinks.",
     "fact_id": "laughter-opens-up",
     "framework": "Team Activity",
     "source_id": "cornell-group-games"
@@ -34367,6 +34376,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone talks like a pirate until the next card. The first person to slip back into normal talk takes one sip, and the round ends.",
+    "text_classic": "Everyone talks like a pirate until the next card. The first person to slip back into normal talk drinks, and the round ends.",
     "fact_id": "improv-uncertainty",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -34419,6 +34429,7 @@
     "type": "dare",
     "party": true,
     "text": "Play \"I went to the market\": each person repeats the list and adds an item. Anyone who forgets takes a sip.",
+    "text_classic": "Play \"I went to the market\": each person repeats the list and adds an item. Anyone who forgets drinks.",
     "fact_id": "nostalgia-support",
     "framework": "Team Activity",
     "source_id": "cornell-group-games"
@@ -34445,6 +34456,7 @@
     "type": "dare",
     "party": true,
     "text": "Each person pulls their funniest face at the person on their left. First to laugh takes a sip.",
+    "text_classic": "Each person pulls their funniest face at the person on their left. First to laugh drinks.",
     "fact_id": "improv-uncertainty",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -34510,6 +34522,7 @@
     "type": "question",
     "party": true,
     "text": "What's the worst present you've ever given? Confess, or take a sip.",
+    "text_classic": "What's the worst present you've ever given? Confess, or drink.",
     "fact_id": "embarrassment-trust",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -34692,6 +34705,7 @@
     "type": "question",
     "party": true,
     "text": "Which emoji best describes your current mood? Act it out, or take a sip.",
+    "text_classic": "Which emoji best describes your current mood? Act it out, or drink.",
     "fact_id": "deep-talk-less-awkward",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -34835,6 +34849,7 @@
     "type": "question",
     "party": true,
     "text": "Which impression are you secretly proud of? Do it, or take a sip.",
+    "text_classic": "Which impression are you secretly proud of? Do it, or drink.",
     "fact_id": "thanks-boosts-helping",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -34848,6 +34863,7 @@
     "type": "dare",
     "party": true,
     "text": "Tongue-twister round: everyone says \"unique New York\" five times fast. Anyone who slips takes a sip.",
+    "text_classic": "Tongue-twister round: everyone says \"unique New York\" five times fast. Anyone who slips drinks.",
     "fact_id": "improv-uncertainty",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -34900,6 +34916,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone speaks in rhyme until the next card. The first person to break the rhyme takes one sip, and the round ends.",
+    "text_classic": "Everyone speaks in rhyme until the next card. The first person to break the rhyme drinks, and the round ends.",
     "fact_id": "laughter-opens-up",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -34939,6 +34956,7 @@
     "type": "dare",
     "party": true,
     "text": "Play categories: the person holding the phone picks a topic and everyone names one thing in turn. First to freeze takes a sip.",
+    "text_classic": "Play categories: the person holding the phone picks a topic and everyone names one thing in turn. First to freeze drinks.",
     "fact_id": "laughter-opens-up",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -34991,6 +35009,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone says \"red leather, yellow leather\" as fast as they can. Anyone who stumbles takes a sip.",
+    "text_classic": "Everyone says \"red leather, yellow leather\" as fast as they can. Anyone who stumbles drinks.",
     "fact_id": "laughter-opens-up",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -35004,6 +35023,7 @@
     "type": "dare",
     "party": true,
     "text": "Never have I ever, silly edition: each person says something harmless they've never done. Anyone who has done it takes a sip.",
+    "text_classic": "Never have I ever, silly edition: each person says something they've never done. Anyone who has done it drinks.",
     "fact_id": "laughter-pain-threshold",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -35056,6 +35076,7 @@
     "type": "dare",
     "party": true,
     "text": "Count to 21 around the table. Each person may say one, two or three numbers. Whoever says 21 takes a sip.",
+    "text_classic": "Count to 21 around the table. Each person may say one, two or three numbers. Whoever says 21 drinks.",
     "fact_id": "laughter-pain-threshold",
     "framework": "Team Activity",
     "source_id": "cornell-group-games"
@@ -35095,6 +35116,7 @@
     "type": "dare",
     "party": true,
     "text": "The table hums a famous theme tune together. Anyone who laughs first takes a sip.",
+    "text_classic": "The table hums a famous theme tune together. Anyone who laughs first drinks.",
     "fact_id": "laughter-pain-threshold",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -35225,6 +35247,7 @@
     "type": "question",
     "party": true,
     "text": "Which children's TV theme can you still sing all the way through? Sing a line, or take a sip.",
+    "text_classic": "Which children's TV theme can you still sing all the way through? Sing a line, or drink.",
     "fact_id": "singing-ice-breaker",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -35303,6 +35326,7 @@
     "type": "question",
     "party": true,
     "text": "If you were a ghost, how would you haunt people in the most harmless way?",
+    "text_classic": "If you were a ghost, how would you haunt people in the funniest way?",
     "fact_id": "substantive-talk-happiness",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -35498,6 +35522,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone says \"toy boat\" five times fast. Anyone who slips takes a sip.",
+    "text_classic": "Everyone says \"toy boat\" five times fast. Anyone who slips drinks.",
     "fact_id": "laughter-pain-threshold",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -35550,6 +35575,7 @@
     "type": "dare",
     "party": true,
     "text": "Play word association: go around, each saying a word linked to the last one. Anyone who pauses takes a sip.",
+    "text_classic": "Play word association: go around, each saying a word linked to the last one. Anyone who pauses drinks.",
     "fact_id": "improv-uncertainty",
     "framework": "Team Activity",
     "source_id": "cornell-group-games"
@@ -35576,6 +35602,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone tries to say the months of the year backwards. Anyone who slips takes a sip or passes.",
+    "text_classic": "Everyone tries to say the months of the year backwards. Anyone who slips drinks.",
     "fact_id": "laughter-pain-threshold",
     "framework": "General",
     "source_id": "general-asana-team-games"
@@ -35628,6 +35655,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone speaks like a news anchor until the next card. The first person to forget takes one sip, and the round ends.",
+    "text_classic": "Everyone speaks like a news anchor until the next card. The first person to forget drinks, and the round ends.",
     "fact_id": "improv-uncertainty",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -35706,6 +35734,7 @@
     "type": "dare",
     "party": true,
     "text": "Each person says a sentence where every word starts with the same letter. Anyone who can't takes a sip or passes.",
+    "text_classic": "Each person says a sentence where every word starts with the same letter. Anyone who can't think of one drinks.",
     "fact_id": "improv-uncertainty",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -35745,6 +35774,7 @@
     "type": "dare",
     "party": true,
     "text": "Whoever drew this card leads one minute of \"heads, shoulders, knees and toes\" at double speed. Anyone who gets mixed up takes a sip.",
+    "text_classic": "Whoever drew this card leads one minute of \"heads, shoulders, knees and toes\" at double speed. Anyone who gets mixed up drinks.",
     "fact_id": "laughter-pain-threshold",
     "framework": "Team Activity",
     "source_id": "cornell-group-games"
@@ -35771,6 +35801,7 @@
     "type": "question",
     "party": true,
     "text": "What's the strangest thing you've done to win a harmless bet?",
+    "text_classic": "What's the strangest thing you've done to win a bet?",
     "fact_id": "deep-talk-less-awkward",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -35823,6 +35854,7 @@
     "type": "question",
     "party": true,
     "text": "What's a fact about you that sounds made up but is true? Share it, or take a sip.",
+    "text_classic": "What's a fact about you that sounds made up but is true? Share it, or drink.",
     "fact_id": "others-care-more",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -35979,6 +36011,7 @@
     "type": "question",
     "party": true,
     "text": "What's your best \"you won't believe this\" story that's totally harmless?",
+    "text_classic": "What's your best \"you won't believe this\" story?",
     "fact_id": "laughter-opens-up",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -36044,6 +36077,7 @@
     "type": "question",
     "party": true,
     "text": "What's the most ridiculous injury you've had, the harmless kind?",
+    "text_classic": "What's the most ridiculous injury you've had?",
     "fact_id": "compliments-underestimated",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -36148,6 +36182,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone says \"Irish wristwatch\" three times fast. Anyone who slips takes a sip.",
+    "text_classic": "Everyone says \"Irish wristwatch\" three times fast. Anyone who slips drinks.",
     "fact_id": "laughter-pain-threshold",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -36187,6 +36222,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone tries to balance a spoon on their nose. The shortest balance takes a sip or passes.",
+    "text_classic": "Everyone tries to balance a spoon on their nose. Whoever balances it for the shortest time drinks.",
     "fact_id": "improv-uncertainty",
     "framework": "Team Activity",
     "source_id": "cornell-group-games"
@@ -36200,6 +36236,7 @@
     "type": "dare",
     "party": true,
     "text": "Go around and say a word that rhymes with \"cat\". Anyone who repeats or freezes takes a sip.",
+    "text_classic": "Go around and say a word that rhymes with \"cat\". Anyone who repeats or freezes drinks.",
     "fact_id": "laughter-opens-up",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -36252,6 +36289,7 @@
     "type": "dare",
     "party": true,
     "text": "Play buzz: count around the table and say \"buzz\" for any number with a seven in it. Anyone who slips takes a sip.",
+    "text_classic": "Play buzz: count around the table and say \"buzz\" for any number with a seven in it. Anyone who slips drinks.",
     "fact_id": "laughter-opens-up",
     "framework": "Team Activity",
     "source_id": "cornell-group-games"
@@ -36278,6 +36316,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone talks without using the letter \"s\" until the next card. The first person to slip takes one sip, and the round ends.",
+    "text_classic": "Everyone talks without using the letter \"s\" until the next card. The first person to slip drinks, and the round ends.",
     "fact_id": "improv-uncertainty",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -36356,6 +36395,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone names a famous person who shares their first initial. Anyone who can't takes a sip or passes.",
+    "text_classic": "Everyone names a famous person who shares their first initial. Anyone who can't think of one drinks.",
     "fact_id": "improv-uncertainty",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -36421,6 +36461,7 @@
     "type": "question",
     "party": true,
     "text": "What's your spiciest harmless hot take about a popular TV series?",
+    "text_classic": "What's your spiciest hot take about a popular TV series?",
     "fact_id": "talking-about-self",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -36447,6 +36488,7 @@
     "type": "question",
     "party": true,
     "text": "What's the cheekiest thing you've ever said to a boss or teacher, the harmless kind?",
+    "text_classic": "What's the cheekiest thing you've ever said to a boss or teacher?",
     "fact_id": "thanks-boosts-helping",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -36499,6 +36541,7 @@
     "type": "question",
     "party": true,
     "text": "What's a rule you broke as a teenager that seems tame now? Tell it, or take a sip.",
+    "text_classic": "What's a rule you broke as a teenager that seems tame now? Tell it, or drink.",
     "fact_id": "nostalgia-support",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -36616,6 +36659,7 @@
     "type": "question",
     "party": true,
     "text": "What's the most unnecessary thing you've ever fibbed about, harmlessly?",
+    "text_classic": "What's the most unnecessary thing you've ever fibbed about?",
     "fact_id": "others-care-more",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -36694,6 +36738,7 @@
     "type": "question",
     "party": true,
     "text": "What's the most chaotic thing you've done on a night out, harmless only? Share it, or take a sip.",
+    "text_classic": "What's the most chaotic thing you've done on a night out? Share it, or drink.",
     "fact_id": "sharing-is-rewarding",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -36798,6 +36843,7 @@
     "type": "dare",
     "party": true,
     "text": "Travel confessions: each person names a holiday disaster they've somehow avoided so far. Anyone who has lived through it takes a sip and tells the story.",
+    "text_classic": "Travel confessions: each person names a holiday disaster they've somehow avoided so far. Anyone who has lived through it drinks and tells the story.",
     "fact_id": "improv-uncertainty",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -36811,6 +36857,7 @@
     "type": "dare",
     "party": true,
     "text": "Hot take round: each person shares a harmless hot take, and the table gives it a thumbs up or down.",
+    "text_classic": "Hot take round: each person shares a hot take, and the table gives it a thumbs up or down.",
     "fact_id": "laughter-opens-up",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -36824,6 +36871,7 @@
     "type": "dare",
     "party": true,
     "text": "Each person tells their most embarrassing story in exactly 30 seconds, or takes a sip.",
+    "text_classic": "Each person tells their most embarrassing story in exactly 30 seconds, or drinks.",
     "fact_id": "beautiful-mess",
     "framework": "Team: Psychological Safety",
     "source_id": "psychsafety-project-aristotle"
@@ -36876,6 +36924,7 @@
     "type": "dare",
     "party": true,
     "text": "Never have I ever, work edition: each person names a harmless work habit they've never had. Anyone who has had it takes a sip.",
+    "text_classic": "Never have I ever, work edition: each person names a work habit they've never had. Anyone who has had it drinks.",
     "fact_id": "aristotle-how-not-who",
     "framework": "Team: Psychological Safety",
     "source_id": "psychsafety-aristotle-guide"
@@ -37162,6 +37211,7 @@
     "type": "question",
     "party": true,
     "text": "What's the most petty thing you've ever done, harmlessly?",
+    "text_classic": "What's the most petty thing you've ever done?",
     "fact_id": "talking-about-self",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -37331,6 +37381,7 @@
     "type": "question",
     "party": true,
     "text": "Which show did you binge in a way you're not proud of? Tell it, or take a sip.",
+    "text_classic": "Which show did you binge in a way you're not proud of? Tell it, or drink.",
     "fact_id": "compliments-underestimated",
     "framework": "General",
     "source_id": "general-asana-team-games"
@@ -37448,6 +37499,7 @@
     "type": "dare",
     "party": true,
     "text": "Kitchen confessions: name a cooking blunder you've never made, like forgetting the oven was on. Whoever has made it takes a sip, or shares how it went.",
+    "text_classic": "Kitchen confessions: name a cooking blunder you've never made, like forgetting the oven was on. Whoever has made it drinks, or shares how it went.",
     "fact_id": "shared-pain-glue",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -37643,6 +37695,7 @@
     "type": "dare",
     "party": true,
     "text": "Everyone names a skill they gave up on embarrassingly fast, or takes a sip.",
+    "text_classic": "Everyone names a skill they gave up on embarrassingly fast, or drinks.",
     "fact_id": "shared-pain-glue",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -37682,6 +37735,7 @@
     "type": "dare",
     "party": true,
     "text": "School-days confessions: each person names something they never once did at school. Anyone who did it takes a sip and can explain themselves.",
+    "text_classic": "School-days confessions: each person names something they never once did at school. Anyone who did it drinks and can explain themselves.",
     "fact_id": "nostalgia-support",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -37708,6 +37762,7 @@
     "type": "question",
     "party": true,
     "text": "What's a message you sent too quickly and wished you could unsend, harmless only?",
+    "text_classic": "What's a message you sent too quickly and wished you could unsend?",
     "fact_id": "beautiful-mess",
     "framework": "Team: Psychological Safety",
     "source_id": "psychsafety-aristotle-guide"
@@ -38098,6 +38153,7 @@
     "type": "dare",
     "party": true,
     "text": "Gadget confessions: say a tech slip you've never made, such as replying in the wrong chat. Anyone guilty of it takes a sip.",
+    "text_classic": "Gadget confessions: say a tech slip you've never made, such as replying in the wrong chat. Anyone guilty of it drinks.",
     "fact_id": "laughter-pain-threshold",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -38163,6 +38219,7 @@
     "type": "dare",
     "party": true,
     "text": "Each person shares the cheesiest thing they've ever written in a card or said in a speech, or takes a sip.",
+    "text_classic": "Each person shares the cheesiest thing they've ever written in a card or said in a speech, or drinks.",
     "fact_id": "improv-uncertainty",
     "framework": "General",
     "source_id": "general-asana-team-games"
@@ -38254,6 +38311,7 @@
     "type": "dare",
     "party": true,
     "text": "Each person tells the table their most embarrassing typo, or takes a sip.",
+    "text_classic": "Each person tells the table their most embarrassing typo, or drinks.",
     "fact_id": "beautiful-mess",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -38293,6 +38351,7 @@
     "type": "dare",
     "party": true,
     "text": "Never have I ever, holiday edition: each person names a holiday mishap that's never happened to them. Anyone it has happened to takes a sip.",
+    "text_classic": "Never have I ever, holiday edition: each person names a holiday mishap that's never happened to them. Anyone it has happened to drinks.",
     "fact_id": "embarrassment-trust",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -38553,6 +38612,7 @@
     "type": "question",
     "party": true,
     "text": "What's the most out-there thing you've done on a dare, harmless only?",
+    "text_classic": "What's the most out-there thing you've done on a dare?",
     "fact_id": "substantive-talk-happiness",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -38735,6 +38795,7 @@
     "type": "question",
     "party": true,
     "text": "What's something you've never told this group that would make us laugh? Share it, or take a sip.",
+    "text_classic": "What's something you've never told this group that would make us laugh? Share it, or drink.",
     "fact_id": "laughter-pain-threshold",
     "framework": "Team: Psychological Safety",
     "source_id": "psychsafety-project-aristotle"
@@ -38748,6 +38809,7 @@
     "type": "dare",
     "party": true,
     "text": "Never have I ever, at home: name a household accident you've been lucky enough to avoid. Anyone less lucky takes a sip.",
+    "text_classic": "Never have I ever, at home: name a household accident you've been lucky enough to avoid. Anyone less lucky drinks.",
     "fact_id": "improv-uncertainty",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -38839,6 +38901,7 @@
     "type": "dare",
     "party": true,
     "text": "Each person confesses one thing they bought only because it was on sale, or takes a sip.",
+    "text_classic": "Each person confesses one thing they bought only because it was on sale, or drinks.",
     "fact_id": "laughter-pain-threshold",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -38956,6 +39019,7 @@
     "type": "dare",
     "party": true,
     "text": "Party confessions: name a harmless party moment you've never had, like dozing off on a sofa. Whoever has had it takes a sip.",
+    "text_classic": "Party confessions: name a party moment you've never had, like dozing off on a sofa. Whoever has had it drinks.",
     "fact_id": "laughter-opens-up",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"
@@ -39047,6 +39111,7 @@
     "type": "question",
     "party": true,
     "text": "What's a dream so big it feels silly to say? Say it, or take a sip.",
+    "text_classic": "What's a dream so big it feels silly to say? Say it, or drink.",
     "fact_id": "laughter-opens-up",
     "framework": "Fast Friends",
     "source_id": "ggia-36-questions"
@@ -39138,6 +39203,7 @@
     "type": "question",
     "party": true,
     "text": "Which rule in life do you think is worth breaking, harmlessly?",
+    "text_classic": "Which of life's unwritten rules do you think is worth breaking?",
     "fact_id": "talking-about-self",
     "framework": "General",
     "source_id": "general-atlassian-icebreakers"
@@ -40048,6 +40114,7 @@
     "type": "dare",
     "party": true,
     "text": "Talent show: each volunteer has 20 seconds to perform any harmless talent, and the table cheers every act.",
+    "text_classic": "Talent show: each volunteer has 20 seconds to perform any talent, and the table cheers every act.",
     "fact_id": "compliments-barrier",
     "framework": "General",
     "source_id": "general-sessionlab-icebreakers"
@@ -41114,6 +41181,7 @@
     "type": "question",
     "party": true,
     "text": "What harmless stunt would you love to see this group pull off together?",
+    "text_classic": "What bold challenge would you love to see this group pull off together?",
     "fact_id": "escalating-questions-closeness",
     "framework": "Team Activity",
     "source_id": "cornell-group-games"
@@ -41127,6 +41195,7 @@
     "type": "question",
     "party": true,
     "text": "What's the most rebellious thing you've done that you'd do again, harmless only?",
+    "text_classic": "What's the most rebellious thing you've done that you'd do again?",
     "fact_id": "substantive-talk-happiness",
     "framework": "General",
     "source_id": "general-teambuilding-icebreakers"

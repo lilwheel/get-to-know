@@ -12,6 +12,9 @@ Checks data/sources.json, data/facts.json and data/questions.json and prints:
   - dares that end with a question mark (probably a question filed as a dare)
   - party cards outside Friends, and 18+ cards outside Dating levels 2 and 3
   - party cards that mention drinking other than "take a sip" (Party mode safety)
+  - Classic wording ("text_classic", shown with 18+ wording on in Party mode):
+    only on party cards, present on every card that needs it, different from
+    the Gentle text, and within the Classic safety floor
 
 Exits with status 1 if any problem is found, 0 otherwise.
 
@@ -66,6 +69,15 @@ ALLOWED_OPENER_PHRASES = ("would you rather",)
 PARTY_BANNED_WORDS = ("drink", "drinks", "drinking", "drunk", "chug", "chugging", "shot", "shots",
                       "down it", "finish your", "bottoms up", "alcohol", "beer", "wine",
                       "booze", "pint", "pints")
+# Classic wording (text_classic) may say "drink"/"drinks" instead of "take a sip",
+# but the rules don't change: these stay banned (the safety floor).
+CLASSIC_ALLOWED_WORDS = ("drink", "drinks")
+CLASSIC_BANNED_PHRASES = ("finish your drink", "shot after shot", "count your drinks",
+                          "drinks in a row", "every drink", "drive", "drives", "driving", "drove",
+                          "drunk", "chugs", "downs")
+# Classic drops the Gentle softeners; a Gentle card that has any of these needs
+# a text_classic, and a text_classic must not contain them.
+GENTLE_ONLY_PATTERN = re.compile(r"\bsips?\b|\bharmless(ly)?\b|\bor passes\b", re.IGNORECASE)
 
 
 # ----------------------------------------------------------
@@ -270,6 +282,39 @@ def check_party_wording(text, label):
     return []
 
 
+def check_classic_wording(question, label):
+    """Classic wording: only on party cards, on every party card that needs it,
+    different from the Gentle text, free of the Gentle softeners, and within the
+    safety floor (drinking words other than "drink"/"drinks" are still banned)."""
+    classic = question.get("text_classic")
+    text = question.get("text") if is_filled_string(question.get("text")) else ""
+    is_party = question.get("party") is True
+    if classic is None:
+        if is_party and GENTLE_ONLY_PATTERN.search(text):
+            return [f"{label}: party card needs a 'text_classic' (its text says sip, harmless or 'or passes')"]
+        return []
+    if not is_party:
+        return [f"{label}: 'text_classic' is only for party cards"]
+    if not is_filled_string(classic):
+        return [f"{label}: 'text_classic' must be non-empty text"]
+    problems = []
+    lowered = classic.lower()
+    if classic == text:
+        problems.append(f"{label}: 'text_classic' is the same as 'text'; remove it")
+    if GENTLE_ONLY_PATTERN.search(classic):
+        problems.append(f"{label}: 'text_classic' still says sip, harmless or 'or passes'")
+    banned = [word for word in PARTY_BANNED_WORDS if word not in CLASSIC_ALLOWED_WORDS]
+    found = [word for word in banned + list(CLASSIC_BANNED_PHRASES)
+             if re.search(r"\b" + re.escape(word) + r"\b", lowered)]
+    if found:
+        problems.append(f"{label}: 'text_classic' breaks the safety floor: {', '.join(found)}")
+    if question.get("type") == "question" and opens_like_yes_no(classic):
+        problems.append(f"{label}: 'text_classic' opens like a yes/no question")
+    if question.get("type") == "dare" and classic.rstrip().endswith("?"):
+        problems.append(f"{label}: 'text_classic' of a dare ends with '?'")
+    return problems
+
+
 def check_question_fact(question, label, facts_by_id):
     """Check the card's fact exists, is allowed in its section, is 18+ only on 18+
     cards, and (on Party cards) follows the Party wording rule too."""
@@ -289,6 +334,7 @@ def check_question_fact(question, label, facts_by_id):
 def check_question_rules(question, label, sources_by_id, facts_by_id):
     """Check the content rules: placement, wording, the fact, and that the source and framework agree."""
     problems = check_placement_rules(question, label) + check_text_rules(question, label)
+    problems += check_classic_wording(question, label)
     problems += check_question_fact(question, label, facts_by_id)
     source = sources_by_id.get(question.get("source_id"))
     if source is None:
@@ -361,6 +407,8 @@ def print_counts(questions):
                  f"{party[(section, level)]:>3} / {dares[(section, level)]:>3}" for level in LEVELS]
         print(f"  {section:<11} " + "   ".join(cells))
     print(f"  Total: {len(questions)}")
+    classic_count = sum(1 for question in questions if isinstance(question, dict) and "text_classic" in question)
+    print(f"  Party cards with Classic wording: {classic_count}")
 
 
 def main():

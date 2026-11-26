@@ -320,6 +320,7 @@ The dare example shows the Friends & Teammates format.
 | `type` | `"question"` or `"dare"`. Icebreaker and Dating hold only questions. |
 | `party` | `true` or `false`. `true` only in Friends, for Party mode cards. |
 | `text` | A question must be open-ended (not yes/no), and everyone answers it. A dare is an instruction and must not end with "?". |
+| `text_classic` | Party cards only, and only where the wording changes (69 cards). The Classic wording, shown in Party mode while "Include 18+ wording" is on: "drink"/"drinks" instead of "take a sip", without "harmless" and without the in-card "or passes" (the Pass button stays on every card). Every Party card whose `text` says sip, harmless or "or passes" must have one. Classic changes the wording, not the rules: no finishing or chugging drinks, no shots, no counting drinks, no driving. |
 | `fact_id` | The research finding shown in the footnote. Must match an `id` in `data/facts.json` whose `sections` include this card's section. 18+ facts (`adult_only`) go only on 18+ cards. |
 | `framework` | Must equal the `framework` of the source it cites. |
 | `source_id` | Must match an `id` in `data/sources.json`. |
@@ -392,6 +393,7 @@ It prints a counts table (total, 18+, party and dares for each section and level
 - unknown `source_id`s, and a `framework` that doesn't match its source
 - unknown `fact_id`s, facts used outside their `sections`, 18+ facts on cards that aren't 18+, facts with missing fields, texts over 160 characters or non-https links, and facts no card uses
 - Party cards whose fact mentions drinking
+- Classic wording (`text_classic`): on a card that isn't a Party card, missing from a Party card that needs it, the same as `text`, still saying sip, harmless or "or passes", or breaking the safety floor (chug, shot, "finish your drink", "shot after shot", "count your drinks", drive and similar)
 - duplicate ids or URLs
 - exact duplicate questions (ignoring case and punctuation)
 - near-duplicates (over 80% word overlap)
