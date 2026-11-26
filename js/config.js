@@ -96,12 +96,6 @@ export const CONFIG = {
     },
   },
 
-  // Words on the Sound button (the starting text is in index.html too).
-  buttonLabels: {
-    soundOn: 'Sound on',
-    soundOff: 'Sound off',
-  },
-
   // Card text longer than this many characters is set a little smaller
   // (css/styles.css .card__question--long), so it fits with the footnote.
   longCardTextCharacters: 110,
@@ -154,11 +148,4 @@ export const CONFIG = {
 
   // Feedback when a card changes.
   vibrationMs: 12,
-  clickSound: {
-    frequencyHz: 1800,
-    durationMs: 40,
-    volume: 0.15,
-    // The click fades to this near-silent volume (a fade can't reach exactly 0).
-    silentGain: 0.0001,
-  },
 };

@@ -460,21 +460,22 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
    ========================================================== */
 
 /* The buttons keep their size; a long section name wraps instead */
+/* Home on the left and the section name centred on the page. The empty
+   right column mirrors Home's width when there's room, and gives way first
+   on narrow screens. */
 .app-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-small);
 }
 
 .app-header .toggle-button {
-  flex: none;
+  justify-self: start;
   white-space: nowrap;
 }
 
 .app-header__title {
-  flex: 1;
-  min-width: 0;
   margin: 0;
   font-family: var(--font-family-display);
   font-weight: normal;
@@ -823,7 +824,7 @@ body[data-theme="friends-party"] .theme-backdrop[data-theme="friends-party"] {
 }
 
 /* ==========================================================
-   Buttons: Back / Next, level buttons, Home, Sound and Pass
+   Buttons: Back / Next, level buttons, Home and Pass
    ========================================================== */
 .card-controls {
   display: flex;

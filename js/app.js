@@ -10,7 +10,7 @@ import { CONFIG, sectionHasToggle } from './config.js';
 import { createCardStack } from './cards.js';
 import { debugLog } from './debug.js';
 import { askToConfirm, isDialogOpen } from './dialog.js';
-import { playCardChangeFeedback, setSoundEnabled } from './feedback.js';
+import { playCardChangeFeedback } from './feedback.js';
 import { createShuffler } from './shuffler.js';
 import { clearSaved, loadSaved, save } from './storage.js';
 import { applyTheme, changeScreenWithFade } from './theme.js';
@@ -25,7 +25,6 @@ const elements = {
   resetButton: document.getElementById('reset-button'),
   homeButton: document.getElementById('home-button'),
   sectionTitle: document.getElementById('section-title'),
-  soundToggle: document.getElementById('sound-toggle'),
   toggleSetting: document.getElementById('toggle-setting'),
   toggleInput: document.getElementById('toggle-input'),
   toggleLabel: document.getElementById('toggle-label'),
@@ -69,7 +68,6 @@ const session = {
   currentPosition: 0,   // which entry of history is on top
   cardStack: null,
   isFirstCardOfVisit: true,
-  isSoundOn: false,     // the click sound; off by default, not saved
 };
 
 // ----------------------------------------------------------
@@ -486,7 +484,6 @@ function connectControls() {
   elements.deeperButton.addEventListener('click', () => changeLevel(1));
   elements.nextButton.addEventListener('click', () => session.cardStack.showNext('left'));
   elements.backButton.addEventListener('click', () => session.cardStack.showPrevious());
-  elements.soundToggle.addEventListener('click', toggleSound);
   elements.toggleInput.addEventListener('change', handleToggleChange);
   document.addEventListener('keydown', handleArrowKeys);
 }
@@ -504,14 +501,6 @@ function handleArrowKeys(event) {
   } else if (event.key === 'ArrowLeft') {
     session.cardStack.showPrevious();
   }
-}
-
-// Flip the click sound on or off and update the button's label to match.
-function toggleSound() {
-  session.isSoundOn = !session.isSoundOn;
-  setSoundEnabled(session.isSoundOn);
-  const { soundOn, soundOff } = CONFIG.buttonLabels;
-  elements.soundToggle.textContent = session.isSoundOn ? soundOn : soundOff;
 }
 
 // ----------------------------------------------------------

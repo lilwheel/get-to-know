@@ -11,29 +11,29 @@
   <!-- Release version: the "?v=" tag on the stylesheet and every script.
        GitHub Pages lets browsers keep files for up to 10 minutes; a new tag
        makes them fetch fresh copies straight away. When you release changes,
-       replace every "v=2026-11-26.4" on this page with a new value (the date). -->
-  <link rel="stylesheet" href="css/styles.css?v=2026-11-26.4">
+       replace every "v=2026-11-26.5" on this page with a new value (the date). -->
+  <link rel="stylesheet" href="css/styles.css?v=2026-11-26.5">
   <!-- The import map gives each JavaScript module the same version tag, so the
        modules' own imports (e.g. "./config.js") also load fresh copies.
        Every file in js/ must be listed here. -->
   <script type="importmap">
     {
       "imports": {
-        "./js/app.js": "./js/app.js?v=2026-11-26.4",
-        "./js/cards.js": "./js/cards.js?v=2026-11-26.4",
-        "./js/config.js": "./js/config.js?v=2026-11-26.4",
-        "./js/debug.js": "./js/debug.js?v=2026-11-26.4",
-        "./js/dialog.js": "./js/dialog.js?v=2026-11-26.4",
-        "./js/feedback.js": "./js/feedback.js?v=2026-11-26.4",
-        "./js/shuffler.js": "./js/shuffler.js?v=2026-11-26.4",
-        "./js/storage.js": "./js/storage.js?v=2026-11-26.4",
-        "./js/swipe.js": "./js/swipe.js?v=2026-11-26.4",
-        "./js/theme.js": "./js/theme.js?v=2026-11-26.4",
-        "./js/timing.js": "./js/timing.js?v=2026-11-26.4"
+        "./js/app.js": "./js/app.js?v=2026-11-26.5",
+        "./js/cards.js": "./js/cards.js?v=2026-11-26.5",
+        "./js/config.js": "./js/config.js?v=2026-11-26.5",
+        "./js/debug.js": "./js/debug.js?v=2026-11-26.5",
+        "./js/dialog.js": "./js/dialog.js?v=2026-11-26.5",
+        "./js/feedback.js": "./js/feedback.js?v=2026-11-26.5",
+        "./js/shuffler.js": "./js/shuffler.js?v=2026-11-26.5",
+        "./js/storage.js": "./js/storage.js?v=2026-11-26.5",
+        "./js/swipe.js": "./js/swipe.js?v=2026-11-26.5",
+        "./js/theme.js": "./js/theme.js?v=2026-11-26.5",
+        "./js/timing.js": "./js/timing.js?v=2026-11-26.5"
       }
     }
   </script>
-  <script type="module" src="js/app.js?v=2026-11-26.4"></script>
+  <script type="module" src="js/app.js?v=2026-11-26.5"></script>
 </head>
 <body data-theme="neutral">
   <!-- One background layer per theme; css/styles.css fades between them -->
@@ -60,8 +60,6 @@
       <header class="app-header">
         <button id="home-button" class="toggle-button" type="button">&larr; Home</button>
         <h2 id="section-title" class="app-header__title"></h2>
-        <!-- The label itself says on/off, so screen readers hear the state once -->
-        <button id="sound-toggle" class="toggle-button" type="button">Sound off</button>
       </header>
 
       <!-- The section's gated switch (18+ in Dating, Party mode in Friends & Teammates).

@@ -56,7 +56,7 @@ Nothing needs installing apart from Python 3, which is used only for the local s
 | Screen | What's on it |
 | --- | --- |
 | Start screen | Title, one button per section (built from `CONFIG.sections`), and "Reset seen cards". |
-| Card screen | Home and Sound buttons, the section's gated switch (18+ in Dating, Party mode in Friends & Teammates), the card stack, Go Shallower / Go Deeper with three level dots, and Back / Next. |
+| Card screen | The Home button, the section's gated switch (18+ in Dating, Party mode in Friends & Teammates), the card stack, Go Shallower / Go Deeper with three level dots, and Back / Next. |
 
 Only one screen shows at a time. A third element, the error message, replaces both if the data can't load.
 
@@ -146,13 +146,13 @@ Both switches are the same shared code, set up in `CONFIG.toggles`. Each section
 | `index.html` | The single page: one background layer per theme (five), the start screen, the card screen, the confirm dialog, the screen-reader announcer and the error message. Loads `css/styles.css` and `js/app.js`, each with a release version tag, plus an import map that gives every script the same tag (see [Deploying](#10-deploying)). | — |
 | `css/styles.css` | All styling. It starts with design tokens (palette, colour roles, sizes, timings), then the section theme overrides (Icebreaker, Dating, Friends, Friends Party), then the components in page order. | — |
 | `js/config.js` | The one `CONFIG` object: every tunable number and name in the JavaScript. See [Settings](#8-settings-you-can-change). | — |
-| `js/app.js` | Entry point and coordinator. Loads data, switches screens, deals cards into the stack, handles levels, the gated switches (18+ and Party mode), Reset, sound and keyboard, and saves your place. | `startApp`, `openSection`, `getCardAt`, `handleCardShown`, `changeLevel`, `handleToggleChange` |
+| `js/app.js` | Entry point and coordinator. Loads data, switches screens, deals cards into the stack, handles levels, the gated switches (18+ and Party mode), Reset and keyboard, and saves your place. | `startApp`, `openSection`, `getCardAt`, `handleCardShown`, `changeLevel`, `handleToggleChange` |
 | `js/cards.js` | The card stack on screen. Builds card elements, keeps at most 3 in the page, flies the top card off for Next, slides one back in for Back, and rebuilds the upcoming cards after a level change. | `createCardStack`, `showNext`, `showPrevious`, `refreshUpcoming` |
 | `js/swipe.js` | Dragging a card with touch or mouse (pointer events). Follows the pointer on each animation frame. On release it decides swipe or snap back: past 30% of the screen width, or a fast flick in the same direction. | `attachSwipe`, `getSwipeDirection` |
 | `js/shuffler.js` | The pools of questions and the dealing rules: no repeats, reshuffle when empty, 18+ only in Dating at a fixed rate, Party cards only in Friends, returning cards that were lined up but never shown. | `createShuffler`, `dealNext`, `putBack`, `markShown`, `takeOut` |
 | `js/theme.js` | Sets `data-theme` on `<body>`, colours the phone's browser bar, and fades between screens. | `applyTheme`, `changeScreenWithFade` |
 | `js/dialog.js` | The reusable "are you sure?" dialog, used for the 18+ check, the Party mode rules and Reset. An optional heading turns the message into body text, one line per rule. | `askToConfirm`, `isDialogOpen` |
-| `js/feedback.js` | A short vibration (where supported) and an optional soft click when the card changes. | `playCardChangeFeedback`, `setSoundEnabled` |
+| `js/feedback.js` | A short vibration (where supported) when the card changes. | `playCardChangeFeedback` |
 | `js/storage.js` | Safe read, write and clear for localStorage and sessionStorage. If storage is blocked, the app carries on without saving. | `loadSaved`, `save`, `clearSaved` |
 | `js/timing.js` | Reads animation durations from CSS variables and waits for them. | `readCssDurationMs`, `wait` |
 | `js/debug.js` | `debugLog()`, the **only** place that writes to the console, and only with `?debug=1`. | `debugLog` |
@@ -176,7 +176,7 @@ index.html ──loads──► app.js
                         ├── cards.js ──► swipe.js   (what's on screen, and dragging)
                         ├── theme.js ──► timing.js  (colours and the fade)
                         ├── dialog.js     (confirmations)
-                        ├── feedback.js   (vibration and click)
+                        ├── feedback.js   (vibration)
                         ├── storage.js    (saving)
                         └── debug.js      (logging; used by every module)
 ```
@@ -202,7 +202,6 @@ Add `?debug=1` to the address, open the browser's developer tools (F12, or Cmd+O
 | `Pool reshuffled` | A pool ran out | `pool` (for example `dating-2-general` or `dating-2-adult`) and how many `cards` it now holds. |
 | `Toggle changed` | A gated switch changed | `toggle` (`adult` or `party`) and `on` (true or false). |
 | `18+ rate` | Every card dealt in Dating levels 2–3 while 18+ is on | Running totals for that level: `adult` and `regular` cards dealt. They include the two cards waiting behind the top card, so they run two ahead of what you've seen. |
-| `Sound setting changed` | Sound button | `soundOn`. |
 | `Progress reset` | After Reset is confirmed | — |
 | `Could not read / save / clear saved progress` | Storage is blocked or full | The storage `key`. The app keeps working, but won't remember your place. |
 
@@ -491,7 +490,6 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 | --- | --- | --- |
 | `questionFileUrls`, `sourcesUrl` | `data/…json` | Where the data files are. Every card file in the list is merged into one bank. |
 | `sections` | Icebreaker, Dating, Friends & Teammates | One entry per section, in start-screen order: `name`, `hint` (the line under the name), `hasPassButton` and `toggle`. Adding a section starts here. |
-| `buttonLabels` | Sound on, Sound off | The Sound button's two labels. |
 | `longCardTextCharacters` | 110 | Card text longer than this is set a little smaller (`.card__question--long`) so it fits with the footnote. |
 | `cardLabels` | Dare, Whole table, Pass, Party, 18+ | Words shown on cards. |
 | `levelNames` | Light, Personal, Deep | Level names shown under the dots. |
@@ -506,7 +504,6 @@ If saved data is unreadable (edited by hand, or from an old version), `loadPlace
 | `dragRotationDegreesPerPixel` | 0.05 | How much a card tilts while dragged. |
 | `transitionSafetyMarginMs` | 50 | Extra wait in case the browser never reports an animation's end. |
 | `vibrationMs` | 12 | Length of the vibration. |
-| `clickSound` | 1800 Hz, 40 ms, volume 0.15 | The soft click, which fades to `silentGain` (0.0001). |
 
 **`css/styles.css`** (the top `:root` block) holds every colour, size and timing, including animation durations such as `--duration-fly` and `--duration-settle`. Durations live in CSS so the reduced-motion rule can shorten them all in one place, and `js/timing.js` reads them from there.
 
@@ -549,7 +546,7 @@ Edit the `<h1>` and the `start-screen__subtitle` paragraph in `index.html`. Also
 The site is served by GitHub Pages from the `main` branch, root folder.
 
 1. Run `python3 scripts/validate.py`, `python3 scripts/check_style.py` and `python3 scripts/check_contrast.py`.
-2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.4`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
+2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.5`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
 3. Commit and push to `main`.
 4. Wait 1–2 minutes, then refresh <https://lilwheel.github.io/get-to-know/>.
 
