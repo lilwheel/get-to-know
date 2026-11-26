@@ -79,3 +79,20 @@ Decisions (2026-11-25):
 ## After Phase 3
 
 - [x] Research facts in card footnotes (2026-11-26): "Did you know?" findings from 55 checked studies and pages replace the "why" lines; every fact was re-checked by an independent reader against the raw abstract, and disputed or unconfirmable findings were dropped. 106 cards reworded after a phrasing review of all 3,340. Short-card layout added so footnotes fit on small phones.
+
+## Phase 4
+
+Paused — not started (wording toggle moved to Phase 5). Card ratings are not being built.
+
+## Phase 5: Remove sound, layout fix, drink wording, share as image
+
+Plan: `PHASE5_PLAN.md`. Evaluation and working notes: `docs/PHASE5_EVALUATION.md`.
+
+- [x] P5-0 — Quick evaluation (2026-11-26, no code changes)
+- [ ] P5-1 — Remove sound
+- [ ] P5-2 — Layout fix for small and short screens
+- [ ] P5-3 — Drink wording: data
+- [ ] P5-4 — Drink wording: setting
+- [ ] P5-5 — Share button and card image
+- [ ] P5-6 — Saving on every device
+- [ ] P5-7 — Final check and deploy
