@@ -96,3 +96,7 @@ Plan: `PHASE5_PLAN.md`. Evaluation and working notes: `docs/PHASE5_EVALUATION.md
 - [x] P5-5 — Share button and card image (2026-11-26, commit af17b90; merged with P5-6 as approved)
 - [x] P5-6 — Saving on every device (2026-11-26, commit af17b90; confirmed by the owner on iPhone (Photos) and Android (gallery))
 - [x] P5-7 — Final check and deploy (2026-11-26, commit 63c8e46; live on GitHub Pages, release 2026-11-26.13)
+
+## After Phase 5
+
+- [x] Data audit (2026-11-26): all 78 study and source links re-checked (PubMed IDs, DOIs and page titles match). Every card reviewed for fact and source fit: 1,310 facts re-matched to cards they suit, 255 "Card idea" credits fixed (e.g. Party cards no longer credited to Google research). 24 cards reworded (British "film", Party safety, near-duplicates, Dating cards that assumed the couple lives together).
