@@ -91,7 +91,7 @@ Plan: `PHASE5_PLAN.md`. Evaluation and working notes: `docs/PHASE5_EVALUATION.md
 - [x] P5-0 — Quick evaluation (2026-11-26, no code changes)
 - [x] P5-1 — Remove sound (2026-11-26, commit 2eb7aec)
 - [x] P5-2 — Layout fix for small and short screens (2026-11-26, commit 27cccb5)
-- [ ] P5-3 — Drink wording: data
+- [x] P5-3 — Drink wording: data (2026-11-26, commit d88e677; 69 cards with Classic wording)
 - [ ] P5-4 — Drink wording: setting
 - [ ] P5-5 — Share button and card image
 - [ ] P5-6 — Saving on every device
