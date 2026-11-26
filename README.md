@@ -5,8 +5,8 @@
 Swipeable question cards for getting to know each other. There are three sections, each with three levels:
 
 - **Icebreaker:** first dates and people who have just met.
-- **Dating:** couples a few months in. Includes optional 18+ questions.
 - **Friends & Teammates:** a group around a table. Questions plus dares (quick activities for the whole table), with a Pass button on every card, and an optional Party mode.
+- **Dating:** couples a few months in. Includes optional 18+ questions.
 
 The app is a static site: plain HTML, CSS and JavaScript. It has no backend, no build step, no accounts and no tracking.
 
@@ -567,7 +567,7 @@ Edit the `<h1>` and the `start-screen__subtitle` paragraph in `index.html`. Also
 The site is served by GitHub Pages from the `main` branch, root folder.
 
 1. Run `python3 scripts/validate.py`, `python3 scripts/check_style.py` and `python3 scripts/check_contrast.py`.
-2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.15`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
+2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.16`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
 3. Commit and push to `main`.
 4. Wait 1–2 minutes, then refresh <https://lilwheel.github.io/get-to-know/>.
 

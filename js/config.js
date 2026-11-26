@@ -32,21 +32,21 @@ export const CONFIG = {
   sections: {
     icebreaker: {
       name: 'Icebreaker',
-      hint: 'First dates and new connections',
+      hint: 'New Connections and First Dates',
       hasPassButton: false,
       toggles: [],
     },
-    dating: {
-      name: 'Dating',
-      hint: 'Couples a few months in',
-      hasPassButton: false,
-      toggles: ['adult'],
-    },
     friends: {
       name: 'Friends & Teammates',
-      hint: 'Questions and dares for the whole table',
+      hint: 'Questions for the Whole Table',
       hasPassButton: true,
       toggles: ['party', 'adultWording'],
+    },
+    dating: {
+      name: 'Dating',
+      hint: 'Getting Deeper and Dreaming Together',
+      hasPassButton: false,
+      toggles: ['adult'],
     },
   },
 
