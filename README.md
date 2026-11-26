@@ -57,7 +57,7 @@ Nothing needs installing apart from Python 3, which is used only for the local s
 | Screen | What's on it |
 | --- | --- |
 | Start screen | Title, one button per section (built from `CONFIG.sections`), and "Reset seen cards". |
-| Card screen | The Home button and section name; a toolbar just above the card with the section's gated switches on the left (18+ in Dating; Party mode and 18+ wording in Friends & Teammates) and Go Shallower / three level flowers / Go Deeper on the right; the card stack; and Back / Save (the floppy disk) / Next at the bottom. |
+| Card screen | A header with Home on the left, the section name in the middle and Save (the floppy disk) on the right; a toolbar just above the card with the section's gated switches on the left (18+ in Dating; Party mode and 18+ wording in Friends & Teammates) and Go Shallower / three level flowers / Go Deeper on the right; the card stack; and Back / Next at the bottom. |
 
 Only one screen shows at a time. A third element, the error message, replaces both if the data can't load.
 
@@ -564,7 +564,7 @@ Edit the `<h1>` and the `start-screen__subtitle` paragraph in `index.html`. Also
 The site is served by GitHub Pages from the `main` branch, root folder.
 
 1. Run `python3 scripts/validate.py`, `python3 scripts/check_style.py` and `python3 scripts/check_contrast.py`.
-2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.13`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
+2. **Bump the release version.** In `index.html`, replace every `v=…` value (the stylesheet, the import map and the app script; currently `2026-11-26.14`) with a new one, such as today's date. GitHub Pages lets browsers keep files for up to 10 minutes; a new tag makes phones fetch the new CSS and JavaScript straight away instead of mixing old and new files. `check_style.py` fails if the tags don't all match or a file in `js/` is missing from the import map. The data files don't need this: the app asks the server for fresh copies on every load.
 3. Commit and push to `main`.
 4. Wait 1–2 minutes, then refresh <https://lilwheel.github.io/get-to-know/>.
 

@@ -136,8 +136,6 @@
   --start-intro-max-width: 34rem;
   --level-indicator-min-width: 5rem;
   --control-button-min-width: 8rem;
-  /* Back and Next never take more than this share of a narrow screen each */
-  --card-control-max-share: 30vw;
   /* Minimum tap heights: main buttons, then smaller toggles and switches */
   --tap-target-large: 48px;
   --tap-target-small: 44px;
@@ -492,12 +490,10 @@ body[data-theme="friends-party-adult"] .theme-backdrop[data-theme="friends-party
    ========================================================== */
 
 /* The buttons keep their size; a long section name wraps instead */
-/* Home on the left and the section name centred on the page. The empty
-   right column mirrors Home's width when there's room, and gives way first
-   on narrow screens. */
+/* Home on the left, the section name centred, Save on the right */
 .app-header {
   display: grid;
-  grid-template-columns: minmax(max-content, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
   align-items: center;
   gap: var(--space-small);
 }
@@ -505,6 +501,10 @@ body[data-theme="friends-party-adult"] .theme-backdrop[data-theme="friends-party
 .app-header .toggle-button {
   justify-self: start;
   white-space: nowrap;
+}
+
+.app-header .icon-button {
+  justify-self: end;
 }
 
 .app-header__title {
@@ -971,15 +971,10 @@ body[data-theme="friends-party-adult"] .theme-backdrop[data-theme="friends-party
   background: var(--color-button-primary-background);
 }
 
-/* Back and Next leave room for Save between them on narrow phones */
-.card-controls .control-button {
-  min-width: min(var(--control-button-min-width), var(--card-control-max-share));
-}
-
 /* Save: a square button holding only the floppy disk icon */
-.card-controls .control-button--icon {
-  min-width: var(--tap-target-large);
-  padding: var(--space-small);
+.icon-button {
+  min-width: var(--tap-target-small);
+  padding: var(--space-xsmall);
   display: inline-grid;
   place-items: center;
 }
